@@ -371,8 +371,7 @@ const MODELS = {
 };
 
 // ─── HEADER COMPONENT (stable — defined outside AIGuide) ─────────────────────
-function AppHeader({ lang, setLang, t, dark, setDark, headerBg, border, muted, text, setLevel, setShowGuide }) {
-  const goHome = () => { if (setLevel) { setLevel(null); setShowGuide(false); window.scrollTo(0, 0); } };
+function AppHeader({ lang, setLang, t, dark, setDark, headerBg, border, muted, text }) {
   return (
     <header style={{
       display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -382,7 +381,7 @@ function AppHeader({ lang, setLang, t, dark, setDark, headerBg, border, muted, t
       background: headerBg, backdropFilter: "blur(20px)",
     }}>
       {/* Logo */}
-      <div onClick={goHome} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{
           width: 32, height: 32, borderRadius: 8,
           background: `linear-gradient(135deg, ${T.accent}, #F97316)`,
@@ -534,7 +533,7 @@ export default function AIGuide() {
     <div style={{
       borderRadius: 12, marginBottom: 8, overflow: "hidden",
       border: `1px solid ${expanded ? T.accent + "55" : border}`,
-      background: expanded ? `rgba(245,158,11,${dark ? "0.05" : "0.07"})` : surface,
+      background: expanded ? "rgba(245,158,11,0.05)" : surface,
       transition: "all .25s",
     }}>
       <button onClick={onToggle} style={{
@@ -585,7 +584,6 @@ export default function AIGuide() {
     .tab-btn:hover { border-color: ${T.accent}44 !important; }
     .tool-link:hover { color: ${T.teal} !important; }
     ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: ${faint}; border-radius: 4px; }
-    body { background: ${bg}; transition: background .3s; }
   `;
 
   // ── HOME SCREEN ──────────────────────────────────────────────────────────────
@@ -600,7 +598,7 @@ export default function AIGuide() {
         <style>{css}</style>
         <Background dark={dark} />
         <div style={{ position: "relative", zIndex: 1 }}>
-          <AppHeader lang={lang} setLang={setLang} t={t} dark={dark} setDark={setDark} headerBg={headerBg} border={border} muted={muted} text={text} setLevel={setLevel} setShowGuide={setShowGuide} />
+          <AppHeader lang={lang} setLang={setLang} t={t} dark={dark} setDark={setDark} headerBg={headerBg} border={border} muted={muted} text={text} />
           <main style={{ maxWidth: 520, margin: "0 auto", padding: "80px 24px 60px", textAlign: "center" }}>
 
             {/* Hero badge */}
@@ -691,9 +689,9 @@ export default function AIGuide() {
   return (
     <div style={{ minHeight: "100vh", background: bg, color: text, fontFamily: "'Sora',sans-serif", position: "relative" }}>
       <style>{css}</style>
-      <Background dark={dark} />
+      <Background />
       <div style={{ position: "relative", zIndex: 1 }}>
-        <AppHeader lang={lang} setLang={setLang} t={t} dark={dark} setDark={setDark} headerBg={headerBg} border={border} muted={muted} text={text} setLevel={setLevel} setShowGuide={setShowGuide} />
+        <AppHeader lang={lang} setLang={setLang} t={t} />
         <main style={{ maxWidth: 820, margin: "0 auto", padding: "32px 24px 100px" }}>
 
           {/* Back button */}
@@ -800,7 +798,7 @@ export default function AIGuide() {
                     {cat.items.map((tool, ti) => (
                       <div key={ti} style={{
                         padding: "14px 16px", borderRadius: 10,
-                        background: surface,
+                        background: "rgba(255,255,255,0.025)",
                         border: `1px solid ${border}`,
                         marginBottom: 8,
                       }}>
@@ -828,8 +826,12 @@ export default function AIGuide() {
           {/* ── PROMPTS TAB ── */}
           {tab === "prompts" && (
             <div>
-              {/* Controls row — view toggle only; language is set globally in header */}
+              {/* Controls row */}
               <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: faint, marginRight: 2 }}>{t.pLang}:</span>
+                <Pill active={pLang === "cs"} onClick={() => setPLang("cs")}>{t.cs2}</Pill>
+                <Pill active={pLang === "en"} onClick={() => setPLang("en")}>{t.en2}</Pill>
+                <span style={{ width: 1, height: 18, background: border, margin: "0 6px" }} />
                 <Pill active={pView === "byTask"} onClick={() => { setPView("byTask"); setExpP(null); setExpM(null); }}>{t.byTask}</Pill>
                 <Pill active={pView === "byModel"} onClick={() => { setPView("byModel"); setExpP(null); setExpM(null); }}>{t.byModel}</Pill>
               </div>
@@ -849,7 +851,7 @@ export default function AIGuide() {
                       <div style={{ fontSize: 12, fontWeight: 600, color: muted, marginBottom: 6, letterSpacing: "0.03em" }}>{p.label[lang]}</div>
                       <div style={{
                         padding: "14px 16px", borderRadius: 10,
-                        background: surface,
+                        background: "rgba(255,255,255,0.025)",
                         border: `1px solid ${border}`,
                         position: "relative",
                       }}>
@@ -873,71 +875,25 @@ export default function AIGuide() {
                 </Acc>
               ))}
 
-              {pView === "byModel" && models.map((m, i) => {
-                // Find prompts that reference this model by name
-                const modelPrompts = prompts.filter(item =>
-                  item.mods.some(mod => mod.toLowerCase().includes(m.name.split(" ")[0].toLowerCase()))
-                );
-                return (
-                  <Acc key={i} expanded={expM === i} onToggle={() => setExpM(expM === i ? null : i)} icon={m.icon} title={m.name} sub={m.d[lang]}>
-                    {m.mv && <div style={S.mvBox}><span style={{ fontWeight: 600 }}>{t.mv}:</span> {m.mv[lang]}</div>}
-
-                    {/* Tips */}
-                    <div style={{ fontSize: 11, fontWeight: 700, color: T.accent, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.tips}</div>
-                    {m.tips[lang].map((tip, ti) => (
-                      <div key={ti} style={{
-                        padding: "10px 14px", borderRadius: 8,
-                        background: surface,
-                        border: `1px solid ${border}`,
-                        marginBottom: 6, fontSize: 13, lineHeight: 1.6,
-                        display: "flex", gap: 10, color: text,
-                      }}>
-                        <span style={{ color: T.accent, flexShrink: 0 }}>→</span><span>{tip}</span>
-                      </div>
-                    ))}
-
-                    {/* Prompts for this model */}
-                    {modelPrompts.length > 0 && (
-                      <div style={{ marginTop: 16 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: T.accent, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>Prompty</div>
-                        {modelPrompts.map((item, pi) =>
-                          item.ps.map((p, pj) => (
-                            <div key={`${pi}-${pj}`} style={{ marginBottom: 10 }}>
-                              <div style={{ fontSize: 11, color: muted, marginBottom: 5, fontWeight: 500 }}>
-                                {item.icon} {item.task[lang]} — {p.label[lang]}
-                              </div>
-                              <div style={{
-                                padding: "12px 14px", borderRadius: 10,
-                                background: surface, border: `1px solid ${border}`,
-                                position: "relative",
-                              }}>
-                                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, lineHeight: 1.8, color: text, whiteSpace: "pre-wrap", wordBreak: "break-word", paddingRight: 86 }}>{p.p[lang]}</div>
-                                <button
-                                  aria-label={t.copyAriaLabel}
-                                  onClick={() => cp(p.p[lang], `m${i}-${pi}-${pj}`)}
-                                  style={{
-                                    position: "absolute", top: 10, right: 10,
-                                    background: copied === `m${i}-${pi}-${pj}` ? T.green : surface,
-                                    border: `1px solid ${copied === `m${i}-${pi}-${pj}` ? T.green + "44" : border}`,
-                                    borderRadius: 6, padding: "3px 10px", fontSize: 11,
-                                    color: copied === `m${i}-${pi}-${pj}` ? "#fff" : muted,
-                                    cursor: "pointer", fontFamily: "inherit", fontWeight: 500,
-                                    transition: "all .2s", whiteSpace: "nowrap",
-                                  }}>
-                                  {copied === `m${i}-${pi}-${pj}` ? t.copied : t.copy}
-                                </button>
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    )}
-
-                    <a href={m.url} target="_blank" rel="noopener noreferrer"
-                      style={{ display: "inline-block", marginTop: 14, fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.02em" }}>{t.open}</a>
-                  </Acc>
-                );
-              })}
+              {pView === "byModel" && models.map((m, i) => (
+                <Acc key={i} expanded={expM === i} onToggle={() => setExpM(expM === i ? null : i)} icon={m.icon} title={m.name} sub={m.d[lang]}>
+                  {m.mv && <div style={S.mvBox}><span style={{ fontWeight: 600 }}>{t.mv}:</span> {m.mv[lang]}</div>}
+                  <div style={{ fontSize: 11, fontWeight: 700, color: T.accent, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.tips}</div>
+                  {m.tips[lang].map((tip, ti) => (
+                    <div key={ti} style={{
+                      padding: "10px 14px", borderRadius: 8,
+                      background: "rgba(255,255,255,0.025)",
+                      border: `1px solid ${border}`,
+                      marginBottom: 6, fontSize: 13, lineHeight: 1.6,
+                      display: "flex", gap: 10, color: text,
+                    }}>
+                      <span style={{ color: T.accent, flexShrink: 0 }}>→</span><span>{tip}</span>
+                    </div>
+                  ))}
+                  <a href={m.url} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-block", marginTop: 12, fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.02em" }}>{t.open}</a>
+                </Acc>
+              ))}
             </div>
           )}
         </main>
