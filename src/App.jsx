@@ -90,259 +90,45 @@ const GUIDE = {
   beginner: {
     cs: [
       // ── REWRITTEN (Dimension 2: more human, start with experience not definition) ──
-      { title: "🤔 Co je umělá inteligence?", text: "Vzpomeňte si na naposledy, kdy jste se na něco chtěli zeptat, ale nevěděli koho. Teď máte někoho k dispozici 24 hodin denně, kdo toho hodně ví, nikdy se nezlobí a má na vás vždy čas.
-
-AI není robot. Je to chytrý software, kterému píšete zprávy a on odpovídá — jako SMS, ale místo člověka odpovídá počítač.
-
-AI umí:
-• Odpovídat na otázky (jako encyklopedie vlastními slovy)
-• Psát texty — emaily, články, dopisy
-• Překládat jazyky
-• Vytvářet obrázky podle popisu
-• Shrnout dlouhé dokumenty
-• Pomoci s plánováním a rozhodováním
-
-A funguje to česky — nemusíte umět anglicky." },
-      { title: "💰 Kolik to stojí?", text: "Většina nástrojů má bezplatnou verzi, která pro začátek bohatě stačí.
-
-🟢 Zdarma:
-• ChatGPT — chat.openai.com
-• Gemini — gemini.google.com
-• Claude — claude.ai
-• DeepSeek — chat.deepseek.com
-• NotebookLM — notebooklm.google.com
-
-🟡 Více za předplatné (~500 Kč/měs.):
-• ChatGPT Plus, Claude Pro, Gemini Advanced
-
-Začněte zdarma. Placená verze dává smysl až když víte, že to používáte každý den." },
-      { title: "🔐 Jak se zaregistrovat?", text: "1. Otevřete prohlížeč (Chrome, Edge, Safari)
-2. Napište adresu — např. chat.openai.com
-3. Klikněte 'Registrovat' nebo 'Sign up'
-4. Zadejte email a heslo
-5. Na email přijde potvrzení — klikněte na odkaz
-6. Hotovo!
-
-💡 U Gemini stačí Google účet. U většiny nástrojů lze přihlásit přes Google jedním kliknutím.
-
-⚠️ Nemusíte zadávat platební kartu. Pokud ji někde vyžadují hned, hledejte bezplatnou alternativu." },
+      { title: "🤔 Co je umělá inteligence?", text: "Vzpomeňte si na naposledy, kdy jste se na něco chtěli zeptat, ale nevěděli koho. Teď máte někoho k dispozici 24 hodin denně, kdo toho hodně ví, nikdy se nezlobí a má na vás vždy čas.\n\nAI není robot. Je to chytrý software, kterému píšete zprávy a on odpovídá — jako SMS, ale místo člověka odpovídá počítač.\n\nAI umí:\n• Odpovídat na otázky (jako encyklopedie vlastními slovy)\n• Psát texty — emaily, články, dopisy\n• Překládat jazyky\n• Vytvářet obrázky podle popisu\n• Shrnout dlouhé dokumenty\n• Pomoci s plánováním a rozhodováním\n\nA funguje to česky — nemusíte umět anglicky." },
+      { title: "💰 Kolik to stojí?", text: "Většina nástrojů má bezplatnou verzi, která pro začátek bohatě stačí.\n\n🟢 Zdarma:\n• ChatGPT — chat.openai.com\n• Gemini — gemini.google.com\n• Claude — claude.ai\n• DeepSeek — chat.deepseek.com\n• NotebookLM — notebooklm.google.com\n\n🟡 Více za předplatné (~500 Kč/měs.):\n• ChatGPT Plus, Claude Pro, Gemini Advanced\n\nZačněte zdarma. Placená verze dává smysl až když víte, že to používáte každý den." },
+      { title: "🔐 Jak se zaregistrovat?", text: "1. Otevřete prohlížeč (Chrome, Edge, Safari)\n2. Napište adresu — např. chat.openai.com\n3. Klikněte 'Registrovat' nebo 'Sign up'\n4. Zadejte email a heslo\n5. Na email přijde potvrzení — klikněte na odkaz\n6. Hotovo!\n\n💡 U Gemini stačí Google účet. U většiny nástrojů lze přihlásit přes Google jedním kliknutím.\n\n⚠️ Nemusíte zadávat platební kartu. Pokud ji někde vyžadují hned, hledejte bezplatnou alternativu." },
       // ── REWRITTEN (Dimension 2: empathetic opener, conversational, no rules numbering) ──
-      { title: "💬 Jak psát dotazy (prompty)?", text: "Váš první prompt bude špatný. To je v pořádku — tak to funguje u každého. AI není Google. Čím víc mu řeknete, tím lépe vám odpoví.
-
-Rozdíl v praxi:
-❌ Špatně: 'Napiš něco o vaření'
-✅ Dobře: 'Napiš jednoduchý recept na svíčkovou pro 4 osoby. Ingredience z běžného supermarketu. Postup krok za krokem, jednoduše.'
-
-Co pomáhá:
-→ Řekněte pro koho text je: 'vysvětli jako pro laika'
-→ Určete délku: 've 3 větách' nebo 'na stránku'
-→ Určete tón: 'formálně' nebo 'přátelsky'
-→ Opravujte výsledek: 'zkrať to', 'víc detailů', 'jiný tón'
-
-AI si nepamatuje vaše předchozí dotazy a nesoudí vás. Klidně se ptejte znovu." },
+      { title: "💬 Jak psát dotazy (prompty)?", text: "Váš první prompt bude špatný. To je v pořádku — tak to funguje u každého. AI není Google. Čím víc mu řeknete, tím lépe vám odpoví.\n\nRozdíl v praxi:\n❌ Špatně: 'Napiš něco o vaření'\n✅ Dobře: 'Napiš jednoduchý recept na svíčkovou pro 4 osoby. Ingredience z běžného supermarketu. Postup krok za krokem, jednoduše.'\n\nCo pomáhá:\n→ Řekněte pro koho text je: 'vysvětli jako pro laika'\n→ Určete délku: 've 3 větách' nebo 'na stránku'\n→ Určete tón: 'formálně' nebo 'přátelsky'\n→ Opravujte výsledek: 'zkrať to', 'víc detailů', 'jiný tón'\n\nAI si nepamatuje vaše předchozí dotazy a nesoudí vás. Klidně se ptejte znovu." },
       // ── REWRITTEN (Dimension 2: lead with reassurance, cautions second) ──
-      { title: "🔒 Je to bezpečné?", text: "Pro 95 % věcí co budete dělat — psaní textů, odpovědi na otázky, plánování — je AI naprosto bezpečný nástroj. Nic se nemůže pokazit. Nejhorší co se stane je, že dostanete špatnou odpověď, kterou jednoduše ignorujete.
-
-Tady jsou věci, které dělat nechcete:
-• Nezadávejte rodná čísla, hesla nebo čísla karet
-• Důležitá fakta (zdravotní, právní, finanční) si ověřte
-• AI nemá přístup k vašemu počítači ani datům
-
-💡 Berte AI jako radu od chytrého kamaráda — velmi užitečná, ale pro zásadní rozhodnutí konzultujte odborníka." },
-      { title: "📱 Na čem to funguje?", text: "🖥️ Počítač — stačí otevřít prohlížeč
-📱 Telefon — prohlížeč nebo zdarma aplikace (App Store / Google Play)
-📱 Tablet — stejně jako telefon
-
-Potřebujete jen internet. Žádná instalace, žádný speciální hardware.
-
-💡 Na telefonu doporučuji stáhnout aplikaci ChatGPT nebo Gemini — jsou pohodlnější než prohlížeč." },
-      { title: "🆚 Který nástroj vybrat?", text: "🟢 ChatGPT — nejuniverzálnější, nejlepší pro začátek
-🟠 Claude — nejlepší na dlouhé texty a přesné odpovědi
-🔵 Gemini — hledá aktuální info, propojený s Googlem
-🟤 DeepSeek — úplně zdarma bez limitů
-📘 NotebookLM — pro učení z dokumentů, umí udělat podcast
-🔴 Kimi — na extrémně dlouhé dokumenty
-
-💡 Začněte s ChatGPT. Funguje to hned, bez nastavení. Pokud nesedí, zkuste Claude nebo Gemini." },
+      { title: "🔒 Je to bezpečné?", text: "Pro 95 % věcí co budete dělat — psaní textů, odpovědi na otázky, plánování — je AI naprosto bezpečný nástroj. Nic se nemůže pokazit. Nejhorší co se stane je, že dostanete špatnou odpověď, kterou jednoduše ignorujete.\n\nTady jsou věci, které dělat nechcete:\n• Nezadávejte rodná čísla, hesla nebo čísla karet\n• Důležitá fakta (zdravotní, právní, finanční) si ověřte\n• AI nemá přístup k vašemu počítači ani datům\n\n💡 Berte AI jako radu od chytrého kamaráda — velmi užitečná, ale pro zásadní rozhodnutí konzultujte odborníka." },
+      { title: "📱 Na čem to funguje?", text: "🖥️ Počítač — stačí otevřít prohlížeč\n📱 Telefon — prohlížeč nebo zdarma aplikace (App Store / Google Play)\n📱 Tablet — stejně jako telefon\n\nPotřebujete jen internet. Žádná instalace, žádný speciální hardware.\n\n💡 Na telefonu doporučuji stáhnout aplikaci ChatGPT nebo Gemini — jsou pohodlnější než prohlížeč." },
+      { title: "🆚 Který nástroj vybrat?", text: "🟢 ChatGPT — nejuniverzálnější, nejlepší pro začátek\n🟠 Claude — nejlepší na dlouhé texty a přesné odpovědi\n🔵 Gemini — hledá aktuální info, propojený s Googlem\n🟤 DeepSeek — úplně zdarma bez limitů\n📘 NotebookLM — pro učení z dokumentů, umí udělat podcast\n🔴 Kimi — na extrémně dlouhé dokumenty\n\n💡 Začněte s ChatGPT. Funguje to hned, bez nastavení. Pokud nesedí, zkuste Claude nebo Gemini." },
       // ── NEW: Mýty a první chyby (Dimension 2) ──
       { title: "🚫 5 největších mýtů o AI", text: "Než začnete, vyvrátíme nejčastější mylné představy.\n\n❌ Mýtus 1: 'AI si věci vymýšlí — nemůžu mu věřit'\n✅ Pravda: AI může chybovat u konkrétních faktů, ale pro psaní emailů, plánování a vysvětlení je spolehlivý. Důležitá fakta jednoduše ověřte. Nemusíte ověřovat každou větu.\n\n❌ Mýtus 2: 'Musím umět anglicky'\n✅ Pravda: ChatGPT, Claude i Gemini fungují výborně česky. Pište česky, dostanete česky.\n\n❌ Mýtus 3: 'Stejně si to pak musím přepsat — nestojí to za čas'\n✅ Pravda: AI dává první návrh za 10 sekund. Upravit návrh trvá zlomek doby oproti psaní od nuly. Cíl je ušetřit 80 % práce, ne 100 %.\n\n❌ Mýtus 4: 'AI má přístup k mým datům'\n✅ Pravda: AI nevidí váš počítač, email ani soubory. Vidí jen to, co mu sami napíšete nebo nahrajete.\n\n❌ Mýtus 5: 'AI je pro mladé a technické lidi'\n✅ Pravda: Nejrychleji rostoucí skupina uživatelů v Evropě je 45–65 let. Pokud zvládáte Google, zvládáte i AI." },
       { title: "😤 Proč to nevychází napoprvé", text: "60–70 % lidí cítí po prvních třech pokusech, že AI 'nefunguje'. Skoro vždy je problém v zadání, ne v AI.\n\n5 nejčastějších chyb začátečníků:\n\n1. Ptáte se jako na Googlu\n   ❌ 'nejlepší restaurace Praha'\n   ✅ 'Doporuč restauraci v centru Prahy na romantickou večeři, max 800 Kč, bez fast foodu'\n\n2. Zadáváte bez kontextu\n   ❌ 'Napiš email'\n   ✅ 'Napiš email šéfovi, omlouvám se za zpoždění. Formální tón, max 80 slov.'\n\n3. Přijmete první výsledek nebo ho rovnou smažete\n   → Iterujte: 'Zkrať to', 'Víc formálně', 'Přidej konkrétní příklad'\n\n4. Kladete příliš složitý úkol najednou\n   → Rozdělte: nejdřív analýza, pak návrh, pak finální verze\n\n5. Vzdáte to při první špatné odpovědi\n   → Správná reakce: 'Toto není co jsem chtěl/a. Zkus to takto: [upřesnění]'\n\n💡 Váš první prompt bude špatný. To je v pořádku. AI vás nesoudí a každý nový chat začíná znovu." },
       // ── NEW SECTION 1 (Dimension 2: "Co AI neumí — a proč je to dobře") ──
-      { title: "⚠️ Co AI neumí — a proč je to dobře", text: "AI je mocný nástroj, ale má limity. Znát je vám ušetří zklamání.
-
-Co AI nedělá spolehlivě:
-• Nezná aktuální zprávy a události (pokud nemá přístup k internetu)
-• Může si vymyslet konkrétní fakta — jména, čísla, citace — a uvést je s jistotou
-• Nerozumí vám jako člověk — analyzuje text, nepromýšlí situaci
-• Má znalostní cutoff — neví co se stalo po určitém datu
-
-Proč je to vlastně dobře:
-→ Vy jste stále v kontrole. AI je nástroj, ne autorita.
-→ Pro psaní emailů, plánování a vysvětlení konceptů jsou tyto limity téměř bezvýznamné.
-→ Důležité informace (zdravotní, právní, finanční) si jednoduše ověřte u odborníka.
-
-💡 Pravidlo: Čím důležitější rozhodnutí, tím víc ověřujte. Pro každodenní úkoly ověřování nepotřebujete." },
+      { title: "⚠️ Co AI neumí — a proč je to dobře", text: "AI je mocný nástroj, ale má limity. Znát je vám ušetří zklamání.\n\nCo AI nedělá spolehlivě:\n• Nezná aktuální zprávy a události (pokud nemá přístup k internetu)\n• Může si vymyslet konkrétní fakta — jména, čísla, citace — a uvést je s jistotou\n• Nerozumí vám jako člověk — analyzuje text, nepromýšlí situaci\n• Má znalostní cutoff — neví co se stalo po určitém datu\n\nProč je to vlastně dobře:\n→ Vy jste stále v kontrole. AI je nástroj, ne autorita.\n→ Pro psaní emailů, plánování a vysvětlení konceptů jsou tyto limity téměř bezvýznamné.\n→ Důležité informace (zdravotní, právní, finanční) si jednoduše ověřte u odborníka.\n\n💡 Pravidlo: Čím důležitější rozhodnutí, tím víc ověřujte. Pro každodenní úkoly ověřování nepotřebujete." },
       // ── NEW SECTION 2 (Dimension 2: "Jak opravovat špatné odpovědi") ──
-      { title: "🔁 Jak opravovat špatné odpovědi", text: "Když výsledek není dobrý, většina lidí to vzdá. To je škoda — iterace je ta nejdůležitější dovednost při práci s AI.
-
-Když je odpověď špatná, nemazejte ji a nezačínejte znovu. Opravte ji:
-
-→ Příliš dlouhé? Napište: 'Zkrať to na 3 věty.'
-→ Příliš obecné? Napište: 'Přidej konkrétní příklad z praxe.'
-→ Špatný tón? Napište: 'Napiš to přátelštěji, méně formálně.'
-→ Chybí detaily? Napište: 'Rozveď bod číslo 2 podrobněji.'
-→ Úplně vedle? Napište: 'Zapomeň na předchozí odpověď. Zkusím to jinak:' a přeformulujte.
-
-5 kroků jak vylepšit jakýkoliv výstup:
-1. Identifikujte co přesně vadí (délka / tón / obsah / struktura)
-2. Napište konkrétní instrukci co změnit
-3. Přečtěte nový výsledek
-4. Opakujte max 2-3x
-5. Pokud nefunguje, začněte nový chat s lepším výchozím zadáním
-
-💡 Cíl není perfektní první výstup — cíl je ušetřit 80 % času na psaní, ne 100 %." },
+      { title: "🔁 Jak opravovat špatné odpovědi", text: "Když výsledek není dobrý, většina lidí to vzdá. To je škoda — iterace je ta nejdůležitější dovednost při práci s AI.\n\nKdyž je odpověď špatná, nemazejte ji a nezačínejte znovu. Opravte ji:\n\n→ Příliš dlouhé? Napište: 'Zkrať to na 3 věty.'\n→ Příliš obecné? Napište: 'Přidej konkrétní příklad z praxe.'\n→ Špatný tón? Napište: 'Napiš to přátelštěji, méně formálně.'\n→ Chybí detaily? Napište: 'Rozveď bod číslo 2 podrobněji.'\n→ Úplně vedle? Napište: 'Zapomeň na předchozí odpověď. Zkusím to jinak:' a přeformulujte.\n\n5 kroků jak vylepšit jakýkoliv výstup:\n1. Identifikujte co přesně vadí (délka / tón / obsah / struktura)\n2. Napište konkrétní instrukci co změnit\n3. Přečtěte nový výsledek\n4. Opakujte max 2-3x\n5. Pokud nefunguje, začněte nový chat s lepším výchozím zadáním\n\n💡 Cíl není perfektní první výstup — cíl je ušetřit 80 % času na psaní, ne 100 %." },
       // ── NEW SECTION 3 (Dimension 2: "AI v každodenním životě") ──
-      { title: "🇨🇿 AI v českém každodenním životě", text: "AI není jen pro techniky a mladé lidi. Nejrychleji rostoucí skupina uživatelů v Evropě je 45–65 let — lidé kteří ho používají na psaní a práci s dokumenty.
-
-10 situací kde AI opravdu pomůže:
-
-1. 📄 Dostali jste nesrozumitelný dopis z úřadu → AI ho vysvětlí lidsky
-2. 💼 Píšete žádost o práci → AI pomůže s motivačním dopisem
-3. 🏥 Nevíte co znamená lékařská zpráva → AI vysvětlí termíny
-4. 🚗 Dostali pokutu a chcete se odvolat → AI napíše odvolání
-5. 🏠 Plánujete rekonstrukci a potřebujete rozpočet → AI pomůže s výpočty
-6. 📚 Dítě má referát do školy → AI vysvětlí téma srozumitelně
-7. ⭐ Zákazník napsal negativní recenzi → AI navrhne profesionální odpověď
-8. 📧 Potřebujete napsat složitý email → AI navrhne znění
-9. 💊 Nevíte zda příznaky jsou urgentní → AI pomůže formulovat otázky pro lékaře
-10. 💰 Zvažujete finanční rozhodnutí → AI pomůže promyslet otázky
-
-💡 Vyzkoušejte jednu situaci ze svého života tento týden. Stačí otevřít ChatGPT a napsat co potřebujete." },
+      { title: "🇨🇿 AI v českém každodenním životě", text: "AI není jen pro techniky a mladé lidi. Nejrychleji rostoucí skupina uživatelů v Evropě je 45–65 let — lidé kteří ho používají na psaní a práci s dokumenty.\n\n10 situací kde AI opravdu pomůže:\n\n1. 📄 Dostali jste nesrozumitelný dopis z úřadu → AI ho vysvětlí lidsky\n2. 💼 Píšete žádost o práci → AI pomůže s motivačním dopisem\n3. 🏥 Nevíte co znamená lékařská zpráva → AI vysvětlí termíny\n4. 🚗 Dostali pokutu a chcete se odvolat → AI napíše odvolání\n5. 🏠 Plánujete rekonstrukci a potřebujete rozpočet → AI pomůže s výpočty\n6. 📚 Dítě má referát do školy → AI vysvětlí téma srozumitelně\n7. ⭐ Zákazník napsal negativní recenzi → AI navrhne profesionální odpověď\n8. 📧 Potřebujete napsat složitý email → AI navrhne znění\n9. 💊 Nevíte zda příznaky jsou urgentní → AI pomůže formulovat otázky pro lékaře\n10. 💰 Zvažujete finanční rozhodnutí → AI pomůže promyslet otázky\n\n💡 Vyzkoušejte jednu situaci ze svého života tento týden. Stačí otevřít ChatGPT a napsat co potřebujete." },
     ],
     en: [
       // ── REWRITTEN (Dimension 2: start with experience, empathetic) ──
-      { title: "🤔 What is AI?", text: "Think about the last time you wanted to ask something but didn't know who to ask. Now you have someone available 24 hours a day who knows a lot, never gets annoyed, and always has time for you.
-
-AI is not a robot. It's smart software you write messages to — like texting, but a very knowledgeable computer replies.
-
-AI can:
-• Answer questions (like an encyclopedia in your own words)
-• Write texts — emails, articles, letters
-• Translate languages
-• Create images from descriptions
-• Summarize long documents
-• Help with planning and decisions
-
-And it works in Czech, English, and most European languages." },
-      { title: "💰 How much does it cost?", text: "Most tools have a free version that's more than enough to start.
-
-🟢 Free: ChatGPT, Gemini, Claude, DeepSeek, NotebookLM
-
-🟡 More with subscription (~$20/mo): ChatGPT Plus, Claude Pro, Gemini Advanced
-
-Start free. A paid plan only makes sense once you know you're using it every day." },
-      { title: "🔐 How to register?", text: "1. Open browser (Chrome, Edge, Safari)
-2. Go to the tool — e.g. chat.openai.com
-3. Click 'Sign up'
-4. Enter email and password
-5. Confirm via the email link
-6. Done!
-
-💡 For Gemini, your Google account is enough. Most tools let you sign in with Google in one click.
-
-⚠️ You don't need to enter a credit card. If one is required immediately, look for a free alternative." },
+      { title: "🤔 What is AI?", text: "Think about the last time you wanted to ask something but didn't know who to ask. Now you have someone available 24 hours a day who knows a lot, never gets annoyed, and always has time for you.\n\nAI is not a robot. It's smart software you write messages to — like texting, but a very knowledgeable computer replies.\n\nAI can:\n• Answer questions (like an encyclopedia in your own words)\n• Write texts — emails, articles, letters\n• Translate languages\n• Create images from descriptions\n• Summarize long documents\n• Help with planning and decisions\n\nAnd it works in Czech, English, and most European languages." },
+      { title: "💰 How much does it cost?", text: "Most tools have a free version that's more than enough to start.\n\n🟢 Free: ChatGPT, Gemini, Claude, DeepSeek, NotebookLM\n\n🟡 More with subscription (~$20/mo): ChatGPT Plus, Claude Pro, Gemini Advanced\n\nStart free. A paid plan only makes sense once you know you're using it every day." },
+      { title: "🔐 How to register?", text: "1. Open browser (Chrome, Edge, Safari)\n2. Go to the tool — e.g. chat.openai.com\n3. Click 'Sign up'\n4. Enter email and password\n5. Confirm via the email link\n6. Done!\n\n💡 For Gemini, your Google account is enough. Most tools let you sign in with Google in one click.\n\n⚠️ You don't need to enter a credit card. If one is required immediately, look for a free alternative." },
       // ── REWRITTEN (empathetic, conversational) ──
-      { title: "💬 How to write prompts?", text: "Your first prompt will be bad. That's fine — it's the same for everyone. AI is not Google. The more you tell it, the better it answers.
-
-The difference in practice:
-❌ Bad: 'Write something about cooking'
-✅ Good: 'Write a simple beef stew recipe for 4 people. Grocery store ingredients. Step-by-step, simple language.'
-
-What helps:
-→ Say who it's for: 'explain like I know nothing about this'
-→ Set the length: 'in 3 sentences' or 'one page'
-→ Set the tone: 'formal' or 'friendly'
-→ Correct the result: 'shorten it', 'more detail', 'different tone'
-
-AI doesn't remember your previous questions and doesn't judge you. Ask again freely." },
+      { title: "💬 How to write prompts?", text: "Your first prompt will be bad. That's fine — it's the same for everyone. AI is not Google. The more you tell it, the better it answers.\n\nThe difference in practice:\n❌ Bad: 'Write something about cooking'\n✅ Good: 'Write a simple beef stew recipe for 4 people. Grocery store ingredients. Step-by-step, simple language.'\n\nWhat helps:\n→ Say who it's for: 'explain like I know nothing about this'\n→ Set the length: 'in 3 sentences' or 'one page'\n→ Set the tone: 'formal' or 'friendly'\n→ Correct the result: 'shorten it', 'more detail', 'different tone'\n\nAI doesn't remember your previous questions and doesn't judge you. Ask again freely." },
       // ── REWRITTEN (reassurance first) ──
-      { title: "🔒 Is it safe?", text: "For 95% of what you'll do — writing texts, answering questions, planning — AI is completely safe. Nothing can go wrong. The worst that happens is you get a bad answer, which you simply ignore.
-
-Here's what you don't want to do:
-• Don't enter ID numbers, passwords or card details
-• Verify important facts (medical, legal, financial) with a specialist
-• AI has no access to your computer or files
-
-💡 Think of AI like advice from a knowledgeable friend — very useful, but for major decisions consult an expert." },
-      { title: "📱 What devices?", text: "🖥️ Computer — just open a browser
-📱 Phone — browser or free app (App Store / Google Play)
-📱 Tablet — same as phone
-
-All you need is internet. No installation, no special hardware.
-
-💡 On phone, download the ChatGPT or Gemini app — more comfortable than a browser." },
-      { title: "🆚 Which tool?", text: "🟢 ChatGPT — most universal, best to start
-🟠 Claude — best for long texts and precise answers
-🔵 Gemini — current info, connected to Google
-🟤 DeepSeek — completely free with no limits
-📘 NotebookLM — learning from documents, can create podcasts
-🔴 Kimi — extremely long documents
-
-💡 Start with ChatGPT. Works immediately, no setup. If it doesn't feel right, try Claude or Gemini." },
+      { title: "🔒 Is it safe?", text: "For 95% of what you'll do — writing texts, answering questions, planning — AI is completely safe. Nothing can go wrong. The worst that happens is you get a bad answer, which you simply ignore.\n\nHere's what you don't want to do:\n• Don't enter ID numbers, passwords or card details\n• Verify important facts (medical, legal, financial) with a specialist\n• AI has no access to your computer or files\n\n💡 Think of AI like advice from a knowledgeable friend — very useful, but for major decisions consult an expert." },
+      { title: "📱 What devices?", text: "🖥️ Computer — just open a browser\n📱 Phone — browser or free app (App Store / Google Play)\n📱 Tablet — same as phone\n\nAll you need is internet. No installation, no special hardware.\n\n💡 On phone, download the ChatGPT or Gemini app — more comfortable than a browser." },
+      { title: "🆚 Which tool?", text: "🟢 ChatGPT — most universal, best to start\n🟠 Claude — best for long texts and precise answers\n🔵 Gemini — current info, connected to Google\n🟤 DeepSeek — completely free with no limits\n📘 NotebookLM — learning from documents, can create podcasts\n🔴 Kimi — extremely long documents\n\n💡 Start with ChatGPT. Works immediately, no setup. If it doesn't feel right, try Claude or Gemini." },
       // ── NEW: Myths and first-task failures (Dimension 2) ──
       { title: "🚫 5 biggest myths about AI", text: "Before you start, let's bust the most common misconceptions.\n\n❌ Myth 1: 'AI makes things up — I can't trust it'\n✅ Truth: AI can be wrong on specific facts, but for writing emails, planning, and explanations it's reliable. Simply verify important facts. You don't need to verify every sentence.\n\n❌ Myth 2: 'I need to know English'\n✅ Truth: ChatGPT, Claude and Gemini all work great in Czech and most European languages. Write in your language, get answers in your language.\n\n❌ Myth 3: 'I'll have to rewrite it anyway — not worth the time'\n✅ Truth: AI delivers a first draft in 10 seconds. Editing a draft takes a fraction of the time of writing from scratch. The goal is to save 80% of the work, not 100%.\n\n❌ Myth 4: 'AI has access to my data'\n✅ Truth: AI can't see your computer, email or files. It only sees what you type or upload into the chat.\n\n❌ Myth 5: 'AI is for young and technical people'\n✅ Truth: The fastest-growing user group in Europe is 45–65 year olds. If you can use Google, you can use AI." },
       { title: "😤 Why it doesn't work first time", text: "60–70% of people feel after their first three attempts that AI 'doesn't work.' Almost always the problem is the prompt, not the AI.\n\n5 most common beginner mistakes:\n\n1. Searching like Google\n   ❌ 'best restaurants Prague'\n   ✅ 'Recommend a restaurant in central Prague for a romantic dinner, max 800 CZK per person, no fast food'\n\n2. Giving no context\n   ❌ 'Write an email'\n   ✅ 'Write an email to my boss apologizing for a delay. Formal tone, max 80 words.'\n\n3. Accepting the first result or deleting it immediately\n   → Iterate: 'Shorten it', 'More formal', 'Add a specific example'\n\n4. Asking something too complex in one go\n   → Break it down: first analysis, then draft, then final version\n\n5. Giving up after the first bad answer\n   → Right response: 'This is not what I wanted. Try it like this: [clarification]'\n\n💡 Your first prompt will be bad. That's fine. AI doesn't judge you and every new chat starts fresh." },
       // ── NEW SECTION 1 ──
-      { title: "⚠️ What AI can't do — and why that's fine", text: "AI is a powerful tool but it has limits. Knowing them saves you disappointment.
-
-What AI doesn't do reliably:
-• Doesn't know current news and events (unless it has internet access)
-• Can invent specific facts — names, numbers, citations — and state them confidently
-• Doesn't understand you like a human — it analyzes text, doesn't think through situations
-• Has a knowledge cutoff — doesn't know what happened after a certain date
-
-Why this is actually fine:
-→ You stay in control. AI is a tool, not an authority.
-→ For writing emails, planning, and explaining concepts, these limits barely matter.
-→ For important information (medical, legal, financial), simply verify with a specialist.
-
-💡 Rule: The more important the decision, the more you verify. For everyday tasks, you don't need to verify much." },
+      { title: "⚠️ What AI can't do — and why that's fine", text: "AI is a powerful tool but it has limits. Knowing them saves you disappointment.\n\nWhat AI doesn't do reliably:\n• Doesn't know current news and events (unless it has internet access)\n• Can invent specific facts — names, numbers, citations — and state them confidently\n• Doesn't understand you like a human — it analyzes text, doesn't think through situations\n• Has a knowledge cutoff — doesn't know what happened after a certain date\n\nWhy this is actually fine:\n→ You stay in control. AI is a tool, not an authority.\n→ For writing emails, planning, and explaining concepts, these limits barely matter.\n→ For important information (medical, legal, financial), simply verify with a specialist.\n\n💡 Rule: The more important the decision, the more you verify. For everyday tasks, you don't need to verify much." },
       // ── NEW SECTION 2 ──
-      { title: "🔁 How to fix bad answers", text: "When the output isn't good, most people give up. That's a shame — iteration is the most important skill when working with AI.
-
-When the answer is wrong, don't delete it and start over. Fix it:
-
-→ Too long? Write: 'Shorten it to 3 sentences.'
-→ Too vague? Write: 'Add a specific real-world example.'
-→ Wrong tone? Write: 'Make it friendlier, less formal.'
-→ Missing detail? Write: 'Expand on point number 2 in more detail.'
-→ Completely off? Write: 'Forget the previous answer. Let me try again:' and rephrase.
-
-5 steps to improve any output:
-1. Identify exactly what's wrong (length / tone / content / structure)
-2. Write a specific instruction for what to change
-3. Read the new result
-4. Repeat max 2-3 times
-5. If it's still not working, start a new chat with a better initial prompt
-
-💡 The goal isn't a perfect first output — the goal is to save 80% of your writing time, not 100%." },
+      { title: "🔁 How to fix bad answers", text: "When the output isn't good, most people give up. That's a shame — iteration is the most important skill when working with AI.\n\nWhen the answer is wrong, don't delete it and start over. Fix it:\n\n→ Too long? Write: 'Shorten it to 3 sentences.'\n→ Too vague? Write: 'Add a specific real-world example.'\n→ Wrong tone? Write: 'Make it friendlier, less formal.'\n→ Missing detail? Write: 'Expand on point number 2 in more detail.'\n→ Completely off? Write: 'Forget the previous answer. Let me try again:' and rephrase.\n\n5 steps to improve any output:\n1. Identify exactly what's wrong (length / tone / content / structure)\n2. Write a specific instruction for what to change\n3. Read the new result\n4. Repeat max 2-3 times\n5. If it's still not working, start a new chat with a better initial prompt\n\n💡 The goal isn't a perfect first output — the goal is to save 80% of your writing time, not 100%." },
       // ── NEW SECTION 3 ──
-      { title: "🌍 AI in everyday life", text: "AI isn't just for tech people and young people. The fastest-growing user group in Europe is 45–65 year olds using it for writing and document tasks.
-
-10 situations where AI genuinely helps:
-
-1. 📄 Got an incomprehensible official letter → AI explains it in plain language
-2. 💼 Writing a job application → AI helps with the cover letter
-3. 🏥 Don't understand a medical report → AI explains the terms
-4. 🚗 Got a fine and want to appeal → AI writes the appeal
-5. 🏠 Planning a renovation and need a budget → AI helps with calculations
-6. 📚 Your child has a school project → AI explains the topic clearly
-7. ⭐ A customer left a negative review → AI suggests a professional response
-8. 📧 Need to write a difficult email → AI drafts the wording
-9. 💊 Not sure if symptoms are urgent → AI helps formulate questions for a doctor
-10. 💰 Considering a financial decision → AI helps think through the questions
-
-💡 Try one situation from your own life this week. Just open ChatGPT and write what you need." },
+      { title: "🌍 AI in everyday life", text: "AI isn't just for tech people and young people. The fastest-growing user group in Europe is 45–65 year olds using it for writing and document tasks.\n\n10 situations where AI genuinely helps:\n\n1. 📄 Got an incomprehensible official letter → AI explains it in plain language\n2. 💼 Writing a job application → AI helps with the cover letter\n3. 🏥 Don't understand a medical report → AI explains the terms\n4. 🚗 Got a fine and want to appeal → AI writes the appeal\n5. 🏠 Planning a renovation and need a budget → AI helps with calculations\n6. 📚 Your child has a school project → AI explains the topic clearly\n7. ⭐ A customer left a negative review → AI suggests a professional response\n8. 📧 Need to write a difficult email → AI drafts the wording\n9. 💊 Not sure if symptoms are urgent → AI helps formulate questions for a doctor\n10. 💰 Considering a financial decision → AI helps think through the questions\n\n💡 Try one situation from your own life this week. Just open ChatGPT and write what you need." },
     ],
   },
   intermediate: {
@@ -479,64 +265,20 @@ const PROMPTS = {
       },
       ps: [
         { label: { cs: "Omluva šéfovi", en: "Apologize to boss" }, p: {
-          cs: "Napiš email šéfovi [jméno], kde se omlouvám za zpoždění projektu [název].
-Důvod: byl/a jsem nemocný/á [X] dní.
-Tón: profesionální, ale lidský — ne přehnaně servilní.
-Max 80 slov.
-Nezačínej pozdravem 'Dobrý den' — použij přirozený oslovení.
-Nezačínej větou 'Omlouvám se' — nejdřív krátce vysvětli situaci, pak se omluv.",
-          en: "Write an email to my manager [name] apologizing for the delay on project [name].
-Reason: I was sick for [X] days.
-Tone: professional but human — not groveling.
-Max 80 words.
-Don't start with 'Dear' — use a natural opener.
-Don't lead with 'I apologize' — briefly explain first, then apologize.",
+          cs: "Napiš email šéfovi [jméno], kde se omlouvám za zpoždění projektu [název].\nDůvod: byl/a jsem nemocný/á [X] dní.\nTón: profesionální, ale lidský — ne přehnaně servilní.\nMax 80 slov.\nNezačínej pozdravem 'Dobrý den' — použij přirozený oslovení.\nNezačínej větou 'Omlouvám se' — nejdřív krátce vysvětli situaci, pak se omluv.",
+          en: "Write an email to my manager [name] apologizing for the delay on project [name].\nReason: I was sick for [X] days.\nTone: professional but human — not groveling.\nMax 80 words.\nDon't start with 'Dear' — use a natural opener.\nDon't lead with 'I apologize' — briefly explain first, then apologize.",
         }},
         { label: { cs: "Žádost o schůzku", en: "Meeting request" }, p: {
-          cs: "Napiš email kolegovi/ě [jméno], navrhuji pracovní schůzku.
-Téma schůzky: [téma — buď konkrétní, např. 'revize Q3 rozpočtu'].
-Nabídni 3 konkrétní termíny s časem.
-Řekni předem co bude potřeba připravit.
-Tón: přátelský a přímý. Max 100 slov.",
-          en: "Write an email to [name] proposing a work meeting.
-Meeting topic: [topic — be specific, e.g. 'Q3 budget review'].
-Offer 3 specific dates and times.
-Mention what they should prepare in advance.
-Tone: friendly and direct. Max 100 words.",
+          cs: "Napiš email kolegovi/ě [jméno], navrhuji pracovní schůzku.\nTéma schůzky: [téma — buď konkrétní, např. 'revize Q3 rozpočtu'].\nNabídni 3 konkrétní termíny s časem.\nŘekni předem co bude potřeba připravit.\nTón: přátelský a přímý. Max 100 slov.",
+          en: "Write an email to [name] proposing a work meeting.\nMeeting topic: [topic — be specific, e.g. 'Q3 budget review'].\nOffer 3 specific dates and times.\nMention what they should prepare in advance.\nTone: friendly and direct. Max 100 words.",
         }},
         { label: { cs: "Reklamace produktu", en: "Product complaint" }, p: {
-          cs: "Napiš reklamační email firmě [název firmy].
-Produkt: [název], koupeno: [datum], cena: [částka].
-Problém: [přesný popis vady nebo situace].
-Co chci: [výměnu / vrácení peněz / opravu — vyber].
-Tón: věcný a nekompromisní, ne agresivní.
-Zmíň že jsi zákonná práva ze zákona o ochraně spotřebitele.",
-          en: "Write a complaint email to [company name].
-Product: [name], purchased: [date], price: [amount].
-Issue: [exact description of the defect or problem].
-What I want: [replacement / refund / repair — choose one].
-Tone: factual and firm, not aggressive.
-Mention that I have rights under consumer protection law.",
+          cs: "Napiš reklamační email firmě [název firmy].\nProdukt: [název], koupeno: [datum], cena: [částka].\nProblém: [přesný popis vady nebo situace].\nCo chci: [výměnu / vrácení peněz / opravu — vyber].\nTón: věcný a nekompromisní, ne agresivní.\nZmíň že jsi zákonná práva ze zákona o ochraně spotřebitele.",
+          en: "Write a complaint email to [company name].\nProduct: [name], purchased: [date], price: [amount].\nIssue: [exact description of the defect or problem].\nWhat I want: [replacement / refund / repair — choose one].\nTone: factual and firm, not aggressive.\nMention that I have rights under consumer protection law.",
         }},
         { label: { cs: "Úřední dotaz", en: "Government office inquiry" }, p: {
-          cs: "Dostal/a jsem tento dopis / rozhodnutí od [název úřadu / pojišťovny / banky]:
-[vlož text dopisu nebo hlavní body]
-
-Napiš mi odpověď, kde zdvořile žádám o:
-1) Vysvětlení co toto rozhodnutí znamená
-2) Co přesně se po mně požaduje a do kdy
-3) Jaké mám možnosti nebo práva
-
-Tón: zdvořilý, sebejistý — neptám se jako prosebník, ale jako občan, který zná svá práva.",
-          en: "I received this letter / decision from [name of office / insurer / bank]:
-[paste letter text or key points]
-
-Write a reply politely asking for:
-1) An explanation of what this decision means
-2) Exactly what is required of me and by when
-3) What options or rights I have
-
-Tone: polite, confident — not pleading, but as a citizen who knows their rights.",
+          cs: "Dostal/a jsem tento dopis / rozhodnutí od [název úřadu / pojišťovny / banky]:\n[vlož text dopisu nebo hlavní body]\n\nNapiš mi odpověď, kde zdvořile žádám o:\n1) Vysvětlení co toto rozhodnutí znamená\n2) Co přesně se po mně požaduje a do kdy\n3) Jaké mám možnosti nebo práva\n\nTón: zdvořilý, sebejistý — neptám se jako prosebník, ale jako občan, který zná svá práva.",
+          en: "I received this letter / decision from [name of office / insurer / bank]:\n[paste letter text or key points]\n\nWrite a reply politely asking for:\n1) An explanation of what this decision means\n2) Exactly what is required of me and by when\n3) What options or rights I have\n\nTone: polite, confident — not pleading, but as a citizen who knows their rights.",
         }},
       ]},
 
@@ -548,30 +290,12 @@ Tone: polite, confident — not pleading, but as a citizen who knows their right
       },
       ps: [
         { label: { cs: "Blog post (osobní styl)", en: "Blog post (personal style)" }, p: {
-          cs: "Napiš blogový článek o [téma] z pohledu [tvoje role, např. 'freelancer s 5 lety praxe' nebo 'rodič dvou dětí'].
-Cílový čtenář: [kdo to přečte a co potřebuje vědět].
-Délka: 500 slov.
-Struktura: konkrétní úvodní situace (ne obecná otázka) → 3 praktické tipy s reálnými příklady → závěr s jedním jasným doporučením.
-Styl: osobní, mluv na čtenáře jako 'ty'. Zakaž si klišé jako 'v dnešní době', 'je důležité' nebo 'každý z nás'.",
-          en: "Write a blog post about [topic] from the perspective of [your role, e.g. 'freelancer with 5 years experience' or 'parent of two kids'].
-Target reader: [who will read it and what they need to know].
-Length: 500 words.
-Structure: concrete opening situation (not a generic question) → 3 practical tips with real examples → conclusion with one clear recommendation.
-Style: personal, speak to reader as 'you'. Ban clichés like 'in today's world', 'it's important to' or 'we all know'.",
+          cs: "Napiš blogový článek o [téma] z pohledu [tvoje role, např. 'freelancer s 5 lety praxe' nebo 'rodič dvou dětí'].\nCílový čtenář: [kdo to přečte a co potřebuje vědět].\nDélka: 500 slov.\nStruktura: konkrétní úvodní situace (ne obecná otázka) → 3 praktické tipy s reálnými příklady → závěr s jedním jasným doporučením.\nStyl: osobní, mluv na čtenáře jako 'ty'. Zakaž si klišé jako 'v dnešní době', 'je důležité' nebo 'každý z nás'.",
+          en: "Write a blog post about [topic] from the perspective of [your role, e.g. 'freelancer with 5 years experience' or 'parent of two kids'].\nTarget reader: [who will read it and what they need to know].\nLength: 500 words.\nStructure: concrete opening situation (not a generic question) → 3 practical tips with real examples → conclusion with one clear recommendation.\nStyle: personal, speak to reader as 'you'. Ban clichés like 'in today's world', 'it's important to' or 'we all know'.",
         }},
         { label: { cs: "LinkedIn příspěvek", en: "LinkedIn post" }, p: {
-          cs: "Napiš LinkedIn příspěvek (max 200 slov) o [téma nebo zkušenost z práce].
-Začni konkrétní situací nebo překvapivým číslem — ne obecným tvrzením.
-Uprostřed: 3 konkrétní poznatky ve formátu 'Co jsem zjistil/a:'
-Závěr: jedno konkrétní doporučení pro čtenáře.
-Nezačínej slovy 'Jsem rád/a', 'Hrdě oznamuji' nebo 'Skvělá příležitost'.
-Tón: přemýšlivý odborník, ne sebepropagace.",
-          en: "Write a LinkedIn post (max 200 words) about [topic or work experience].
-Start with a specific situation or surprising number — not a generic statement.
-Middle: 3 concrete insights in the format 'What I discovered:'
-End: one specific recommendation for the reader.
-Don't start with 'I'm excited to', 'Proud to announce' or 'Great opportunity'.
-Tone: thoughtful expert, not self-promotion.",
+          cs: "Napiš LinkedIn příspěvek (max 200 slov) o [téma nebo zkušenost z práce].\nZačni konkrétní situací nebo překvapivým číslem — ne obecným tvrzením.\nUprostřed: 3 konkrétní poznatky ve formátu 'Co jsem zjistil/a:'\nZávěr: jedno konkrétní doporučení pro čtenáře.\nNezačínej slovy 'Jsem rád/a', 'Hrdě oznamuji' nebo 'Skvělá příležitost'.\nTón: přemýšlivý odborník, ne sebepropagace.",
+          en: "Write a LinkedIn post (max 200 words) about [topic or work experience].\nStart with a specific situation or surprising number — not a generic statement.\nMiddle: 3 concrete insights in the format 'What I discovered:'\nEnd: one specific recommendation for the reader.\nDon't start with 'I'm excited to', 'Proud to announce' or 'Great opportunity'.\nTone: thoughtful expert, not self-promotion.",
         }},
       ]},
 
@@ -583,60 +307,16 @@ Tone: thoughtful expert, not self-promotion.",
       },
       ps: [
         { label: { cs: "Strukturované shrnutí", en: "Structured summary" }, p: {
-          cs: "Shrň tento dokument. Výstup musí mít přesně tuto strukturu:
-• SITUACE (1 věta): o čem dokument je
-• KLÍČOVÉ ZJIŠTĚNÍ (1 věta): nejdůležitější věc
-• CO TO ZNAMENÁ PRO NÁS (2-3 věty): praktický dopad
-• DOPORUČENÍ (1 věta): co dělat dál
-Max 120 slov celkem.
-
-[vlož text nebo nahraj PDF]",
-          en: "Summarize this document. Output must follow this exact structure:
-• SITUATION (1 sentence): what the document is about
-• KEY FINDING (1 sentence): the most important thing
-• WHAT THIS MEANS FOR US (2-3 sentences): practical impact
-• RECOMMENDATION (1 sentence): what to do next
-Max 120 words total.
-
-[paste text or upload PDF]",
+          cs: "Shrň tento dokument. Výstup musí mít přesně tuto strukturu:\n• SITUACE (1 věta): o čem dokument je\n• KLÍČOVÉ ZJIŠTĚNÍ (1 věta): nejdůležitější věc\n• CO TO ZNAMENÁ PRO NÁS (2-3 věty): praktický dopad\n• DOPORUČENÍ (1 věta): co dělat dál\nMax 120 slov celkem.\n\n[vlož text nebo nahraj PDF]",
+          en: "Summarize this document. Output must follow this exact structure:\n• SITUATION (1 sentence): what the document is about\n• KEY FINDING (1 sentence): the most important thing\n• WHAT THIS MEANS FOR US (2-3 sentences): practical impact\n• RECOMMENDATION (1 sentence): what to do next\nMax 120 words total.\n\n[paste text or upload PDF]",
         }},
         { label: { cs: "Zápis ze schůzky → úkoly", en: "Meeting notes → action items" }, p: {
-          cs: "Z těchto poznámek ze schůzky vytvoř:
-1) Rozhodnutí (max 3 odrážky — co bylo odsouhlaseno)
-2) Úkoly ve formátu: [Kdo] udělá [Co] do [Kdy]
-3) Otevřené otázky (co ještě nebylo rozhodnuto)
-
-Poznámky ze schůzky:
-[vlož text]",
-          en: "From these meeting notes create:
-1) Decisions (max 3 bullets — what was agreed)
-2) Action items in format: [Who] will [Do what] by [When]
-3) Open questions (what still hasn't been decided)
-
-Meeting notes:
-[paste text]",
+          cs: "Z těchto poznámek ze schůzky vytvoř:\n1) Rozhodnutí (max 3 odrážky — co bylo odsouhlaseno)\n2) Úkoly ve formátu: [Kdo] udělá [Co] do [Kdy]\n3) Otevřené otázky (co ještě nebylo rozhodnuto)\n\nPoznámky ze schůzky:\n[vlož text]",
+          en: "From these meeting notes create:\n1) Decisions (max 3 bullets — what was agreed)\n2) Action items in format: [Who] will [Do what] by [When]\n3) Open questions (what still hasn't been decided)\n\nMeeting notes:\n[paste text]",
         }},
         { label: { cs: "Porozumět úřednímu dopisu", en: "Understand official letter" }, p: {
-          cs: "Přečti tento text z úřadu / pojišťovny / banky a vysvětli mi ho jednoduše:
-[vlož text dokumentu]
-
-Potřebuji vědět:
-1) Co po mně chtějí?
-2) Musím něco udělat? Co a do kdy?
-3) Co se stane pokud nic neudělám?
-4) Na co si dát pozor?
-
-Vysvětli to jako kamarád, ne jako právník. Bez zbytečného opakování 'je důležité'.",
-          en: "Read this text from a government office / insurer / bank and explain it to me simply:
-[paste document text]
-
-I need to know:
-1) What do they want from me?
-2) Do I need to do anything? What and by when?
-3) What happens if I do nothing?
-4) What should I watch out for?
-
-Explain it like a knowledgeable friend, not a lawyer.",
+          cs: "Přečti tento text z úřadu / pojišťovny / banky a vysvětli mi ho jednoduše:\n[vlož text dokumentu]\n\nPotřebuji vědět:\n1) Co po mně chtějí?\n2) Musím něco udělat? Co a do kdy?\n3) Co se stane pokud nic neudělám?\n4) Na co si dát pozor?\n\nVysvětli to jako kamarád, ne jako právník. Bez zbytečného opakování 'je důležité'.",
+          en: "Read this text from a government office / insurer / bank and explain it to me simply:\n[paste document text]\n\nI need to know:\n1) What do they want from me?\n2) Do I need to do anything? What and by when?\n3) What happens if I do nothing?\n4) What should I watch out for?\n\nExplain it like a knowledgeable friend, not a lawyer.",
         }},
       ]},
 
@@ -648,30 +328,12 @@ Explain it like a knowledgeable friend, not a lawyer.",
       },
       ps: [
         { label: { cs: "Instagram příspěvek", en: "Instagram post" }, p: {
-          cs: "Vytvoř Instagram příspěvek pro [typ účtu, např. 'kavárna v Praze' nebo 'fitness trenér'].
-Téma: [téma].
-Cíl: [co má příspěvek způsobit — sdílení / komentáře / proklik na web]
-Popisek: max 150 slov, začni silnou první větou (ta se zobrazuje bez rozbalení).
-Hashtagy: 10 relevantních (mix velké + niche).
-Návrh vizuálu: popiš co by měl obrázek nebo video zobrazovat.",
-          en: "Create an Instagram post for [account type, e.g. 'Prague café' or 'fitness coach'].
-Topic: [topic].
-Goal: [what the post should cause — shares / comments / website clicks]
-Caption: max 150 words, start with a strong first sentence (visible without expanding).
-Hashtags: 10 relevant ones (mix popular + niche).
-Visual suggestion: describe what the image or video should show.",
+          cs: "Vytvoř Instagram příspěvek pro [typ účtu, např. 'kavárna v Praze' nebo 'fitness trenér'].\nTéma: [téma].\nCíl: [co má příspěvek způsobit — sdílení / komentáře / proklik na web]\nPopisek: max 150 slov, začni silnou první větou (ta se zobrazuje bez rozbalení).\nHashtagy: 10 relevantních (mix velké + niche).\nNávrh vizuálu: popiš co by měl obrázek nebo video zobrazovat.",
+          en: "Create an Instagram post for [account type, e.g. 'Prague café' or 'fitness coach'].\nTopic: [topic].\nGoal: [what the post should cause — shares / comments / website clicks]\nCaption: max 150 words, start with a strong first sentence (visible without expanding).\nHashtags: 10 relevant ones (mix popular + niche).\nVisual suggestion: describe what the image or video should show.",
         }},
         { label: { cs: "LinkedIn — odborný post", en: "LinkedIn — thought leadership" }, p: {
-          cs: "Napiš LinkedIn příspěvek o [téma] pro profesionální publikum v oboru [obor].
-Začni konkrétním příkladem nebo překvapivým číslem.
-Tři krátké odstavce: problém → moje zkušenost/poznatek → co z toho plyne pro ostatní.
-Zakončení: otázka která vyzývá ke komentáři.
-Max 200 slov. Žádné emoji v prvních 2 větách.",
-          en: "Write a LinkedIn post about [topic] for a professional audience in [industry].
-Start with a concrete example or surprising stat.
-Three short paragraphs: problem → my experience/insight → what this means for others.
-End with a question inviting comments.
-Max 200 words. No emoji in the first 2 sentences.",
+          cs: "Napiš LinkedIn příspěvek o [téma] pro profesionální publikum v oboru [obor].\nZačni konkrétním příkladem nebo překvapivým číslem.\nTři krátké odstavce: problém → moje zkušenost/poznatek → co z toho plyne pro ostatní.\nZakončení: otázka která vyzývá ke komentáři.\nMax 200 slov. Žádné emoji v prvních 2 větách.",
+          en: "Write a LinkedIn post about [topic] for a professional audience in [industry].\nStart with a concrete example or surprising stat.\nThree short paragraphs: problem → my experience/insight → what this means for others.\nEnd with a question inviting comments.\nMax 200 words. No emoji in the first 2 sentences.",
         }},
       ]},
 
@@ -683,42 +345,12 @@ Max 200 words. No emoji in the first 2 sentences.",
       },
       ps: [
         { label: { cs: "Výlet po ČR / Evropě", en: "Trip in CZ / Europe" }, p: {
-          cs: "Naplánuj [X]-denní výlet do [město/region].
-Budget: [částka] Kč na osobu (včetně dopravy z [odkud]).
-Cestujeme: [sami / pár / rodina s dětmi věk X]
-Zájmy: [co nás baví, např. 'příroda a pěší turistika, ne muzea']
-Vyhýbáme se: [co nechceme, např. 'turistické pasti a fronty']
-
-Chci: itinerář po dnech s konkrétními časy, odhadem cen, tipem na oběd a večeři každý den.",
-          en: "Plan a [X]-day trip to [city/region].
-Budget: [amount] per person (including transport from [where]).
-Traveling: [solo / couple / family with kids age X]
-Interests: [what we enjoy, e.g. 'nature and hiking, not museums']
-Avoiding: [what we don't want, e.g. 'tourist traps and queues']
-
-I want: day-by-day itinerary with specific times, estimated costs, and a lunch + dinner tip each day.",
+          cs: "Naplánuj [X]-denní výlet do [město/region].\nBudget: [částka] Kč na osobu (včetně dopravy z [odkud]).\nCestujeme: [sami / pár / rodina s dětmi věk X]\nZájmy: [co nás baví, např. 'příroda a pěší turistika, ne muzea']\nVyhýbáme se: [co nechceme, např. 'turistické pasti a fronty']\n\nChci: itinerář po dnech s konkrétními časy, odhadem cen, tipem na oběd a večeři každý den.",
+          en: "Plan a [X]-day trip to [city/region].\nBudget: [amount] per person (including transport from [where]).\nTraveling: [solo / couple / family with kids age X]\nInterests: [what we enjoy, e.g. 'nature and hiking, not museums']\nAvoiding: [what we don't want, e.g. 'tourist traps and queues']\n\nI want: day-by-day itinerary with specific times, estimated costs, and a lunch + dinner tip each day.",
         }},
         { label: { cs: "Týdenní jídelníček", en: "Weekly meal plan" }, p: {
-          cs: "Vytvoř jídelníček na 5 pracovních dní pro [počet osob].
-Omezení stravy: [bez lepku / vegetariánský / bez laktózy / žádné — vyber]
-Budget: max [částka] Kč týdně za suroviny.
-Čas na vaření: max 30 minut na jídlo.
-Preference: [co máme rádi a co nesnášíme]
-
-Výstup:
-• Jídla na každý den (snídaně volná)
-• Nákupní seznam seřazený podle oddělení (zelenina, mléčné, maso...)
-• Které ingredience se opakují a šetří peníze",
-          en: "Create a meal plan for 5 working days for [number of people].
-Dietary restrictions: [gluten-free / vegetarian / dairy-free / none — choose]
-Budget: max [amount] per week for ingredients.
-Cooking time: max 30 minutes per meal.
-Preferences: [what we like and what we hate]
-
-Output:
-• Meals for each day (breakfast flexible)
-• Shopping list organized by store section (veg, dairy, meat...)
-• Which ingredients repeat across meals to save money",
+          cs: "Vytvoř jídelníček na 5 pracovních dní pro [počet osob].\nOmezení stravy: [bez lepku / vegetariánský / bez laktózy / žádné — vyber]\nBudget: max [částka] Kč týdně za suroviny.\nČas na vaření: max 30 minut na jídlo.\nPreference: [co máme rádi a co nesnášíme]\n\nVýstup:\n• Jídla na každý den (snídaně volná)\n• Nákupní seznam seřazený podle oddělení (zelenina, mléčné, maso...)\n• Které ingredience se opakují a šetří peníze",
+          en: "Create a meal plan for 5 working days for [number of people].\nDietary restrictions: [gluten-free / vegetarian / dairy-free / none — choose]\nBudget: max [amount] per week for ingredients.\nCooking time: max 30 minutes per meal.\nPreferences: [what we like and what we hate]\n\nOutput:\n• Meals for each day (breakfast flexible)\n• Shopping list organized by store section (veg, dairy, meat...)\n• Which ingredients repeat across meals to save money",
         }},
       ]},
 
@@ -730,28 +362,12 @@ Output:
       },
       ps: [
         { label: { cs: "Vysvětli jednoduše", en: "Explain simply" }, p: {
-          cs: "Vysvětli mi [téma] jednoduše.
-Moje aktuální znalost: [nic nevím / základy / trochu rozumím — vyber].
-Příklady: použij příklady z [moje profese/situace, např. 'řízení malé firmy' nebo 'každodenního života'].
-Formát: nejdřív 1 věta co to je, pak 3 klíčové body, pak 1 konkrétní příklad, pak shrnutí.
-Pokud jsou tam termíny které neznám, vysvětli je automaticky.",
-          en: "Explain [topic] to me simply.
-My current knowledge: [nothing / basics / some understanding — choose].
-Examples: use examples from [my profession/situation, e.g. 'running a small business' or 'everyday life'].
-Format: first 1 sentence what it is, then 3 key points, then 1 concrete example, then summary.
-If there are terms I might not know, explain them automatically.",
+          cs: "Vysvětli mi [téma] jednoduše.\nMoje aktuální znalost: [nic nevím / základy / trochu rozumím — vyber].\nPříklady: použij příklady z [moje profese/situace, např. 'řízení malé firmy' nebo 'každodenního života'].\nFormát: nejdřív 1 věta co to je, pak 3 klíčové body, pak 1 konkrétní příklad, pak shrnutí.\nPokud jsou tam termíny které neznám, vysvětli je automaticky.",
+          en: "Explain [topic] to me simply.\nMy current knowledge: [nothing / basics / some understanding — choose].\nExamples: use examples from [my profession/situation, e.g. 'running a small business' or 'everyday life'].\nFormat: first 1 sentence what it is, then 3 key points, then 1 concrete example, then summary.\nIf there are terms I might not know, explain them automatically.",
         }},
         { label: { cs: "Interaktivní výuka", en: "Interactive learning" }, p: {
-          cs: "Chci se naučit [téma]. Buď můj učitel.
-Postupuj po malých krocích — jeden koncept najednou.
-Po každém kroku mi polož jednu konkrétní otázku, abych si ověřil/a porozumění.
-Pokud odpovím špatně, nevysvětluj znovu stejně — zkus jiný příklad nebo analogii.
-Začni tím, proč je toto téma užitečné v praxi.",
-          en: "I want to learn [topic]. Be my teacher.
-Proceed in small steps — one concept at a time.
-After each step, ask me one specific question to verify my understanding.
-If I answer wrong, don't re-explain the same way — try a different example or analogy.
-Start with why this topic is practically useful.",
+          cs: "Chci se naučit [téma]. Buď můj učitel.\nPostupuj po malých krocích — jeden koncept najednou.\nPo každém kroku mi polož jednu konkrétní otázku, abych si ověřil/a porozumění.\nPokud odpovím špatně, nevysvětluj znovu stejně — zkus jiný příklad nebo analogii.\nZačni tím, proč je toto téma užitečné v praxi.",
+          en: "I want to learn [topic]. Be my teacher.\nProceed in small steps — one concept at a time.\nAfter each step, ask me one specific question to verify my understanding.\nIf I answer wrong, don't re-explain the same way — try a different example or analogy.\nStart with why this topic is practically useful.",
         }},
       ]},
 
@@ -763,64 +379,16 @@ Start with why this topic is practically useful.",
       },
       ps: [
         { label: { cs: "Motivační dopis na práci", en: "Job application cover letter" }, p: {
-          cs: "Napiš mi motivační dopis na tuto pracovní pozici.
-Pozice: [název pozice]
-Firma: [název firmy — pokud víš, doplň co o nich víš]
-Moje zkušenosti: [2-3 věty — co umíš a co jsi dělal/a]
-Požadavky z inzerátu: [vlož text nebo hlavní body]
-
-Pravidla:
-• Max 200 slov
-• Začni konkrétní větou proč tě tato firma nebo role zajímá — ne 'Dovolte mi představit se'
-• Žádná klišé: komunikativní, týmový hráč, orientace na výsledky
-• Ukaž co přineseš jim, ne jen co hledáš ty",
-          en: "Write a cover letter for this job position.
-Position: [job title]
-Company: [company name — if you know it, add what you know about them]
-My experience: [2-3 sentences — what you can do and what you've done]
-Job requirements: [paste listing text or key points]
-
-Rules:
-• Max 200 words
-• Start with a specific sentence on why this company or role interests you — not 'I would like to apply'
-• No clichés: communicative, team player, results-oriented
-• Show what you'll bring them, not just what you're looking for",
+          cs: "Napiš mi motivační dopis na tuto pracovní pozici.\nPozice: [název pozice]\nFirma: [název firmy — pokud víš, doplň co o nich víš]\nMoje zkušenosti: [2-3 věty — co umíš a co jsi dělal/a]\nPožadavky z inzerátu: [vlož text nebo hlavní body]\n\nPravidla:\n• Max 200 slov\n• Začni konkrétní větou proč tě tato firma nebo role zajímá — ne 'Dovolte mi představit se'\n• Žádná klišé: komunikativní, týmový hráč, orientace na výsledky\n• Ukaž co přineseš jim, ne jen co hledáš ty",
+          en: "Write a cover letter for this job position.\nPosition: [job title]\nCompany: [company name — if you know it, add what you know about them]\nMy experience: [2-3 sentences — what you can do and what you've done]\nJob requirements: [paste listing text or key points]\n\nRules:\n• Max 200 words\n• Start with a specific sentence on why this company or role interests you — not 'I would like to apply'\n• No clichés: communicative, team player, results-oriented\n• Show what you'll bring them, not just what you're looking for",
         }},
         { label: { cs: "Stížnost / odvolání", en: "Complaint / appeal" }, p: {
-          cs: "Pomoz mi napsat formální stížnost nebo odvolání.
-Komu píšu: [firma / úřad / pojišťovna]
-Co se stalo: [přesný popis situace s daty a čísly pokud máš]
-Co jsem už zkusil/a: [předchozí kroky]
-Co chci dosáhnout: [konkrétní výsledek — vrácení peněz, oprava, omluva]
-
-Tón: věcný, bez emocí, s odkazem na zákon pokud relevantní.
-Formát: datum, věc, tělo dopisu, žádost s termínem odpovědi.",
-          en: "Help me write a formal complaint or appeal.
-Who I'm writing to: [company / office / insurer]
-What happened: [exact description with dates and numbers if available]
-What I've already tried: [previous steps]
-What I want to achieve: [specific outcome — refund, repair, apology]
-
-Tone: factual, unemotional, with reference to law if relevant.
-Format: date, subject, body, request with response deadline.",
+          cs: "Pomoz mi napsat formální stížnost nebo odvolání.\nKomu píšu: [firma / úřad / pojišťovna]\nCo se stalo: [přesný popis situace s daty a čísly pokud máš]\nCo jsem už zkusil/a: [předchozí kroky]\nCo chci dosáhnout: [konkrétní výsledek — vrácení peněz, oprava, omluva]\n\nTón: věcný, bez emocí, s odkazem na zákon pokud relevantní.\nFormát: datum, věc, tělo dopisu, žádost s termínem odpovědi.",
+          en: "Help me write a formal complaint or appeal.\nWho I'm writing to: [company / office / insurer]\nWhat happened: [exact description with dates and numbers if available]\nWhat I've already tried: [previous steps]\nWhat I want to achieve: [specific outcome — refund, repair, apology]\n\nTone: factual, unemotional, with reference to law if relevant.\nFormat: date, subject, body, request with response deadline.",
         }},
         { label: { cs: "Finanční rozhodnutí", en: "Financial decision" }, p: {
-          cs: "Pomoz mi promyslet toto finanční rozhodnutí — nechci konkrétní doporučení (to je na finančním poradci), ale chci lépe pochopit situaci.
-Rozhodnutí: [popis — např. 'refinancování hypotéky' nebo 'auto na leasing vs hotově']
-Moje čísla: [relevantní částky, příjmy, výdaje — sdílej jen co ti je příjemné]
-
-Chci vědět:
-1) Jaké klíčové otázky bych si měl/a položit?
-2) Co lidé v této situaci nejčastěji přehlíží?
-3) Jak udělat rychlý výpočet pro orientaci?",
-          en: "Help me think through this financial decision — I don't want specific advice (that's for a financial advisor), but I want to understand the situation better.
-Decision: [description — e.g. 'mortgage refinancing' or 'car on lease vs cash']
-My numbers: [relevant amounts, income, expenses — share only what you're comfortable with]
-
-I want to know:
-1) What key questions should I ask myself?
-2) What do people in this situation most often overlook?
-3) How to do a quick back-of-envelope calculation?",
+          cs: "Pomoz mi promyslet toto finanční rozhodnutí — nechci konkrétní doporučení (to je na finančním poradci), ale chci lépe pochopit situaci.\nRozhodnutí: [popis — např. 'refinancování hypotéky' nebo 'auto na leasing vs hotově']\nMoje čísla: [relevantní částky, příjmy, výdaje — sdílej jen co ti je příjemné]\n\nChci vědět:\n1) Jaké klíčové otázky bych si měl/a položit?\n2) Co lidé v této situaci nejčastěji přehlíží?\n3) Jak udělat rychlý výpočet pro orientaci?",
+          en: "Help me think through this financial decision — I don't want specific advice (that's for a financial advisor), but I want to understand the situation better.\nDecision: [description — e.g. 'mortgage refinancing' or 'car on lease vs cash']\nMy numbers: [relevant amounts, income, expenses — share only what you're comfortable with]\n\nI want to know:\n1) What key questions should I ask myself?\n2) What do people in this situation most often overlook?\n3) How to do a quick back-of-envelope calculation?",
         }},
       ]},
   ],
@@ -835,92 +403,16 @@ I want to know:
       },
       ps: [
         { label: { cs: "AIDA prodejní text", en: "AIDA sales copy" }, p: {
-          cs: "Napiš prodejní text pro [produkt/služba] metodou AIDA.
-
-Cílová skupina: [popis — věk, profese, hlavní problém který řeší]
-USP (proč právě vy): [hlavní výhoda, buď konkrétní]
-Hlavní námitka zákazníka: [proč by nekoupil — cena, nedůvěra, alternativa]
-
-Struktura:
-• ATTENTION: Nadpis který zasáhne hlavní bolest cílovky — ne 'Představujeme...'
-• INTEREST: Rozveď proč je tento problém závažnější než si myslí
-• DESIRE: Konkrétní výsledek zákazníka (ne vlastnosti). Příklad: 'Za 3 týdny...' ne 'Náš produkt umí...'
-• ACTION: Jedno CTA s důvodem jednat teď (omezená nabídka / deadline / konkrétní přínos)
-
-Max 300 slov. Nezačínej slovem 'Jsou' nebo 'Každý'.",
-          en: "Write sales copy for [product/service] using the AIDA method.
-
-Target audience: [description — age, profession, main problem they solve]
-USP (why you): [main advantage, be specific]
-Main customer objection: [why they wouldn't buy — price, distrust, alternative]
-
-Structure:
-• ATTENTION: Headline that hits the target's main pain — not 'Introducing...'
-• INTEREST: Expand on why this problem is more serious than they think
-• DESIRE: Specific customer result (not features). Example: 'In 3 weeks...' not 'Our product can...'
-• ACTION: One CTA with a reason to act now (limited offer / deadline / specific benefit)
-
-Max 300 words. Don't start with 'Are you' or 'Everyone'.",
+          cs: "Napiš prodejní text pro [produkt/služba] metodou AIDA.\n\nCílová skupina: [popis — věk, profese, hlavní problém který řeší]\nUSP (proč právě vy): [hlavní výhoda, buď konkrétní]\nHlavní námitka zákazníka: [proč by nekoupil — cena, nedůvěra, alternativa]\n\nStruktura:\n• ATTENTION: Nadpis který zasáhne hlavní bolest cílovky — ne 'Představujeme...'\n• INTEREST: Rozveď proč je tento problém závažnější než si myslí\n• DESIRE: Konkrétní výsledek zákazníka (ne vlastnosti). Příklad: 'Za 3 týdny...' ne 'Náš produkt umí...'\n• ACTION: Jedno CTA s důvodem jednat teď (omezená nabídka / deadline / konkrétní přínos)\n\nMax 300 slov. Nezačínej slovem 'Jsou' nebo 'Každý'.",
+          en: "Write sales copy for [product/service] using the AIDA method.\n\nTarget audience: [description — age, profession, main problem they solve]\nUSP (why you): [main advantage, be specific]\nMain customer objection: [why they wouldn't buy — price, distrust, alternative]\n\nStructure:\n• ATTENTION: Headline that hits the target's main pain — not 'Introducing...'\n• INTEREST: Expand on why this problem is more serious than they think\n• DESIRE: Specific customer result (not features). Example: 'In 3 weeks...' not 'Our product can...'\n• ACTION: One CTA with a reason to act now (limited offer / deadline / specific benefit)\n\nMax 300 words. Don't start with 'Are you' or 'Everyone'.",
         }},
         { label: { cs: "Cold email outreach", en: "Cold email outreach" }, p: {
-          cs: "Napiš cold email potenciálnímu klientovi.
-Typ firmy/osoby: [komu píšu]
-Co nabízím: [stručně]
-Proč jim píšu teď (trigger): [konkrétní důvod — novinka o jejich firmě, sezóna, problém který řeším]
-Cíl emailu: 20minutový hovor — ne prodat hned.
-
-Pravidla:
-• Max 5 vět v těle emailu
-• První věta mluví o nich, ne o mně
-• Zmíň jeden konkrétní problém, který pravděpodobně mají
-• Nezačínej 'Dobrý den, jmenuji se...'
-• Předmět: max 6 slov, žádné otazníky
-
-Napiš 2 varianty:
-A) Přímá a stručná
-B) S konkrétním příkladem nebo číslem",
-          en: "Write a cold email to a potential client.
-Type of company/person: [who I'm writing to]
-What I offer: [briefly]
-Why I'm writing now (trigger): [specific reason — news about their company, season, problem I solve]
-Goal of email: 20-minute call — not to sell immediately.
-
-Rules:
-• Max 5 sentences in the email body
-• First sentence is about them, not me
-• Mention one specific problem they likely have
-• Don't start with 'My name is...'
-• Subject: max 6 words, no question marks
-
-Write 2 variants:
-A) Direct and concise
-B) With a specific example or number",
+          cs: "Napiš cold email potenciálnímu klientovi.\nTyp firmy/osoby: [komu píšu]\nCo nabízím: [stručně]\nProč jim píšu teď (trigger): [konkrétní důvod — novinka o jejich firmě, sezóna, problém který řeším]\nCíl emailu: 20minutový hovor — ne prodat hned.\n\nPravidla:\n• Max 5 vět v těle emailu\n• První věta mluví o nich, ne o mně\n• Zmíň jeden konkrétní problém, který pravděpodobně mají\n• Nezačínej 'Dobrý den, jmenuji se...'\n• Předmět: max 6 slov, žádné otazníky\n\nNapiš 2 varianty:\nA) Přímá a stručná\nB) S konkrétním příkladem nebo číslem",
+          en: "Write a cold email to a potential client.\nType of company/person: [who I'm writing to]\nWhat I offer: [briefly]\nWhy I'm writing now (trigger): [specific reason — news about their company, season, problem I solve]\nGoal of email: 20-minute call — not to sell immediately.\n\nRules:\n• Max 5 sentences in the email body\n• First sentence is about them, not me\n• Mention one specific problem they likely have\n• Don't start with 'My name is...'\n• Subject: max 6 words, no question marks\n\nWrite 2 variants:\nA) Direct and concise\nB) With a specific example or number",
         }},
         { label: { cs: "PAS prodejní email", en: "PAS sales email" }, p: {
-          cs: "Napiš prodejní email metodou PAS (Problem, Agitate, Solution).
-Produkt/služba: [co prodávám]
-Cílová skupina: [kdo jsou moji zákazníci]
-Hlavní problém: [co je trápí — buď velmi konkrétní]
-
-Struktura:
-• PROBLEM: Pojmenuj problém jazykem zákazníka — ne jak ho vidíš ty
-• AGITATE: Ukáž co se stane pokud ho neřeší (ztracené peníze, čas, příležitosti)
-• SOLUTION: Představ produkt jako přirozené řešení — ne jako reklamu
-
-Předmět: 3 varianty (jedna s číslem, jedna s otázkou, jedna s 'jak')
-Délka emailu: max 200 slov.",
-          en: "Write a sales email using the PAS method (Problem, Agitate, Solution).
-Product/service: [what I'm selling]
-Target audience: [who my customers are]
-Main problem: [what troubles them — be very specific]
-
-Structure:
-• PROBLEM: Name the problem in the customer's language — not how you see it
-• AGITATE: Show what happens if they don't solve it (lost money, time, opportunities)
-• SOLUTION: Introduce the product as the natural solution — not as an ad
-
-Subject: 3 variants (one with a number, one with a question, one with 'how to')
-Email length: max 200 words.",
+          cs: "Napiš prodejní email metodou PAS (Problem, Agitate, Solution).\nProdukt/služba: [co prodávám]\nCílová skupina: [kdo jsou moji zákazníci]\nHlavní problém: [co je trápí — buď velmi konkrétní]\n\nStruktura:\n• PROBLEM: Pojmenuj problém jazykem zákazníka — ne jak ho vidíš ty\n• AGITATE: Ukáž co se stane pokud ho neřeší (ztracené peníze, čas, příležitosti)\n• SOLUTION: Představ produkt jako přirozené řešení — ne jako reklamu\n\nPředmět: 3 varianty (jedna s číslem, jedna s otázkou, jedna s 'jak')\nDélka emailu: max 200 slov.",
+          en: "Write a sales email using the PAS method (Problem, Agitate, Solution).\nProduct/service: [what I'm selling]\nTarget audience: [who my customers are]\nMain problem: [what troubles them — be very specific]\n\nStructure:\n• PROBLEM: Name the problem in the customer's language — not how you see it\n• AGITATE: Show what happens if they don't solve it (lost money, time, opportunities)\n• SOLUTION: Introduce the product as the natural solution — not as an ad\n\nSubject: 3 variants (one with a number, one with a question, one with 'how to')\nEmail length: max 200 words.",
         }},
       ]},
 
@@ -932,52 +424,12 @@ Email length: max 200 words.",
       },
       ps: [
         { label: { cs: "Kompletní analýza datasetu", en: "Full dataset analysis" }, p: {
-          cs: "Analyzuj přiložený dataset. Výstup musí mít přesně tuto strukturu:
-
-1) PŘEHLED DAT: Kolik řádků/sloupců, jaký typ dat, chybějící hodnoty?
-2) TOP 3 ZJIŠTĚNÍ: Co je nejdůležitější co data říkají? Každé = 1 věta + konkrétní číslo.
-3) ANOMÁLIE: Co vypadá divně nebo neočekávaně? Proč to může být důležité?
-4) VIZUALIZACE: Navrhni 2 konkrétní grafy — popiš typ, osy a co přesně zobrazit.
-5) DOPORUČENÉ KROKY: Co analyticky zkoumat dál?
-
-Každá sekce max 3-5 vět. Chci report, ne akademickou práci.
-
-[nahraj soubor nebo vlož data]",
-          en: "Analyze the attached dataset. Output must follow this exact structure:
-
-1) DATA OVERVIEW: How many rows/columns, what type of data, missing values?
-2) TOP 3 FINDINGS: What is the most important thing the data says? Each = 1 sentence + specific number.
-3) ANOMALIES: What looks strange or unexpected? Why might this be important?
-4) VISUALIZATIONS: Suggest 2 specific charts — describe type, axes, and exactly what to show.
-5) RECOMMENDED NEXT STEPS: What to analyze further?
-
-Max 3-5 sentences per section. I want a report, not an academic paper.
-
-[upload file or paste data]",
+          cs: "Analyzuj přiložený dataset. Výstup musí mít přesně tuto strukturu:\n\n1) PŘEHLED DAT: Kolik řádků/sloupců, jaký typ dat, chybějící hodnoty?\n2) TOP 3 ZJIŠTĚNÍ: Co je nejdůležitější co data říkají? Každé = 1 věta + konkrétní číslo.\n3) ANOMÁLIE: Co vypadá divně nebo neočekávaně? Proč to může být důležité?\n4) VIZUALIZACE: Navrhni 2 konkrétní grafy — popiš typ, osy a co přesně zobrazit.\n5) DOPORUČENÉ KROKY: Co analyticky zkoumat dál?\n\nKaždá sekce max 3-5 vět. Chci report, ne akademickou práci.\n\n[nahraj soubor nebo vlož data]",
+          en: "Analyze the attached dataset. Output must follow this exact structure:\n\n1) DATA OVERVIEW: How many rows/columns, what type of data, missing values?\n2) TOP 3 FINDINGS: What is the most important thing the data says? Each = 1 sentence + specific number.\n3) ANOMALIES: What looks strange or unexpected? Why might this be important?\n4) VISUALIZATIONS: Suggest 2 specific charts — describe type, axes, and exactly what to show.\n5) RECOMMENDED NEXT STEPS: What to analyze further?\n\nMax 3-5 sentences per section. I want a report, not an academic paper.\n\n[upload file or paste data]",
         }},
         { label: { cs: "Analýza zpětné vazby zákazníků", en: "Customer feedback analysis" }, p: {
-          cs: "Mám [X] hodnocení/recenzí/zpětné vazby od zákazníků. Analyzuj je.
-
-[vlož text recenzí nebo nahraj soubor]
-
-Výstup:
-1) Top 3 věci které zákazníci CHVÁLÍ (s citací 1 příkladu každého)
-2) Top 3 věci které zákazníci KRITIZUJÍ (s citací 1 příkladu každého)
-3) SKRYTÉ POTŘEBY: Co zákazníci chtějí ale přímo neříkají?
-4) PRIORITA: Jedno doporučení — co udělat jako první a proč
-
-Ignoruj obecné fráze jako 'dobrá kvalita' nebo 'doporučuji'. Hledej konkrétní vzory.",
-          en: "I have [X] reviews / ratings / feedback from customers. Analyze them.
-
-[paste review text or upload file]
-
-Output:
-1) Top 3 things customers PRAISE (with 1 example quote each)
-2) Top 3 things customers CRITICIZE (with 1 example quote each)
-3) HIDDEN NEEDS: What do customers want but don't say directly?
-4) PRIORITY: One recommendation — what to do first and why
-
-Ignore generic phrases like 'good quality' or 'would recommend'. Look for specific patterns.",
+          cs: "Mám [X] hodnocení/recenzí/zpětné vazby od zákazníků. Analyzuj je.\n\n[vlož text recenzí nebo nahraj soubor]\n\nVýstup:\n1) Top 3 věci které zákazníci CHVÁLÍ (s citací 1 příkladu každého)\n2) Top 3 věci které zákazníci KRITIZUJÍ (s citací 1 příkladu každého)\n3) SKRYTÉ POTŘEBY: Co zákazníci chtějí ale přímo neříkají?\n4) PRIORITA: Jedno doporučení — co udělat jako první a proč\n\nIgnoruj obecné fráze jako 'dobrá kvalita' nebo 'doporučuji'. Hledej konkrétní vzory.",
+          en: "I have [X] reviews / ratings / feedback from customers. Analyze them.\n\n[paste review text or upload file]\n\nOutput:\n1) Top 3 things customers PRAISE (with 1 example quote each)\n2) Top 3 things customers CRITICIZE (with 1 example quote each)\n3) HIDDEN NEEDS: What do customers want but don't say directly?\n4) PRIORITY: One recommendation — what to do first and why\n\nIgnore generic phrases like 'good quality' or 'would recommend'. Look for specific patterns.",
         }},
       ]},
 
@@ -989,66 +441,12 @@ Ignore generic phrases like 'good quality' or 'would recommend'. Look for specif
       },
       ps: [
         { label: { cs: "Nová funkce", en: "New function" }, p: {
-          cs: "Napiš [jazyk + verze, např. 'Python 3.11'] funkci pro: [přesný popis co má dělat].
-
-Požadavky:
-• Ošetření chyb pro edge cases: [vyjmenuj možné problémy]
-• Typové anotace
-• Docstring s popisem parametrů
-• 3 unit testy (normální případ, edge case, chybový stav)
-
-Příklad vstupu: [konkrétní data]
-Očekávaný výstup: [konkrétní výsledek]
-
-Existující kód pro kontext:
-```
-[vlož relevantní části kódu pokud máš]
-```",
-          en: "Write a [language + version, e.g. 'Python 3.11'] function for: [exact description of what it should do].
-
-Requirements:
-• Error handling for edge cases: [list possible issues]
-• Type annotations
-• Docstring with parameter descriptions
-• 3 unit tests (normal case, edge case, error state)
-
-Example input: [specific data]
-Expected output: [specific result]
-
-Existing code for context:
-```
-[paste relevant parts of your code if available]
-```",
+          cs: "Napiš [jazyk + verze, např. 'Python 3.11'] funkci pro: [přesný popis co má dělat].\n\nPožadavky:\n• Ošetření chyb pro edge cases: [vyjmenuj možné problémy]\n• Typové anotace\n• Docstring s popisem parametrů\n• 3 unit testy (normální případ, edge case, chybový stav)\n\nPříklad vstupu: [konkrétní data]\nOčekávaný výstup: [konkrétní výsledek]\n\nExistující kód pro kontext:\n```\n[vlož relevantní části kódu pokud máš]\n```",
+          en: "Write a [language + version, e.g. 'Python 3.11'] function for: [exact description of what it should do].\n\nRequirements:\n• Error handling for edge cases: [list possible issues]\n• Type annotations\n• Docstring with parameter descriptions\n• 3 unit tests (normal case, edge case, error state)\n\nExample input: [specific data]\nExpected output: [specific result]\n\nExisting code for context:\n```\n[paste relevant parts of your code if available]\n```",
         }},
         { label: { cs: "Debug a oprava", en: "Debug and fix" }, p: {
-          cs: "Tento kód nefunguje správně:
-
-```[jazyk]
-[vlož kód]
-```
-
-Chyba / nesprávné chování: [přesný popis co se děje]
-Očekávané chování: [co by se mělo dít]
-Prostředí: [OS, verze jazyka, relevantní knihovny]
-
-Potřebuji:
-1) Identifikaci bugu s vysvětlením PROČ k tomu dochází
-2) Opravu s komentářem co se změnilo
-3) Jedno doporučení jak kódu do budoucna předejít podobnému problému",
-          en: "This code isn't working correctly:
-
-```[language]
-[paste code]
-```
-
-Error / wrong behavior: [exact description of what's happening]
-Expected behavior: [what should happen]
-Environment: [OS, language version, relevant libraries]
-
-I need:
-1) Identification of the bug with explanation of WHY it happens
-2) Fix with a comment on what changed
-3) One recommendation for how to prevent similar issues in the future",
+          cs: "Tento kód nefunguje správně:\n\n```[jazyk]\n[vlož kód]\n```\n\nChyba / nesprávné chování: [přesný popis co se děje]\nOčekávané chování: [co by se mělo dít]\nProstředí: [OS, verze jazyka, relevantní knihovny]\n\nPotřebuji:\n1) Identifikaci bugu s vysvětlením PROČ k tomu dochází\n2) Opravu s komentářem co se změnilo\n3) Jedno doporučení jak kódu do budoucna předejít podobnému problému",
+          en: "This code isn't working correctly:\n\n```[language]\n[paste code]\n```\n\nError / wrong behavior: [exact description of what's happening]\nExpected behavior: [what should happen]\nEnvironment: [OS, language version, relevant libraries]\n\nI need:\n1) Identification of the bug with explanation of WHY it happens\n2) Fix with a comment on what changed\n3) One recommendation for how to prevent similar issues in the future",
         }},
       ]},
 
@@ -1060,48 +458,12 @@ I need:
       },
       ps: [
         { label: { cs: "20 nápadů → top 5 s plánem", en: "20 ideas → top 5 with plan" }, p: {
-          cs: "Fáze 1 — generování:
-Vygeneruj 20 nápadů na [téma/problém]. Zahrň i neobvyklé nebo zdánlivě absurdní nápady — nekritizuj je.
-
-Fáze 2 — výběr a plán:
-Vyber 5 nejlepších. Pro každý:
-• Proč je silný (konkrétní argument)
-• Jak ho realizovat (první 3 kroky)
-• Hlavní překážka a jak ji překonat
-• Odhad nákladů nebo potřebného času
-
-Kontext: [doplň relevantní info — obor, cílová skupina, dostupné zdroje]",
-          en: "Phase 1 — generation:
-Generate 20 ideas for [topic/problem]. Include unusual or seemingly absurd ideas — don't criticize them.
-
-Phase 2 — selection and plan:
-Select the 5 best. For each:
-• Why it's strong (specific argument)
-• How to implement it (first 3 steps)
-• Main obstacle and how to overcome it
-• Estimated cost or time required
-
-Context: [add relevant info — industry, target audience, available resources]",
+          cs: "Fáze 1 — generování:\nVygeneruj 20 nápadů na [téma/problém]. Zahrň i neobvyklé nebo zdánlivě absurdní nápady — nekritizuj je.\n\nFáze 2 — výběr a plán:\nVyber 5 nejlepších. Pro každý:\n• Proč je silný (konkrétní argument)\n• Jak ho realizovat (první 3 kroky)\n• Hlavní překážka a jak ji překonat\n• Odhad nákladů nebo potřebného času\n\nKontext: [doplň relevantní info — obor, cílová skupina, dostupné zdroje]",
+          en: "Phase 1 — generation:\nGenerate 20 ideas for [topic/problem]. Include unusual or seemingly absurd ideas — don't criticize them.\n\nPhase 2 — selection and plan:\nSelect the 5 best. For each:\n• Why it's strong (specific argument)\n• How to implement it (first 3 steps)\n• Main obstacle and how to overcome it\n• Estimated cost or time required\n\nContext: [add relevant info — industry, target audience, available resources]",
         }},
         { label: { cs: "Analýza z více perspektiv", en: "Multi-perspective analysis" }, p: {
-          cs: "Analyzuj [problém/rozhodnutí/nápad] z těchto 5 perspektiv:
-1) Zákazník / uživatel: co si myslí a co potřebuje?
-2) Konkurence: jak by na to reagovala?
-3) Technologie: co je technicky možné nebo omezující?
-4) Finance: jaký je finanční dopad a riziko?
-5) Lidský faktor: jak to ovlivní tým nebo vztahy?
-
-Pro každou perspektivu: 2-3 konkrétní postřehy + 1 doporučení.
-Na závěr: jedno souhrnné doporučení s odůvodněním.",
-          en: "Analyze [problem/decision/idea] from these 5 perspectives:
-1) Customer / user: what do they think and need?
-2) Competition: how would they react?
-3) Technology: what's technically possible or limiting?
-4) Finance: what's the financial impact and risk?
-5) Human factor: how does it affect the team or relationships?
-
-For each perspective: 2-3 specific insights + 1 recommendation.
-At the end: one overall recommendation with reasoning.",
+          cs: "Analyzuj [problém/rozhodnutí/nápad] z těchto 5 perspektiv:\n1) Zákazník / uživatel: co si myslí a co potřebuje?\n2) Konkurence: jak by na to reagovala?\n3) Technologie: co je technicky možné nebo omezující?\n4) Finance: jaký je finanční dopad a riziko?\n5) Lidský faktor: jak to ovlivní tým nebo vztahy?\n\nPro každou perspektivu: 2-3 konkrétní postřehy + 1 doporučení.\nNa závěr: jedno souhrnné doporučení s odůvodněním.",
+          en: "Analyze [problem/decision/idea] from these 5 perspectives:\n1) Customer / user: what do they think and need?\n2) Competition: how would they react?\n3) Technology: what's technically possible or limiting?\n4) Finance: what's the financial impact and risk?\n5) Human factor: how does it affect the team or relationships?\n\nFor each perspective: 2-3 specific insights + 1 recommendation.\nAt the end: one overall recommendation with reasoning.",
         }},
       ]},
 
@@ -1113,54 +475,12 @@ At the end: one overall recommendation with reasoning.",
       },
       ps: [
         { label: { cs: "Oborová rešerše", en: "Industry research" }, p: {
-          cs: "Proveď rešerši na téma: [téma]
-Účel: [co s tím budu dělat — např. 'rozhodnutí zda vstoupit na trh' nebo 'příprava prezentace pro klienta']
-
-Struktura výstupu:
-1) SOUČASNÝ STAV: Kde se obor/téma nachází dnes? (3-5 klíčových faktů)
-2) HLAVNÍ HRÁČI: Kdo jsou dominantní aktéři a jaké jsou jejich pozice?
-3) TRENDY: Co se mění v posledních 2 letech? (ne obecnosti — konkrétní posuny)
-4) VÝZVY A RIZIKA: Co brání růstu nebo způsobuje problémy?
-5) PŘÍLEŽITOSTI: Kde jsou mezery nebo neobsloužené potřeby?
-6) PREDIKCE: Co lze očekávat za 2-3 roky?
-
-U každého tvrzení uveď zdroj nebo alespoň odkaz.",
-          en: "Conduct research on: [topic]
-Purpose: [what I'll do with it — e.g. 'decision whether to enter the market' or 'preparing a client presentation']
-
-Output structure:
-1) CURRENT STATE: Where is the industry/topic today? (3-5 key facts)
-2) KEY PLAYERS: Who are the dominant actors and what are their positions?
-3) TRENDS: What has changed in the last 2 years? (not generalities — specific shifts)
-4) CHALLENGES & RISKS: What's preventing growth or causing problems?
-5) OPPORTUNITIES: Where are the gaps or underserved needs?
-6) PREDICTIONS: What can be expected in 2-3 years?
-
-Cite a source or at least a reference for each claim.",
+          cs: "Proveď rešerši na téma: [téma]\nÚčel: [co s tím budu dělat — např. 'rozhodnutí zda vstoupit na trh' nebo 'příprava prezentace pro klienta']\n\nStruktura výstupu:\n1) SOUČASNÝ STAV: Kde se obor/téma nachází dnes? (3-5 klíčových faktů)\n2) HLAVNÍ HRÁČI: Kdo jsou dominantní aktéři a jaké jsou jejich pozice?\n3) TRENDY: Co se mění v posledních 2 letech? (ne obecnosti — konkrétní posuny)\n4) VÝZVY A RIZIKA: Co brání růstu nebo způsobuje problémy?\n5) PŘÍLEŽITOSTI: Kde jsou mezery nebo neobsloužené potřeby?\n6) PREDIKCE: Co lze očekávat za 2-3 roky?\n\nU každého tvrzení uveď zdroj nebo alespoň odkaz.",
+          en: "Conduct research on: [topic]\nPurpose: [what I'll do with it — e.g. 'decision whether to enter the market' or 'preparing a client presentation']\n\nOutput structure:\n1) CURRENT STATE: Where is the industry/topic today? (3-5 key facts)\n2) KEY PLAYERS: Who are the dominant actors and what are their positions?\n3) TRENDS: What has changed in the last 2 years? (not generalities — specific shifts)\n4) CHALLENGES & RISKS: What's preventing growth or causing problems?\n5) OPPORTUNITIES: Where are the gaps or underserved needs?\n6) PREDICTIONS: What can be expected in 2-3 years?\n\nCite a source or at least a reference for each claim.",
         }},
         { label: { cs: "Srovnání produktů / řešení", en: "Product / solution comparison" }, p: {
-          cs: "Porovnej [A] vs [B] vs [C] pro použití: [konkrétní use case — pro koho a k čemu].
-
-Kritéria pro porovnání:
-• Cena a cenový model (freemium, předplatné, jednorázová platba)
-• Klíčové funkce relevantní pro [use case]
-• Nevýhody a omezení
-• Pro koho je každá možnost nejlepší
-• Integrace s dalšími nástroji
-
-Výstup: srovnávací tabulka + 1 odstavec doporučení pro [moji situaci: popis].
-Buď konkrétní — vyhni se formulaci 'záleží na situaci' bez vysvětlení.",
-          en: "Compare [A] vs [B] vs [C] for use case: [specific use case — for whom and what for].
-
-Comparison criteria:
-• Price and pricing model (freemium, subscription, one-time)
-• Key features relevant to [use case]
-• Disadvantages and limitations
-• Who each option is best for
-• Integration with other tools
-
-Output: comparison table + 1 paragraph recommendation for [my situation: description].
-Be specific — avoid 'it depends' without explanation.",
+          cs: "Porovnej [A] vs [B] vs [C] pro použití: [konkrétní use case — pro koho a k čemu].\n\nKritéria pro porovnání:\n• Cena a cenový model (freemium, předplatné, jednorázová platba)\n• Klíčové funkce relevantní pro [use case]\n• Nevýhody a omezení\n• Pro koho je každá možnost nejlepší\n• Integrace s dalšími nástroji\n\nVýstup: srovnávací tabulka + 1 odstavec doporučení pro [moji situaci: popis].\nBuď konkrétní — vyhni se formulaci 'záleží na situaci' bez vysvětlení.",
+          en: "Compare [A] vs [B] vs [C] for use case: [specific use case — for whom and what for].\n\nComparison criteria:\n• Price and pricing model (freemium, subscription, one-time)\n• Key features relevant to [use case]\n• Disadvantages and limitations\n• Who each option is best for\n• Integration with other tools\n\nOutput: comparison table + 1 paragraph recommendation for [my situation: description].\nBe specific — avoid 'it depends' without explanation.",
         }},
       ]},
   ],
@@ -1175,72 +495,12 @@ Be specific — avoid 'it depends' without explanation.",
       },
       ps: [
         { label: { cs: "SEO článek s EEAT", en: "SEO article with EEAT" }, p: {
-          cs: "Napiš SEO článek na klíčové slovo: '[keyword]'
-
-Search intent: [informační / transakční / navigační / porovnávací — vyber]
-Cílový čtenář: [kdo to bude číst a co potřebuje vyřešit]
-
-Struktura:
-• H1: Obsahuje keyword, max 60 znaků, slibuje konkrétní hodnotu
-• Úvod (150 slov): problém čtenáře → proč je tento článek odpovědí → co se dozví
-• H2 sekce: [seznam sekcí]
-• FAQ sekce: 5 otázek z 'Lidé se také ptají' pro tento keyword
-• Závěr: shrnutí + jasný next step
-
-EEAT signály (zabuduj přirozeně):
-• Konkrétní čísla nebo statistiky s uvedením zdroje
-• Příklad z reálné praxe nebo case study
-• Jasné vymezení kdo a proč je kvalifikovaný psát o tomto tématu
-
-Meta title: keyword + benefit, max 60 znaků
-Meta description: problém → řešení → CTA, max 155 znaků
-Délka: 1800-2200 slov",
-          en: "Write an SEO article for keyword: '[keyword]'
-
-Search intent: [informational / transactional / navigational / comparison — choose]
-Target reader: [who will read it and what they need to solve]
-
-Structure:
-• H1: Contains keyword, max 60 chars, promises specific value
-• Intro (150 words): reader's problem → why this article answers it → what they'll learn
-• H2 sections: [list of sections]
-• FAQ section: 5 questions from 'People Also Ask' for this keyword
-• Conclusion: summary + clear next step
-
-EEAT signals (embed naturally):
-• Specific numbers or statistics with source
-• Real-world example or case study
-• Clear statement of who is qualified to write about this topic and why
-
-Meta title: keyword + benefit, max 60 chars
-Meta description: problem → solution → CTA, max 155 chars
-Length: 1800-2200 words",
+          cs: "Napiš SEO článek na klíčové slovo: '[keyword]'\n\nSearch intent: [informační / transakční / navigační / porovnávací — vyber]\nCílový čtenář: [kdo to bude číst a co potřebuje vyřešit]\n\nStruktura:\n• H1: Obsahuje keyword, max 60 znaků, slibuje konkrétní hodnotu\n• Úvod (150 slov): problém čtenáře → proč je tento článek odpovědí → co se dozví\n• H2 sekce: [seznam sekcí]\n• FAQ sekce: 5 otázek z 'Lidé se také ptají' pro tento keyword\n• Závěr: shrnutí + jasný next step\n\nEEAT signály (zabuduj přirozeně):\n• Konkrétní čísla nebo statistiky s uvedením zdroje\n• Příklad z reálné praxe nebo case study\n• Jasné vymezení kdo a proč je kvalifikovaný psát o tomto tématu\n\nMeta title: keyword + benefit, max 60 znaků\nMeta description: problém → řešení → CTA, max 155 znaků\nDélka: 1800-2200 slov",
+          en: "Write an SEO article for keyword: '[keyword]'\n\nSearch intent: [informational / transactional / navigational / comparison — choose]\nTarget reader: [who will read it and what they need to solve]\n\nStructure:\n• H1: Contains keyword, max 60 chars, promises specific value\n• Intro (150 words): reader's problem → why this article answers it → what they'll learn\n• H2 sections: [list of sections]\n• FAQ section: 5 questions from 'People Also Ask' for this keyword\n• Conclusion: summary + clear next step\n\nEEAT signals (embed naturally):\n• Specific numbers or statistics with source\n• Real-world example or case study\n• Clear statement of who is qualified to write about this topic and why\n\nMeta title: keyword + benefit, max 60 chars\nMeta description: problem → solution → CTA, max 155 chars\nLength: 1800-2200 words",
         }},
         { label: { cs: "SEO brief pro copywritera", en: "SEO brief for copywriter" }, p: {
-          cs: "Vytvoř kompletní SEO brief pro copywritera. Keyword: '[keyword]'
-
-1) SEARCH INTENT: Co přesně uživatel hledá? (nechce obecný článek — chce...)
-2) STRUKTURA H1-H3: Navrhni konkrétní nadpisy (ne zástupné texty)
-3) DÉLKA A ČITELNOST: Doporučená délka, úroveň čtení (Flesch score cíl)
-4) LSI A SÉMANTICKÁ KLÍČOVÁ SLOVA: 15 výrazů které musí článek přirozeně obsahovat
-5) INTERNAL LINKING: 3 existující stránky na webu na které může odkazovat
-6) FEATURED SNIPPET: Jak strukturovat odpověď pro snippet (tabulka / seznam / odstavec)
-7) SCHEMA MARKUP: Doporučený typ (Article / FAQ / HowTo)
-8) COMPETITOR GAP: Co top 3 výsledky mají a co jim chybí?
-
-Web: [URL webu pokud máš]",
-          en: "Create a complete SEO brief for a copywriter. Keyword: '[keyword]'
-
-1) SEARCH INTENT: What exactly is the user looking for? (they don't want a generic article — they want...)
-2) H1-H3 STRUCTURE: Suggest specific headings (not placeholder text)
-3) LENGTH & READABILITY: Recommended length, reading level (Flesch score target)
-4) LSI & SEMANTIC KEYWORDS: 15 expressions the article must naturally contain
-5) INTERNAL LINKING: 3 existing pages on the site it can link to
-6) FEATURED SNIPPET: How to structure the answer for a snippet (table / list / paragraph)
-7) SCHEMA MARKUP: Recommended type (Article / FAQ / HowTo)
-8) COMPETITOR GAP: What do top 3 results have and what are they missing?
-
-Website: [URL if available]",
+          cs: "Vytvoř kompletní SEO brief pro copywritera. Keyword: '[keyword]'\n\n1) SEARCH INTENT: Co přesně uživatel hledá? (nechce obecný článek — chce...)\n2) STRUKTURA H1-H3: Navrhni konkrétní nadpisy (ne zástupné texty)\n3) DÉLKA A ČITELNOST: Doporučená délka, úroveň čtení (Flesch score cíl)\n4) LSI A SÉMANTICKÁ KLÍČOVÁ SLOVA: 15 výrazů které musí článek přirozeně obsahovat\n5) INTERNAL LINKING: 3 existující stránky na webu na které může odkazovat\n6) FEATURED SNIPPET: Jak strukturovat odpověď pro snippet (tabulka / seznam / odstavec)\n7) SCHEMA MARKUP: Doporučený typ (Article / FAQ / HowTo)\n8) COMPETITOR GAP: Co top 3 výsledky mají a co jim chybí?\n\nWeb: [URL webu pokud máš]",
+          en: "Create a complete SEO brief for a copywriter. Keyword: '[keyword]'\n\n1) SEARCH INTENT: What exactly is the user looking for? (they don't want a generic article — they want...)\n2) H1-H3 STRUCTURE: Suggest specific headings (not placeholder text)\n3) LENGTH & READABILITY: Recommended length, reading level (Flesch score target)\n4) LSI & SEMANTIC KEYWORDS: 15 expressions the article must naturally contain\n5) INTERNAL LINKING: 3 existing pages on the site it can link to\n6) FEATURED SNIPPET: How to structure the answer for a snippet (table / list / paragraph)\n7) SCHEMA MARKUP: Recommended type (Article / FAQ / HowTo)\n8) COMPETITOR GAP: What do top 3 results have and what are they missing?\n\nWebsite: [URL if available]",
         }},
       ]},
 
@@ -1252,88 +512,12 @@ Website: [URL if available]",
       },
       ps: [
         { label: { cs: "Kompletní byznys plán", en: "Full business plan" }, p: {
-          cs: "\u003cbusiness\u003e
-[Popis firmy/produktu/služby — co děláte, jak, pro koho]
-\u003c/business\u003e
-\u003cmarket\u003e
-[Popis trhu — geografický rozsah, velikost, zralost]
-\u003c/market\u003e
-\u003cgoals\u003e
-[Cíle — konkrétní čísla a časový horizont]
-\u003c/goals\u003e
-\u003cconstraints\u003e
-[Omezení — budget, tým, čas, regulace]
-\u003c/constraints\u003e
-
-Vytvoř byznys plán:
-1) Executive summary (max 200 slov — pro investora)
-2) Analýza trhu (TAM/SAM/SOM s čísly)
-3) Konkurenční analýza (min 3 přímí konkurenti — silné stránky, slabé stránky, jak se odlišujeme)
-4) Business Model Canvas (všech 9 polí)
-5) GTM strategie (první 3 měsíce — konkrétní kroky)
-6) Finanční projekce na 3 roky (optimistická / realistická / pesimistická varianta)
-7) Klíčová rizika + mitigace
-8) KPIs pro měření úspěchu
-
-Buď kritický — pokud náš plán má slabiny, pojmenuj je.",
-          en: "\u003cbusiness\u003e
-[Company/product/service description — what you do, how, for whom]
-\u003c/business\u003e
-\u003cmarket\u003e
-[Market description — geographic scope, size, maturity]
-\u003c/market\u003e
-\u003cgoals\u003e
-[Goals — specific numbers and time horizon]
-\u003c/goals\u003e
-\u003cconstraints\u003e
-[Constraints — budget, team, time, regulations]
-\u003c/constraints\u003e
-
-Create a business plan:
-1) Executive summary (max 200 words — for an investor)
-2) Market analysis (TAM/SAM/SOM with numbers)
-3) Competitive analysis (min 3 direct competitors — strengths, weaknesses, how we differ)
-4) Business Model Canvas (all 9 fields)
-5) GTM strategy (first 3 months — specific steps)
-6) 3-year financial projections (optimistic / realistic / pessimistic scenarios)
-7) Key risks + mitigation
-8) KPIs for measuring success
-
-Be critical — if our plan has weaknesses, name them.",
+          cs: "\u003cbusiness\u003e\n[Popis firmy/produktu/služby — co děláte, jak, pro koho]\n\u003c/business\u003e\n\u003cmarket\u003e\n[Popis trhu — geografický rozsah, velikost, zralost]\n\u003c/market\u003e\n\u003cgoals\u003e\n[Cíle — konkrétní čísla a časový horizont]\n\u003c/goals\u003e\n\u003cconstraints\u003e\n[Omezení — budget, tým, čas, regulace]\n\u003c/constraints\u003e\n\nVytvoř byznys plán:\n1) Executive summary (max 200 slov — pro investora)\n2) Analýza trhu (TAM/SAM/SOM s čísly)\n3) Konkurenční analýza (min 3 přímí konkurenti — silné stránky, slabé stránky, jak se odlišujeme)\n4) Business Model Canvas (všech 9 polí)\n5) GTM strategie (první 3 měsíce — konkrétní kroky)\n6) Finanční projekce na 3 roky (optimistická / realistická / pesimistická varianta)\n7) Klíčová rizika + mitigace\n8) KPIs pro měření úspěchu\n\nBuď kritický — pokud náš plán má slabiny, pojmenuj je.",
+          en: "\u003cbusiness\u003e\n[Company/product/service description — what you do, how, for whom]\n\u003c/business\u003e\n\u003cmarket\u003e\n[Market description — geographic scope, size, maturity]\n\u003c/market\u003e\n\u003cgoals\u003e\n[Goals — specific numbers and time horizon]\n\u003c/goals\u003e\n\u003cconstraints\u003e\n[Constraints — budget, team, time, regulations]\n\u003c/constraints\u003e\n\nCreate a business plan:\n1) Executive summary (max 200 words — for an investor)\n2) Market analysis (TAM/SAM/SOM with numbers)\n3) Competitive analysis (min 3 direct competitors — strengths, weaknesses, how we differ)\n4) Business Model Canvas (all 9 fields)\n5) GTM strategy (first 3 months — specific steps)\n6) 3-year financial projections (optimistic / realistic / pessimistic scenarios)\n7) Key risks + mitigation\n8) KPIs for measuring success\n\nBe critical — if our plan has weaknesses, name them.",
         }},
         { label: { cs: "Analýza konkurence", en: "Competitor analysis" }, p: {
-          cs: "\u003ccontext\u003e
-Naše firma: [popis, cílová skupina, cenová úroveň, hlavní USP]
-Náš problém: [proč zákazníci odcházejí ke konkurenci nebo k nám nepřicházejí]
-\u003c/context\u003e
-
-\u003ctask\u003e
-Analyzuj konkurenci pro naši firmu vs [konkurent 1], [konkurent 2], [konkurent 3].
-
-1) Positioning matrix: umísti všechny hráče na 2 osy — [osa 1, např. cena] vs [osa 2, např. jednoduchost]
-2) Kde jsou konkurenti slabí a kde bychom mohli vyhrát?
-3) Které segmenty zákazníků obsluhují oni a ne my (a naopak)?
-4) Navrhni 1 positioning statement který nás jasně odliší
-5) 3 konkrétní kroky které můžeme udělat v příštích 30 dnech
-\u003c/task\u003e
-
-Buď kritický. Pokud naše USP není přesvědčivé, řekni to přímo.",
-          en: "\u003ccontext\u003e
-Our company: [description, target audience, price level, main USP]
-Our problem: [why customers go to competitors or don't come to us]
-\u003c/context\u003e
-
-\u003ctask\u003e
-Analyze the competitive landscape for our company vs [competitor 1], [competitor 2], [competitor 3].
-
-1) Positioning matrix: place all players on 2 axes — [axis 1, e.g. price] vs [axis 2, e.g. simplicity]
-2) Where are competitors weak and where could we win?
-3) Which customer segments do they serve that we don't (and vice versa)?
-4) Propose 1 positioning statement that clearly differentiates us
-5) 3 concrete steps we can take in the next 30 days
-\u003c/task\u003e
-
-Be critical. If our USP isn't compelling, say so directly.",
+          cs: "\u003ccontext\u003e\nNaše firma: [popis, cílová skupina, cenová úroveň, hlavní USP]\nNáš problém: [proč zákazníci odcházejí ke konkurenci nebo k nám nepřicházejí]\n\u003c/context\u003e\n\n\u003ctask\u003e\nAnalyzuj konkurenci pro naši firmu vs [konkurent 1], [konkurent 2], [konkurent 3].\n\n1) Positioning matrix: umísti všechny hráče na 2 osy — [osa 1, např. cena] vs [osa 2, např. jednoduchost]\n2) Kde jsou konkurenti slabí a kde bychom mohli vyhrát?\n3) Které segmenty zákazníků obsluhují oni a ne my (a naopak)?\n4) Navrhni 1 positioning statement který nás jasně odliší\n5) 3 konkrétní kroky které můžeme udělat v příštích 30 dnech\n\u003c/task\u003e\n\nBuď kritický. Pokud naše USP není přesvědčivé, řekni to přímo.",
+          en: "\u003ccontext\u003e\nOur company: [description, target audience, price level, main USP]\nOur problem: [why customers go to competitors or don't come to us]\n\u003c/context\u003e\n\n\u003ctask\u003e\nAnalyze the competitive landscape for our company vs [competitor 1], [competitor 2], [competitor 3].\n\n1) Positioning matrix: place all players on 2 axes — [axis 1, e.g. price] vs [axis 2, e.g. simplicity]\n2) Where are competitors weak and where could we win?\n3) Which customer segments do they serve that we don't (and vice versa)?\n4) Propose 1 positioning statement that clearly differentiates us\n5) 3 concrete steps we can take in the next 30 days\n\u003c/task\u003e\n\nBe critical. If our USP isn't compelling, say so directly.",
         }},
       ]},
 
@@ -1345,74 +529,12 @@ Be critical. If our USP isn't compelling, say so directly.",
       },
       ps: [
         { label: { cs: "Landing page", en: "Landing page" }, p: {
-          cs: "Vytvoř landing page pro [produkt/služba]. Tech stack: React + Tailwind CSS.
-
-Design reference: [odkaz nebo popis stylu — např. 'minimalistický, tmavé pozadí, amber akcenty']
-Cílová skupina: [kdo jsou návštěvníci]
-Hlavní CTA: [co má visitor udělat]
-
-Sekce (v tomto pořadí):
-1) Hero: headline + subheadline + CTA tlačítko + hero vizuál nebo mockup
-2) Social proof: loga klientů nebo [X] spokojených zákazníků
-3) Benefity: 3-4 karty s ikonou, nadpisem a 2 větami
-4) Jak to funguje: 3 kroky s čísly
-5) Testimonials: 2-3 citace se jménem a rolí
-6) Pricing: 3 plány (Basic / Pro / Enterprise) s highlighted středním plánem
-7) FAQ: 5 otázek v accordion
-8) Footer: logo, navigace, kontakt, social
-
-Technické požadavky: responsive, dark/light mode toggle, smooth scroll, lazy loading obrázků.",
-          en: "Create a landing page for [product/service]. Tech stack: React + Tailwind CSS.
-
-Design reference: [link or style description — e.g. 'minimalist, dark background, amber accents']
-Target audience: [who the visitors are]
-Main CTA: [what the visitor should do]
-
-Sections (in this order):
-1) Hero: headline + subheadline + CTA button + hero visual or mockup
-2) Social proof: client logos or [X] happy customers
-3) Benefits: 3-4 cards with icon, title, and 2 sentences
-4) How it works: 3 steps with numbers
-5) Testimonials: 2-3 quotes with name and role
-6) Pricing: 3 plans (Basic / Pro / Enterprise) with highlighted middle plan
-7) FAQ: 5 questions in accordion
-8) Footer: logo, navigation, contact, social
-
-Technical requirements: responsive, dark/light mode toggle, smooth scroll, lazy image loading.",
+          cs: "Vytvoř landing page pro [produkt/služba]. Tech stack: React + Tailwind CSS.\n\nDesign reference: [odkaz nebo popis stylu — např. 'minimalistický, tmavé pozadí, amber akcenty']\nCílová skupina: [kdo jsou návštěvníci]\nHlavní CTA: [co má visitor udělat]\n\nSekce (v tomto pořadí):\n1) Hero: headline + subheadline + CTA tlačítko + hero vizuál nebo mockup\n2) Social proof: loga klientů nebo [X] spokojených zákazníků\n3) Benefity: 3-4 karty s ikonou, nadpisem a 2 větami\n4) Jak to funguje: 3 kroky s čísly\n5) Testimonials: 2-3 citace se jménem a rolí\n6) Pricing: 3 plány (Basic / Pro / Enterprise) s highlighted středním plánem\n7) FAQ: 5 otázek v accordion\n8) Footer: logo, navigace, kontakt, social\n\nTechnické požadavky: responsive, dark/light mode toggle, smooth scroll, lazy loading obrázků.",
+          en: "Create a landing page for [product/service]. Tech stack: React + Tailwind CSS.\n\nDesign reference: [link or style description — e.g. 'minimalist, dark background, amber accents']\nTarget audience: [who the visitors are]\nMain CTA: [what the visitor should do]\n\nSections (in this order):\n1) Hero: headline + subheadline + CTA button + hero visual or mockup\n2) Social proof: client logos or [X] happy customers\n3) Benefits: 3-4 cards with icon, title, and 2 sentences\n4) How it works: 3 steps with numbers\n5) Testimonials: 2-3 quotes with name and role\n6) Pricing: 3 plans (Basic / Pro / Enterprise) with highlighted middle plan\n7) FAQ: 5 questions in accordion\n8) Footer: logo, navigation, contact, social\n\nTechnical requirements: responsive, dark/light mode toggle, smooth scroll, lazy image loading.",
         }},
         { label: { cs: "API integrace", en: "API integration" }, p: {
-          cs: "Napiš kód pro integraci [název API / služby] do existující [jazyk/framework] aplikace.
-
-Co integrace má dělat: [přesný popis funkcionality]
-Autentizace: [API key / OAuth / JWT — co používá tato API]
-Endpoint(s): [konkrétní endpoints nebo odkaz na docs]
-
-Existující kód (relevantní části):
-```
-[vlož]
-```
-
-Požadavky:
-• Error handling pro: rate limiting, timeout, invalid response
-• Logování pro debugging
-• Typové definice (TypeScript pokud projekt používá)
-• Příklad použití v komentáři",
-          en: "Write code for integrating [API name / service] into an existing [language/framework] application.
-
-What the integration should do: [exact description of functionality]
-Authentication: [API key / OAuth / JWT — what this API uses]
-Endpoint(s): [specific endpoints or link to docs]
-
-Existing code (relevant parts):
-```
-[paste]
-```
-
-Requirements:
-• Error handling for: rate limiting, timeout, invalid response
-• Logging for debugging
-• Type definitions (TypeScript if project uses it)
-• Usage example in a comment",
+          cs: "Napiš kód pro integraci [název API / služby] do existující [jazyk/framework] aplikace.\n\nCo integrace má dělat: [přesný popis funkcionality]\nAutentizace: [API key / OAuth / JWT — co používá tato API]\nEndpoint(s): [konkrétní endpoints nebo odkaz na docs]\n\nExistující kód (relevantní části):\n```\n[vlož]\n```\n\nPožadavky:\n• Error handling pro: rate limiting, timeout, invalid response\n• Logování pro debugging\n• Typové definice (TypeScript pokud projekt používá)\n• Příklad použití v komentáři",
+          en: "Write code for integrating [API name / service] into an existing [language/framework] application.\n\nWhat the integration should do: [exact description of functionality]\nAuthentication: [API key / OAuth / JWT — what this API uses]\nEndpoint(s): [specific endpoints or link to docs]\n\nExisting code (relevant parts):\n```\n[paste]\n```\n\nRequirements:\n• Error handling for: rate limiting, timeout, invalid response\n• Logging for debugging\n• Type definitions (TypeScript if project uses it)\n• Usage example in a comment",
         }},
       ]},
 
@@ -1424,74 +546,12 @@ Requirements:
       },
       ps: [
         { label: { cs: "Systémový prompt pro AI asistenta", en: "System prompt for AI assistant" }, p: {
-          cs: "Vytvoř systémový prompt pro AI asistenta s těmito parametry:
-
-Role: [přesný popis role — např. 'zákaznický servis pro SaaS firmu']
-Účel: [co asistent dělá a co ne]
-Uživatelé: [kdo bude asistenta používat]
-Tón a osobnost: [formální / přátelský / přímý — s příkladem]
-
-Struktura systémového promptu:
-1) Role a kontext (2-3 věty)
-2) Co asistent VÍ (znalostní báze — odkaz na dokumenty nebo popis)
-3) Co asistent NESMÍ dělat (guardrails — buď konkrétní)
-4) Formát odpovědí (délka, struktura, jazyk)
-5) 3 few-shot příklady (otázka → ideální odpověď)
-6) Edge cases (co říct při mimo-téma otázkách, necitlivých dotazech)
-7) Anti-injection ochrana
-
-Po napsání promptu: navrhni 5 testovacích vstupů včetně 2 adversariálních.",
-          en: "Create a system prompt for an AI assistant with these parameters:
-
-Role: [exact role description — e.g. 'customer service for a SaaS company']
-Purpose: [what the assistant does and doesn't do]
-Users: [who will use the assistant]
-Tone and personality: [formal / friendly / direct — with an example]
-
-System prompt structure:
-1) Role and context (2-3 sentences)
-2) What the assistant KNOWS (knowledge base — link to docs or description)
-3) What the assistant MUST NOT do (guardrails — be specific)
-4) Response format (length, structure, language)
-5) 3 few-shot examples (question → ideal response)
-6) Edge cases (what to say for off-topic questions, sensitive queries)
-7) Anti-injection protection
-
-After writing the prompt: suggest 5 test inputs including 2 adversarial ones.",
+          cs: "Vytvoř systémový prompt pro AI asistenta s těmito parametry:\n\nRole: [přesný popis role — např. 'zákaznický servis pro SaaS firmu']\nÚčel: [co asistent dělá a co ne]\nUživatelé: [kdo bude asistenta používat]\nTón a osobnost: [formální / přátelský / přímý — s příkladem]\n\nStruktura systémového promptu:\n1) Role a kontext (2-3 věty)\n2) Co asistent VÍ (znalostní báze — odkaz na dokumenty nebo popis)\n3) Co asistent NESMÍ dělat (guardrails — buď konkrétní)\n4) Formát odpovědí (délka, struktura, jazyk)\n5) 3 few-shot příklady (otázka → ideální odpověď)\n6) Edge cases (co říct při mimo-téma otázkách, necitlivých dotazech)\n7) Anti-injection ochrana\n\nPo napsání promptu: navrhni 5 testovacích vstupů včetně 2 adversariálních.",
+          en: "Create a system prompt for an AI assistant with these parameters:\n\nRole: [exact role description — e.g. 'customer service for a SaaS company']\nPurpose: [what the assistant does and doesn't do]\nUsers: [who will use the assistant]\nTone and personality: [formal / friendly / direct — with an example]\n\nSystem prompt structure:\n1) Role and context (2-3 sentences)\n2) What the assistant KNOWS (knowledge base — link to docs or description)\n3) What the assistant MUST NOT do (guardrails — be specific)\n4) Response format (length, structure, language)\n5) 3 few-shot examples (question → ideal response)\n6) Edge cases (what to say for off-topic questions, sensitive queries)\n7) Anti-injection protection\n\nAfter writing the prompt: suggest 5 test inputs including 2 adversarial ones.",
         }},
         { label: { cs: "XML prompt pro komplexní úkol", en: "XML prompt for complex task" }, p: {
-          cs: "Přepis tento jednoduchý prompt do strukturovaného XML formátu pro lepší výsledky:
-
-Původní prompt: [vlož]
-
-XML struktura:
-\u003crole\u003e[kdo je AI v tomto kontextu]\u003c/role\u003e
-\u003ccontext\u003e[relevantní zázemí a informace]\u003c/context\u003e
-\u003ctask\u003e[přesný úkol — jeden konkrétní]\u003c/task\u003e
-\u003cconstraints\u003e[co AI nesmí nebo musí zachovat]\u003c/constraints\u003e
-\u003cformat\u003e[přesný formát výstupu]\u003c/format\u003e
-\u003cexamples\u003e
-\u003cgood\u003e[příklad dobrého výstupu]\u003c/good\u003e
-\u003cbad\u003e[příklad čemu se vyhnout]\u003c/bad\u003e
-\u003c/examples\u003e
-
-Po přepsání: vysvětli co každý tag přidává a proč je výsledek lepší než původní prompt.",
-          en: "Rewrite this simple prompt into a structured XML format for better results:
-
-Original prompt: [paste]
-
-XML structure:
-\u003crole\u003e[who AI is in this context]\u003c/role\u003e
-\u003ccontext\u003e[relevant background and information]\u003c/context\u003e
-\u003ctask\u003e[exact task — one specific thing]\u003c/task\u003e
-\u003cconstraints\u003e[what AI must not do or must preserve]\u003c/constraints\u003e
-\u003cformat\u003e[exact output format]\u003c/format\u003e
-\u003cexamples\u003e
-\u003cgood\u003e[example of good output]\u003c/good\u003e
-\u003cbad\u003e[example of what to avoid]\u003c/bad\u003e
-\u003c/examples\u003e
-
-After rewriting: explain what each tag adds and why the result is better than the original prompt.",
+          cs: "Přepis tento jednoduchý prompt do strukturovaného XML formátu pro lepší výsledky:\n\nPůvodní prompt: [vlož]\n\nXML struktura:\n\u003crole\u003e[kdo je AI v tomto kontextu]\u003c/role\u003e\n\u003ccontext\u003e[relevantní zázemí a informace]\u003c/context\u003e\n\u003ctask\u003e[přesný úkol — jeden konkrétní]\u003c/task\u003e\n\u003cconstraints\u003e[co AI nesmí nebo musí zachovat]\u003c/constraints\u003e\n\u003cformat\u003e[přesný formát výstupu]\u003c/format\u003e\n\u003cexamples\u003e\n\u003cgood\u003e[příklad dobrého výstupu]\u003c/good\u003e\n\u003cbad\u003e[příklad čemu se vyhnout]\u003c/bad\u003e\n\u003c/examples\u003e\n\nPo přepsání: vysvětli co každý tag přidává a proč je výsledek lepší než původní prompt.",
+          en: "Rewrite this simple prompt into a structured XML format for better results:\n\nOriginal prompt: [paste]\n\nXML structure:\n\u003crole\u003e[who AI is in this context]\u003c/role\u003e\n\u003ccontext\u003e[relevant background and information]\u003c/context\u003e\n\u003ctask\u003e[exact task — one specific thing]\u003c/task\u003e\n\u003cconstraints\u003e[what AI must not do or must preserve]\u003c/constraints\u003e\n\u003cformat\u003e[exact output format]\u003c/format\u003e\n\u003cexamples\u003e\n\u003cgood\u003e[example of good output]\u003c/good\u003e\n\u003cbad\u003e[example of what to avoid]\u003c/bad\u003e\n\u003c/examples\u003e\n\nAfter rewriting: explain what each tag adds and why the result is better than the original prompt.",
         }},
       ]},
 
@@ -1503,34 +563,8 @@ After rewriting: explain what each tag adds and why the result is better than th
       },
       ps: [
         { label: { cs: "Kompletní sales funnel", en: "Full sales funnel" }, p: {
-          cs: "Navrhni kompletní sales funnel pro:
-Produkt: [název a stručný popis]
-Cena: [cenový model — např. '990 Kč/měs nebo 9900 Kč/rok']
-Cílová skupina: [přesný popis — kdo jsou, co řeší, kde tráví čas]
-Hlavní námitka: [proč nekoupí — cena / nedůvěra / načasování]
-
-Fáze funnelu:
-1) TOFU — Awareness: 3 nápady na obsah který osloví lidi kteří náš produkt ještě neznají
-2) Lead magnet: 1 konkrétní bezplatný obsah (checklist, template, mini-kurz) s názvem a popisem
-3) Email sekvence (7 emailů): předmět + 2věty obsah pro každý email; den 1, 3, 5, 7, 10, 14, 21
-4) Sales page: struktura (ne copy) — co musí stránka obsahovat v jakém pořadí
-5) Upsell: co nabídnout po koupi a jak načasovat
-6) Retargeting: 2 nápady na retargeting pro ty, kteří nekoupili
-7) KPIs: co měřit v každé fázi (conversion rate, open rate...)",
-          en: "Design a complete sales funnel for:
-Product: [name and brief description]
-Price: [pricing model — e.g. '$49/month or $490/year']
-Target audience: [precise description — who they are, what they solve, where they spend time]
-Main objection: [why they won't buy — price / distrust / timing]
-
-Funnel stages:
-1) TOFU — Awareness: 3 content ideas that reach people who don't know our product yet
-2) Lead magnet: 1 specific free resource (checklist, template, mini-course) with name and description
-3) Email sequence (7 emails): subject + 2-sentence content for each email; day 1, 3, 5, 7, 10, 14, 21
-4) Sales page: structure (not copy) — what the page must contain and in what order
-5) Upsell: what to offer after purchase and when to time it
-6) Retargeting: 2 retargeting ideas for those who didn't buy
-7) KPIs: what to measure at each stage (conversion rate, open rate...)",
+          cs: "Navrhni kompletní sales funnel pro:\nProdukt: [název a stručný popis]\nCena: [cenový model — např. '990 Kč/měs nebo 9900 Kč/rok']\nCílová skupina: [přesný popis — kdo jsou, co řeší, kde tráví čas]\nHlavní námitka: [proč nekoupí — cena / nedůvěra / načasování]\n\nFáze funnelu:\n1) TOFU — Awareness: 3 nápady na obsah který osloví lidi kteří náš produkt ještě neznají\n2) Lead magnet: 1 konkrétní bezplatný obsah (checklist, template, mini-kurz) s názvem a popisem\n3) Email sekvence (7 emailů): předmět + 2věty obsah pro každý email; den 1, 3, 5, 7, 10, 14, 21\n4) Sales page: struktura (ne copy) — co musí stránka obsahovat v jakém pořadí\n5) Upsell: co nabídnout po koupi a jak načasovat\n6) Retargeting: 2 nápady na retargeting pro ty, kteří nekoupili\n7) KPIs: co měřit v každé fázi (conversion rate, open rate...)",
+          en: "Design a complete sales funnel for:\nProduct: [name and brief description]\nPrice: [pricing model — e.g. '$49/month or $490/year']\nTarget audience: [precise description — who they are, what they solve, where they spend time]\nMain objection: [why they won't buy — price / distrust / timing]\n\nFunnel stages:\n1) TOFU — Awareness: 3 content ideas that reach people who don't know our product yet\n2) Lead magnet: 1 specific free resource (checklist, template, mini-course) with name and description\n3) Email sequence (7 emails): subject + 2-sentence content for each email; day 1, 3, 5, 7, 10, 14, 21\n4) Sales page: structure (not copy) — what the page must contain and in what order\n5) Upsell: what to offer after purchase and when to time it\n6) Retargeting: 2 retargeting ideas for those who didn't buy\n7) KPIs: what to measure at each stage (conversion rate, open rate...)",
         }},
       ]},
   ],
