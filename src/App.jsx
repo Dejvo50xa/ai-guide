@@ -364,14 +364,14 @@ When the answer is wrong, don't delete it and start over. Fix it:
   advanced: {
     cs: [
       { title: "🏆 Výběr modelu pro pokročilé úkoly", text: "Volba modelu přímo ovlivňuje kvalitu výstupu:\n\nHluboká analýza a strategie:\n→ Claude Opus — nejsilnější reasoning, byznys úkoly\n→ o1 — chain-of-thought, matematika a logika\n\nRychá iterace a kódování:\n→ Claude Sonnet — nejlepší poměr rychlost/výkon\n→ GPT-4o — multimodální, různorodé úkoly\n\nResearch a aktuální data:\n→ Perplexity Pro — cituje zdroje\n→ Gemini Pro — real-time internet\n\n💡 Pravidlo: Správný model šetří čas. Nepoužívejte Opus na jednoduché shrnutí." },
-      { title: "🏷️ XML promptování", text: "Pokročilí uživatelé používají XML tagy:\n\n<role>Jsi zkušený finanční analytik</role>\n<context>Analyzuji startup v SaaS segmentu</context>\n<task>Vytvoř finanční projekci na 3 roky</task>\n<constraints>Konzervativní odhady, sensitivity analysis</constraints>\n<format>Tabulka + komentář v bodech</format>\n\nProč XML funguje:\n• Jasně odděluje roli, kontext, úkol a omezení\n• Snižuje ambiguitu\n• Claude byl trénován s XML strukturou\n\n💡 Pro složité prompty vždy <context> + <task>." },
+      { title: "🏷️ XML promptování", text: "Pokročilí uživatelé používají XML tagy:\n\n\u003crole\u003eJsi zkušený finanční analytik\u003c/role\u003e\n\u003ccontext\u003eAnalyzuji startup v SaaS segmentu\u003c/context\u003e\n\u003ctask\u003eVytvoř finanční projekci na 3 roky\u003c/task\u003e\n\u003cconstraints\u003eKonzervativní odhady, sensitivity analysis\u003c/constraints\u003e\n\u003cformat\u003eTabulka + komentář v bodech\u003c/format\u003e\n\nProč XML funguje:\n• Jasně odděluje roli, kontext, úkol a omezení\n• Snižuje ambiguitu\n• Claude byl trénován s XML strukturou\n\n💡 Pro složité prompty vždy \u003ccontext\u003e + \u003ctask\u003e." },
       { title: "⚙️ Návrh systémových promptů", text: "Systémový prompt je základ každého AI produktu:\n\n1. Definuje roli a osobnost\n2. Vymezuje znalostní bázi\n3. Definuje formát výstupů\n4. Obsahuje few-shot příklady (2–3)\n5. Řeší edge cases\n6. Obsahuje safety guardrails\n\n💡 Testujte s 10 různými vstupy včetně adversariálních před nasazením." },
       { title: "🔌 API a automatizace", text: "Přímé API volání otevírá nové možnosti:\n\nClaude API:\n• claude-opus-4 pro hluboký reasoning\n• Batched API — 50% sleva\n• 200K tokenů context window\n\nOpenAI API:\n• GPT-4o, JSON mode, Function calling\n\nAutomatizace:\n• Make — vizuální workflow + HTTP modul\n• n8n — open-source, self-host\n\n💡 Make + HTTP → Claude API. Za odpoledne automatizace na emails." },
       { title: "🤖 Agentické nástroje", text: "AI agenti vykonávají akce autonomně:\n\nClaude Code (CLI):\n• npm install -g @anthropic-ai/claude-code\n• Edituje soubory, spouští testy\n• Vy schvalujete, AI vykonává\n\nCursor IDE:\n• Composer — editace napříč soubory\n• .cursorrules — kontext projektu\n\nCrewAI:\n• Týmy agentů: Researcher → Writer → Editor\n• Každý má nástroje a předává výsledky\n\n💡 Začněte Claude Code pro kódovací projekty." },
     ],
     en: [
       { title: "🏆 Model Selection for Advanced Tasks", text: "Model choice directly affects output quality:\n\nDeep analysis and strategy:\n→ Claude Opus — strongest reasoning\n→ o1 — chain-of-thought, math and logic\n\nFast iteration and coding:\n→ Claude Sonnet — best speed/performance ratio\n→ GPT-4o — multimodal, diverse tasks\n\nResearch and current data:\n→ Perplexity Pro — cites sources\n→ Gemini Pro — real-time internet\n\n💡 Rule: Right model saves time. Don't use Opus for simple summaries." },
-      { title: "🏷️ XML Prompting", text: "Advanced users use XML tags to structure prompts:\n\n<role>You are an experienced financial analyst</role>\n<context>I'm analyzing a SaaS startup</context>\n<task>Create a 3-year financial projection</task>\n<constraints>Conservative estimates, sensitivity analysis</constraints>\n<format>Table + bullet-point commentary</format>\n\nWhy XML works:\n• Clearly separates role, context, task, constraints\n• Reduces ambiguity\n• Claude was trained with XML structure\n\n💡 For complex prompts always use <context> + <task>." },
+      { title: "🏷️ XML Prompting", text: "Advanced users use XML tags to structure prompts:\n\n\u003crole\u003eYou are an experienced financial analyst\u003c/role\u003e\n\u003ccontext\u003eI'm analyzing a SaaS startup\u003c/context\u003e\n\u003ctask\u003eCreate a 3-year financial projection\u003c/task\u003e\n\u003cconstraints\u003eConservative estimates, sensitivity analysis\u003c/constraints\u003e\n\u003cformat\u003eTable + bullet-point commentary\u003c/format\u003e\n\nWhy XML works:\n• Clearly separates role, context, task, constraints\n• Reduces ambiguity\n• Claude was trained with XML structure\n\n💡 For complex prompts always use \u003ccontext\u003e + \u003ctask\u003e." },
       { title: "⚙️ System Prompt Design", text: "A system prompt is the foundation of every AI product:\n\n1. Define role and personality\n2. Define knowledge base\n3. Define output format\n4. Include few-shot examples (2–3)\n5. Handle edge cases\n6. Include safety guardrails\n\n💡 Test with 10 different inputs including adversarial ones before deploying." },
       { title: "🔌 API & Automation", text: "Direct API calls unlock new possibilities:\n\nClaude API:\n• claude-opus-4 for deepest reasoning\n• Batched API — 50% discount\n• 200K token context window\n\nOpenAI API:\n• GPT-4o, JSON mode, Function calling\n\nAutomation:\n• Make — visual workflows + HTTP module\n• n8n — open-source, self-hostable\n\n💡 Make + HTTP → Claude API. Build email automation in an afternoon." },
       { title: "🤖 Agentic Tools", text: "AI agents perform actions autonomously:\n\nClaude Code (CLI):\n• npm install -g @anthropic-ai/claude-code\n• Edits files, runs tests, you approve\n\nCursor IDE:\n• Composer — edit across files\n• .cursorrules — project context\n\nCrewAI:\n• Agent teams: Researcher → Writer → Editor\n• Each has tools and passes results\n\n💡 Start with Claude Code for coding projects." },
@@ -453,7 +453,7 @@ const TOOLS = {
       { name: "Bolt", url: "https://bolt.new", price: "freemium", d: { cs: "Full-stack v prohlížeči.", en: "Full-stack in browser." }, h: { cs: "Popište → celý projekt.", en: "Describe → full project frontend + backend." }, tip: { cs: "Ideální pro MVP — celá app za hodinu.", en: "Ideal for MVP — full app in an hour." } },
     ]},
     { cat: { cs: "Byznys a strategie", en: "Business & Strategy" }, icon: "💼", desc: { cs: "Plánování, analýza trhu.", en: "Planning, market analysis." }, items: [
-      { name: "Claude (Opus)", url: "https://claude.ai", price: "freemium", d: { cs: "Nejchytřejší pro hlubokou analýzu.", en: "Smartest for deep analysis." }, h: { cs: "SWOT, finanční modely, byznys plány.", en: "SWOT, financial models, business plans." }, tip: { cs: "XML: <context>váš byznys</context><task>úkol</task>", en: "XML: <context>your business</context><task>task</task>" } },
+      { name: "Claude (Opus)", url: "https://claude.ai", price: "freemium", d: { cs: "Nejchytřejší pro hlubokou analýzu.", en: "Smartest for deep analysis." }, h: { cs: "SWOT, finanční modely, byznys plány.", en: "SWOT, financial models, business plans." }, tip: { cs: "XML: \u003ccontext\u003eváš byznys\u003c/context\u003e\u003ctask\u003eúkol\u003c/task\u003e", en: "XML: \u003ccontext\u003eyour business\u003c/context\u003e\u003ctask\u003etask\u003c/task\u003e" } },
       { name: "Perplexity Pro", url: "https://perplexity.ai", price: "freemium", d: { cs: "AI search s aktuálními daty.", en: "AI search with current data." }, h: { cs: "Trendy, konkurence, tržní data.", en: "Trends, competition, market data." }, tip: { cs: "Pro Mode dá hlubší analýzu.", en: "Pro Mode gives deeper analysis." } },
     ]},
     { cat: { cs: "AI agenti", en: "AI Agents" }, icon: "🤖", desc: { cs: "Autonomní AI.", en: "Autonomous AI." }, items: [
@@ -1252,18 +1252,18 @@ Website: [URL if available]",
       },
       ps: [
         { label: { cs: "Kompletní byznys plán", en: "Full business plan" }, p: {
-          cs: "<business>
+          cs: "\u003cbusiness\u003e
 [Popis firmy/produktu/služby — co děláte, jak, pro koho]
-</business>
-<market>
+\u003c/business\u003e
+\u003cmarket\u003e
 [Popis trhu — geografický rozsah, velikost, zralost]
-</market>
-<goals>
+\u003c/market\u003e
+\u003cgoals\u003e
 [Cíle — konkrétní čísla a časový horizont]
-</goals>
-<constraints>
+\u003c/goals\u003e
+\u003cconstraints\u003e
 [Omezení — budget, tým, čas, regulace]
-</constraints>
+\u003c/constraints\u003e
 
 Vytvoř byznys plán:
 1) Executive summary (max 200 slov — pro investora)
@@ -1276,18 +1276,18 @@ Vytvoř byznys plán:
 8) KPIs pro měření úspěchu
 
 Buď kritický — pokud náš plán má slabiny, pojmenuj je.",
-          en: "<business>
+          en: "\u003cbusiness\u003e
 [Company/product/service description — what you do, how, for whom]
-</business>
-<market>
+\u003c/business\u003e
+\u003cmarket\u003e
 [Market description — geographic scope, size, maturity]
-</market>
-<goals>
+\u003c/market\u003e
+\u003cgoals\u003e
 [Goals — specific numbers and time horizon]
-</goals>
-<constraints>
+\u003c/goals\u003e
+\u003cconstraints\u003e
 [Constraints — budget, team, time, regulations]
-</constraints>
+\u003c/constraints\u003e
 
 Create a business plan:
 1) Executive summary (max 200 words — for an investor)
@@ -1302,12 +1302,12 @@ Create a business plan:
 Be critical — if our plan has weaknesses, name them.",
         }},
         { label: { cs: "Analýza konkurence", en: "Competitor analysis" }, p: {
-          cs: "<context>
+          cs: "\u003ccontext\u003e
 Naše firma: [popis, cílová skupina, cenová úroveň, hlavní USP]
 Náš problém: [proč zákazníci odcházejí ke konkurenci nebo k nám nepřicházejí]
-</context>
+\u003c/context\u003e
 
-<task>
+\u003ctask\u003e
 Analyzuj konkurenci pro naši firmu vs [konkurent 1], [konkurent 2], [konkurent 3].
 
 1) Positioning matrix: umísti všechny hráče na 2 osy — [osa 1, např. cena] vs [osa 2, např. jednoduchost]
@@ -1315,15 +1315,15 @@ Analyzuj konkurenci pro naši firmu vs [konkurent 1], [konkurent 2], [konkurent 
 3) Které segmenty zákazníků obsluhují oni a ne my (a naopak)?
 4) Navrhni 1 positioning statement který nás jasně odliší
 5) 3 konkrétní kroky které můžeme udělat v příštích 30 dnech
-</task>
+\u003c/task\u003e
 
 Buď kritický. Pokud naše USP není přesvědčivé, řekni to přímo.",
-          en: "<context>
+          en: "\u003ccontext\u003e
 Our company: [description, target audience, price level, main USP]
 Our problem: [why customers go to competitors or don't come to us]
-</context>
+\u003c/context\u003e
 
-<task>
+\u003ctask\u003e
 Analyze the competitive landscape for our company vs [competitor 1], [competitor 2], [competitor 3].
 
 1) Positioning matrix: place all players on 2 axes — [axis 1, e.g. price] vs [axis 2, e.g. simplicity]
@@ -1331,7 +1331,7 @@ Analyze the competitive landscape for our company vs [competitor 1], [competitor
 3) Which customer segments do they serve that we don't (and vice versa)?
 4) Propose 1 positioning statement that clearly differentiates us
 5) 3 concrete steps we can take in the next 30 days
-</task>
+\u003c/task\u003e
 
 Be critical. If our USP isn't compelling, say so directly.",
         }},
@@ -1465,15 +1465,15 @@ After writing the prompt: suggest 5 test inputs including 2 adversarial ones.",
 Původní prompt: [vlož]
 
 XML struktura:
-<role>[kdo je AI v tomto kontextu]</role>
-<context>[relevantní zázemí a informace]</context>
-<task>[přesný úkol — jeden konkrétní]</task>
-<constraints>[co AI nesmí nebo musí zachovat]</constraints>
-<format>[přesný formát výstupu]</format>
-<examples>
-<good>[příklad dobrého výstupu]</good>
-<bad>[příklad čemu se vyhnout]</bad>
-</examples>
+\u003crole\u003e[kdo je AI v tomto kontextu]\u003c/role\u003e
+\u003ccontext\u003e[relevantní zázemí a informace]\u003c/context\u003e
+\u003ctask\u003e[přesný úkol — jeden konkrétní]\u003c/task\u003e
+\u003cconstraints\u003e[co AI nesmí nebo musí zachovat]\u003c/constraints\u003e
+\u003cformat\u003e[přesný formát výstupu]\u003c/format\u003e
+\u003cexamples\u003e
+\u003cgood\u003e[příklad dobrého výstupu]\u003c/good\u003e
+\u003cbad\u003e[příklad čemu se vyhnout]\u003c/bad\u003e
+\u003c/examples\u003e
 
 Po přepsání: vysvětli co každý tag přidává a proč je výsledek lepší než původní prompt.",
           en: "Rewrite this simple prompt into a structured XML format for better results:
@@ -1481,15 +1481,15 @@ Po přepsání: vysvětli co každý tag přidává a proč je výsledek lepší
 Original prompt: [paste]
 
 XML structure:
-<role>[who AI is in this context]</role>
-<context>[relevant background and information]</context>
-<task>[exact task — one specific thing]</task>
-<constraints>[what AI must not do or must preserve]</constraints>
-<format>[exact output format]</format>
-<examples>
-<good>[example of good output]</good>
-<bad>[example of what to avoid]</bad>
-</examples>
+\u003crole\u003e[who AI is in this context]\u003c/role\u003e
+\u003ccontext\u003e[relevant background and information]\u003c/context\u003e
+\u003ctask\u003e[exact task — one specific thing]\u003c/task\u003e
+\u003cconstraints\u003e[what AI must not do or must preserve]\u003c/constraints\u003e
+\u003cformat\u003e[exact output format]\u003c/format\u003e
+\u003cexamples\u003e
+\u003cgood\u003e[example of good output]\u003c/good\u003e
+\u003cbad\u003e[example of what to avoid]\u003c/bad\u003e
+\u003c/examples\u003e
 
 After rewriting: explain what each tag adds and why the result is better than the original prompt.",
         }},
@@ -1555,7 +1555,7 @@ const MODELS = {
     { name: "ChatGPT (GPT-4o)", icon: "🟢", url: "https://chat.openai.com", d: { cs: "Multimodální. Text, obrázky, kód, data.", en: "Multimodal. Text, images, code, data." }, mv: { cs: "GPT-4o = hlavní | o1 = hluboký reasoning | GPT-4o mini = lehký", en: "GPT-4o = main | o1 = deep reasoning | GPT-4o mini = light" },
       tips: { cs: ["Custom Instructions pro váš kontext", "CSV/Excel → Python analýza + grafy", "Vlastní GPTs pro opakující se úkoly", "DALL-E 3 pro obrázky v chatu"], en: ["Custom Instructions for your context", "CSV/Excel → Python analysis + charts", "Custom GPTs for recurring tasks", "DALL-E 3 for images in chat"] }},
     { name: "Claude (Sonnet/Opus)", icon: "🟠", url: "https://claude.ai", d: { cs: "Silný v analýze, kódu. 200K tokenů.", en: "Strong in analysis, code. 200K tokens." }, mv: { cs: "Haiku = rychlé | Sonnet = nejlepší poměr | Opus = nejchytřejší", en: "Haiku = quick | Sonnet = best ratio | Opus = smartest" },
-      tips: { cs: ["Artifacts → interaktivní komponenty", "Projekty sdílejí kontext", "XML tagy: <context>, <task>", "200K tokenů = celé knihy"], en: ["Artifacts → interactive components", "Projects share context across conversations", "XML tags: <context>, <task>", "200K tokens = entire books in one call"] }},
+      tips: { cs: ["Artifacts → interaktivní komponenty", "Projekty sdílejí kontext", "XML tagy: \u003ccontext\u003e, \u003ctask\u003e", "200K tokenů = celé knihy"], en: ["Artifacts → interactive components", "Projects share context across conversations", "XML tags: \u003ccontext\u003e, \u003ctask\u003e", "200K tokens = entire books in one call"] }},
     { name: "DeepSeek R1", icon: "🟤", url: "https://chat.deepseek.com", d: { cs: "Zdarma reasoning model.", en: "Free reasoning model." }, mv: { cs: "V3 = rychlý | R1 = reasoning (o1 konkurent, zdarma!)", en: "V3 = fast | R1 = reasoning (o1 competitor, free!)" },
       tips: { cs: ["Zdarma alternativa k o1", "Vidíte myšlenkový postup", "Silný v matematice a kódu", "Open-source — lokálně přes Ollama"], en: ["Free o1 alternative", "See full thinking process", "Strong in math and code", "Open-source — run locally via Ollama"] }},
     { name: "Perplexity", icon: "🟣", url: "https://perplexity.ai", d: { cs: "AI search s citacemi.", en: "AI search with citations." }, mv: { cs: "Default = rychlý | Pro = volba modelu", en: "Default = fast | Pro = model choice" },
@@ -1565,7 +1565,7 @@ const MODELS = {
   ],
   advanced: [
     { name: "Claude (Opus/Sonnet)", icon: "🟠", url: "https://claude.ai", d: { cs: "Top pro analýzu, strategii, kód.", en: "Top for analysis, strategy, code." }, mv: { cs: "Opus = nejhlubší | Sonnet = denní driver | Haiku = ultra rychlý", en: "Opus = deepest | Sonnet = daily driver | Haiku = ultra fast" },
-      tips: { cs: ["XML: <role>, <context>, <constraints>", "Claude Code CLI pro agentické kódování", "Extended thinking pro složité úkoly", "Batched API — 50% sleva na velkých objemech"], en: ["XML: <role>, <context>, <constraints>", "Claude Code CLI for agentic coding", "Extended thinking for complex tasks", "Batched API — 50% discount at scale"] }},
+      tips: { cs: ["XML: \u003crole\u003e, \u003ccontext\u003e, \u003cconstraints\u003e", "Claude Code CLI pro agentické kódování", "Extended thinking pro složité úkoly", "Batched API — 50% sleva na velkých objemech"], en: ["XML: \u003crole\u003e, \u003ccontext\u003e, \u003cconstraints\u003e", "Claude Code CLI for agentic coding", "Extended thinking for complex tasks", "Batched API — 50% discount at scale"] }},
     { name: "ChatGPT (GPT-4o / o1)", icon: "🟢", url: "https://platform.openai.com", d: { cs: "Multimodální ekosystém s API.", en: "Multimodal ecosystem with API." }, mv: { cs: "GPT-4o = nejuniverzálnější | o1 = nejhlubší reasoning | o1-mini = levnější", en: "GPT-4o = most universal | o1 = deepest reasoning | o1-mini = cheaper" },
       tips: { cs: ["Function calling pro strukturované výstupy", "Custom GPTs + Actions pro workflow", "Fine-tuning pro specifické use-case", "JSON mode pro API integrace"], en: ["Function calling for structured outputs", "Custom GPTs + Actions for workflows", "Fine-tuning for specific use cases", "JSON mode for API integrations"] }},
     { name: "DeepSeek R1", icon: "🟤", url: "https://chat.deepseek.com", d: { cs: "Zdarma reasoning. Open-source.", en: "Free reasoning. Open-source." }, mv: { cs: "R1 = plný model | R1-Lite = odlehčený", en: "R1 = full model | R1-Lite = lighter version" },
