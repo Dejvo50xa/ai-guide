@@ -1,1449 +1,1665 @@
 import { useState, useCallback } from "react";
 
+// ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
 const T = {
-  accent:"#F59E0B", accentLo:"rgba(245,158,11,0.10)", accentBorder:"rgba(245,158,11,0.28)",
-  teal:"#2DD4BF", tealLo:"rgba(45,212,191,0.07)", tealBorder:"rgba(45,212,191,0.25)",
-  purple:"#A78BFA", purpleLo:"rgba(167,139,250,0.08)", purpleBorder:"rgba(167,139,250,0.28)",
-  blue:"#60A5FA", blueLo:"rgba(96,165,250,0.08)", blueBorder:"rgba(96,165,250,0.25)",
-  orange:"#F97316", bg:"#06060A", surface:"rgba(255,255,255,0.036)",
-  border:"rgba(255,255,255,0.07)", text:"#F1F0EE", muted:"#8A8A9A",
-  faint:"#3A3A4A", green:"#10B981", red:"#EF4444",
+  accent:   "#F59E0B",
+  accentLo: "rgba(245,158,11,0.12)",
+  accentMd: "rgba(245,158,11,0.25)",
+  teal:     "#2DD4BF",
+  tealLo:   "rgba(45,212,191,0.08)",
+  purple:   "#A78BFA",
+  purpleLo: "rgba(167,139,250,0.08)",
+  bg:       "#06060A",
+  surface:  "rgba(255,255,255,0.038)",
+  surfaceHover: "rgba(255,255,255,0.06)",
+  border:   "rgba(255,255,255,0.07)",
+  borderHover: "rgba(245,158,11,0.45)",
+  text:     "#F1F0EE",
+  muted:    "#8A8A9A",
+  faint:    "#4A4A5A",
+  green:    "#10B981",
+  red:      "#EF4444",
 };
 
+// ─── STYLE CONSTANTS (outside component — no per-render allocations) ─────────
+const S = {
+  tipBox: {
+    fontSize: 13, color: T.accent, marginBottom: 4,
+    padding: "7px 11px", background: T.accentLo,
+    borderRadius: 8, border: `1px solid rgba(245,158,11,0.18)`,
+    lineHeight: 1.55,
+  },
+  mvBox: {
+    padding: "10px 14px", borderRadius: 10,
+    background: T.accentLo, marginBottom: 12,
+    fontSize: 13, color: T.accent, lineHeight: 1.6,
+    border: `1px solid rgba(245,158,11,0.18)`,
+  },
+  ptipBox: {
+    fontSize: 13, color: T.accent,
+    padding: "9px 13px", background: T.accentLo,
+    borderRadius: 10, border: `1px solid rgba(245,158,11,0.18)`,
+    marginBottom: 14, lineHeight: 1.6,
+  },
+};
+
+// ─── STRINGS ─────────────────────────────────────────────────────────────────
 const L = {
-  cs:{
-    title:"PromptujAI", sub:"Průvodce světem umělé inteligence — od začátečníka po experta",
-    pick:"Zvolte svou úroveň",
-    beg:"Začátečník", begD:"První kroky s AI. Průvodce bez žargonu.",
-    mid:"Mírně pokročilý", midD:"Zvládáte základy. Čas na konkrétní nástroje a techniky.",
-    adv:"Pokročilý", advD:"Marketing, byznys, SEO, vývoj aplikací, AI agenti.",
-    tools:"Nástroje", prompts:"Prompty", models:"Modely",
-    byTask:"Podle úkolu", byModel:"Podle modelu",
-    pLang:"Jazyk promptů", cs2:"Čeština", en2:"English",
-    back:"Zpět", open:"Otevřít",
-    mv:"Verze:", tips:"Tipy:",
-    free:"Zdarma", paid:"Placený", freemium:"Freemium",
-    copy:"Kopírovat", copied:"Zkopírováno",
-    guide:"Průvodce pro tuto úroveň", guideIntro:"Doporučujeme přečíst před začátkem.",
-    promptTip:"Tip k promptu:",
-    noResults:"Žádné výsledky", noResultsSub:"Zkuste jiný výraz.",
-    searchPH:"Hledat…", copyAria:"Kopírovat prompt",
-    anatomyTitle:"Anatomie dokonalého promptu",
-    toolsDesc:"Vyberte co chcete dělat — dostanete doporučené nástroje, kroky a tip.",
-    modelsDesc:"Přehled všech AI modelů — na co jsou ideální, jak z nich vytěžit maximum a konkrétní prompty.",
-    recommended:"Doporučené nástroje:", howTo:"Jak na to:",
-    idealPrompts:"Ideální prompty", bestFor:"Ideální pro", notFor:"Méně vhodný",
+  cs: {
+    title: "AI Průvodce", sub: "Vaše příručka do světa umělé inteligence",
+    pick: "Vyberte svou úroveň",
+    beg: "Začátečník", begD: "Pro ty, kteří s AI teprve začínají. Jednoduchý průvodce krok za krokem.",
+    mid: "Mírně pokročilý", midD: "Už víte, co AI je. Čas na pokročilejší nástroje a techniky.",
+    adv: "Pokročilý", advD: "SEO, byznys, vývoj a pokročilé AI workflow.",
+    tools: "AI Nástroje", prompts: "Prompty",
+    byTask: "Podle úkolu", byModel: "Podle modelu",
+    pLang: "Jazyk promptů", cs2: "Čeština", en2: "English",
+    back: "← Zpět", open: "Otevřít →",
+    how: "Jak na to:", tip: "💡 Tip:", tips: "Tipy:", models: "Modely:",
+    free: "Zdarma", paid: "Placený", freemium: "Freemium",
+    copy: "Kopírovat", copied: "✓ Zkopírováno",
+    guide: "📖 Průvodce pro tuto úroveň", guideIntro: "Přečtěte si, než začnete s nástroji.",
+    mv: "Verze modelů", promptTip: "💡 Tip k promptu:",
+    noResults: "Žádné výsledky", noResultsSub: "Zkuste jiný výraz.",
+    searchPlaceholder: "Hledat nástroje…", comingSoon: "Brzy přidáme",
+    breadcrumb: "Úroveň:", copyAriaLabel: "Kopírovat prompt",
+    claude: "Claude Průvodce", claudeD: "Interaktivní průvodce reálnými use cases s Claudem krok za krokem.",
   },
-  en:{
-    title:"PromptujAI", sub:"Your guide to artificial intelligence — from beginner to expert",
-    pick:"Choose your level",
-    beg:"Beginner", begD:"First steps with AI. Guide without jargon.",
-    mid:"Intermediate", midD:"You know the basics. Time for specific tools and techniques.",
-    adv:"Advanced", advD:"Marketing, business, SEO, app development, AI agents.",
-    tools:"Tools", prompts:"Prompts", models:"Models",
-    byTask:"By task", byModel:"By model",
-    pLang:"Prompt language", cs2:"Čeština", en2:"English",
-    back:"Back", open:"Open",
-    mv:"Versions:", tips:"Tips:",
-    free:"Free", paid:"Paid", freemium:"Freemium",
-    copy:"Copy", copied:"Copied",
-    guide:"Guide for this level", guideIntro:"Recommended reading before you start.",
-    promptTip:"Prompt tip:",
-    noResults:"No results", noResultsSub:"Try a different term.",
-    searchPH:"Search…", copyAria:"Copy prompt",
-    anatomyTitle:"Anatomy of a perfect prompt",
-    toolsDesc:"Pick what you want to do — get recommended tools, steps and a tip.",
-    modelsDesc:"Overview of all AI models — ideal use cases, how to get the most out of them and concrete prompts.",
-    recommended:"Recommended tools:", howTo:"How to:",
-    idealPrompts:"Ideal prompts", bestFor:"Ideal for", notFor:"Less suitable",
+  en: {
+    title: "AI Guide", sub: "Your guide to the world of artificial intelligence",
+    pick: "Choose your level",
+    beg: "Beginner", begD: "For those just starting with AI. Simple step-by-step guide.",
+    mid: "Intermediate", midD: "You know what AI is. Time for advanced tools and techniques.",
+    adv: "Advanced", advD: "SEO, business, development and advanced AI workflows.",
+    tools: "AI Tools", prompts: "Prompts",
+    byTask: "By task", byModel: "By model",
+    pLang: "Prompt language", cs2: "Čeština", en2: "English",
+    back: "← Back", open: "Open →",
+    how: "How to:", tip: "💡 Tip:", tips: "Tips:", models: "Models:",
+    free: "Free", paid: "Paid", freemium: "Freemium",
+    copy: "Copy", copied: "✓ Copied",
+    guide: "📖 Guide for this level", guideIntro: "Read before starting with tools.",
+    mv: "Model versions", promptTip: "💡 Prompt tip:",
+    noResults: "No results", noResultsSub: "Try a different search term.",
+    searchPlaceholder: "Search tools…", comingSoon: "Coming soon",
+    breadcrumb: "Level:", copyAriaLabel: "Copy prompt",
+    claude: "Claude Guide", claudeD: "Interactive step-by-step guide through real Claude use cases.",
   },
 };
 
-// ─── GUIDE ────────────────────────────────────────────────────────────────────
+// ─── GUIDE DATA ───────────────────────────────────────────────────────────────
 const GUIDE = {
-  beginner:{
-    cs:[
-      {title:"Jak pracovat s AI: váš první průvodce",text:"Nejdůležitější věc: AI je nástroj, ne věštec. Funguje jako chytrý asistent, kterému píšete zprávy. Čím přesněji se ptáte, tím lepší odpověď dostanete.\n\nZačněte takto:\n1. Otevřete claude.ai nebo chat.openai.com\n2. Přihlaste se (Google účet stačí)\n3. Napište první dotaz česky\n4. Čtěte odpověď — pak upřesněte\n\nZlatá rada: Pište AI jako kolegovi — v celých větách s kontextem. Ne jako Googlu.\n\nRozdíl:\n[Google] restaurace Praha centrum\n[AI] Hledám restauraci v centru Prahy na pracovní oběd pro 2, česká kuchyně, ~400 Kč/os. Co doporučíš?\n\nVyzkoušejte AI tento týden na jeden reálný problém."},
-      {title:"Kolik to stojí a kde začít",text:"Naprostá většina toho, co jako začátečník potřebujete, je zdarma.\n\nZdarma (bez kreditní karty):\n→ Claude — claude.ai (nejlepší na texty a analýzu)\n→ ChatGPT — chat.openai.com (nejuniverzálnější)\n→ Gemini — gemini.google.com (aktuální informace z webu)\n→ DeepSeek — chat.deepseek.com (zcela zdarma, bez limitů)\n→ NotebookLM — notebooklm.google.com (učení z vašich dokumentů)\n→ Perplexity — perplexity.ai (AI vyhledávač s citacemi)\n\nPlacené verze (~500 Kč/měs) odemknou výkonnější modely, méně omezení a pokročilé funkce.\n\nDoporučení: Začněte s Claude nebo ChatGPT. Oba fungují výborně česky."},
-      {title:"Jak psát prompty — anatomie dobrého dotazu",text:"Prompt = zpráva, kterou posíláte AI. Kvalita promptu rozhoduje o 80 % kvality odpovědi.\n\nStruktura profesionálního promptu:\n[ROLE] Jsi zkušený copywriter pro B2B firmy.\n[ÚKOL] Napiš email potenciálnímu klientovi.\n[KONTEXT] Firma prodává CRM software. Klient je ředitel obchodní firmy. Prezentaci viděl před 3 dny.\n[STYL] Profesionální, přátelský. Ne agresivně prodejní.\n[FORMÁT] Max 120 slov. Předmět emailu jako první řádek.\n\nNejčastější chyby:\n→ Příliš vague: 'Napiš něco o marketingu'\n→ Bez kontextu: 'Napiš email' (komu? o čem? jaký tón?)\n→ Přijmout první výsledek bez iterace\n\nTip: Napište AI přímo: 'Napiš mi ideální prompt pro tento úkol: [popis]' — AI vám prompt navrhne sama."},
-      {title:"Bezpečnost a soukromí",text:"Pro 95 % každodenního použití je AI zcela bezpečný nástroj.\n\nCo do AI NESMÍTE zadávat:\n→ Rodná čísla, čísla pasů nebo průkazů\n→ Hesla nebo přístupové klíče\n→ Čísla platebních karet\n→ Citlivé obchodní informace (patenty, neveřejné smlouvy)\n\nCo je zcela v pořádku:\n→ Vaše jméno a email pro drafty\n→ Obecné info o vaší práci\n→ Dokumenty bez osobních dat třetích stran\n\nAI může chybovat u konkrétních čísel a faktů — u důležitých rozhodnutí vždy ověřte.\nAI vás nesoudí a každý nový chat začíná čistě."},
+  beginner: {
+    cs: [
+      // ── REWRITTEN (Dimension 2: more human, start with experience not definition) ──
+      { title: "🤔 Co je umělá inteligence?", text: "Vzpomeňte si na naposledy, kdy jste se na něco chtěli zeptat, ale nevěděli koho. Teď máte někoho k dispozici 24 hodin denně, kdo toho hodně ví, nikdy se nezlobí a má na vás vždy čas.\n\nAI není robot. Je to chytrý software, kterému píšete zprávy a on odpovídá — jako SMS, ale místo člověka odpovídá počítač.\n\nAI umí:\n• Odpovídat na otázky (jako encyklopedie vlastními slovy)\n• Psát texty — emaily, články, dopisy\n• Překládat jazyky\n• Vytvářet obrázky podle popisu\n• Shrnout dlouhé dokumenty\n• Pomoci s plánováním a rozhodováním\n\nA funguje to česky — nemusíte umět anglicky." },
+      { title: "💰 Kolik to stojí?", text: "Většina nástrojů má bezplatnou verzi, která pro začátek bohatě stačí.\n\n🟢 Zdarma:\n• ChatGPT — chat.openai.com\n• Gemini — gemini.google.com\n• Claude — claude.ai\n• DeepSeek — chat.deepseek.com\n• NotebookLM — notebooklm.google.com\n\n🟡 Více za předplatné (~500 Kč/měs.):\n• ChatGPT Plus, Claude Pro, Gemini Advanced\n\nZačněte zdarma. Placená verze dává smysl až když víte, že to používáte každý den." },
+      { title: "🔐 Jak se zaregistrovat?", text: "1. Otevřete prohlížeč (Chrome, Edge, Safari)\n2. Napište adresu — např. chat.openai.com\n3. Klikněte 'Registrovat' nebo 'Sign up'\n4. Zadejte email a heslo\n5. Na email přijde potvrzení — klikněte na odkaz\n6. Hotovo!\n\n💡 U Gemini stačí Google účet. U většiny nástrojů lze přihlásit přes Google jedním kliknutím.\n\n⚠️ Nemusíte zadávat platební kartu. Pokud ji někde vyžadují hned, hledejte bezplatnou alternativu." },
+      // ── REWRITTEN (Dimension 2: empathetic opener, conversational, no rules numbering) ──
+      { title: "💬 Jak psát dotazy (prompty)?", text: "Váš první prompt bude špatný. To je v pořádku — tak to funguje u každého. AI není Google. Čím víc mu řeknete, tím lépe vám odpoví.\n\nRozdíl v praxi:\n❌ Špatně: 'Napiš něco o vaření'\n✅ Dobře: 'Napiš jednoduchý recept na svíčkovou pro 4 osoby. Ingredience z běžného supermarketu. Postup krok za krokem, jednoduše.'\n\nCo pomáhá:\n→ Řekněte pro koho text je: 'vysvětli jako pro laika'\n→ Určete délku: 've 3 větách' nebo 'na stránku'\n→ Určete tón: 'formálně' nebo 'přátelsky'\n→ Opravujte výsledek: 'zkrať to', 'víc detailů', 'jiný tón'\n\nAI si nepamatuje vaše předchozí dotazy a nesoudí vás. Klidně se ptejte znovu." },
+      // ── REWRITTEN (Dimension 2: lead with reassurance, cautions second) ──
+      { title: "🔒 Je to bezpečné?", text: "Pro 95 % věcí co budete dělat — psaní textů, odpovědi na otázky, plánování — je AI naprosto bezpečný nástroj. Nic se nemůže pokazit. Nejhorší co se stane je, že dostanete špatnou odpověď, kterou jednoduše ignorujete.\n\nTady jsou věci, které dělat nechcete:\n• Nezadávejte rodná čísla, hesla nebo čísla karet\n• Důležitá fakta (zdravotní, právní, finanční) si ověřte\n• AI nemá přístup k vašemu počítači ani datům\n\n💡 Berte AI jako radu od chytrého kamaráda — velmi užitečná, ale pro zásadní rozhodnutí konzultujte odborníka." },
+      { title: "📱 Na čem to funguje?", text: "🖥️ Počítač — stačí otevřít prohlížeč\n📱 Telefon — prohlížeč nebo zdarma aplikace (App Store / Google Play)\n📱 Tablet — stejně jako telefon\n\nPotřebujete jen internet. Žádná instalace, žádný speciální hardware.\n\n💡 Na telefonu doporučuji stáhnout aplikaci ChatGPT nebo Gemini — jsou pohodlnější než prohlížeč." },
+      { title: "🆚 Který nástroj vybrat?", text: "🟢 ChatGPT — nejuniverzálnější, nejlepší pro začátek\n🟠 Claude — nejlepší na dlouhé texty a přesné odpovědi\n🔵 Gemini — hledá aktuální info, propojený s Googlem\n🟤 DeepSeek — úplně zdarma bez limitů\n📘 NotebookLM — pro učení z dokumentů, umí udělat podcast\n🔴 Kimi — na extrémně dlouhé dokumenty\n\n💡 Začněte s ChatGPT. Funguje to hned, bez nastavení. Pokud nesedí, zkuste Claude nebo Gemini." },
+      // ── NEW: Mýty a první chyby (Dimension 2) ──
+      { title: "🚫 5 největších mýtů o AI", text: "Než začnete, vyvrátíme nejčastější mylné představy.\n\n❌ Mýtus 1: 'AI si věci vymýšlí — nemůžu mu věřit'\n✅ Pravda: AI může chybovat u konkrétních faktů, ale pro psaní emailů, plánování a vysvětlení je spolehlivý. Důležitá fakta jednoduše ověřte. Nemusíte ověřovat každou větu.\n\n❌ Mýtus 2: 'Musím umět anglicky'\n✅ Pravda: ChatGPT, Claude i Gemini fungují výborně česky. Pište česky, dostanete česky.\n\n❌ Mýtus 3: 'Stejně si to pak musím přepsat — nestojí to za čas'\n✅ Pravda: AI dává první návrh za 10 sekund. Upravit návrh trvá zlomek doby oproti psaní od nuly. Cíl je ušetřit 80 % práce, ne 100 %.\n\n❌ Mýtus 4: 'AI má přístup k mým datům'\n✅ Pravda: AI nevidí váš počítač, email ani soubory. Vidí jen to, co mu sami napíšete nebo nahrajete.\n\n❌ Mýtus 5: 'AI je pro mladé a technické lidi'\n✅ Pravda: Nejrychleji rostoucí skupina uživatelů v Evropě je 45–65 let. Pokud zvládáte Google, zvládáte i AI." },
+      { title: "😤 Proč to nevychází napoprvé", text: "60–70 % lidí cítí po prvních třech pokusech, že AI 'nefunguje'. Skoro vždy je problém v zadání, ne v AI.\n\n5 nejčastějších chyb začátečníků:\n\n1. Ptáte se jako na Googlu\n   ❌ 'nejlepší restaurace Praha'\n   ✅ 'Doporuč restauraci v centru Prahy na romantickou večeři, max 800 Kč, bez fast foodu'\n\n2. Zadáváte bez kontextu\n   ❌ 'Napiš email'\n   ✅ 'Napiš email šéfovi, omlouvám se za zpoždění. Formální tón, max 80 slov.'\n\n3. Přijmete první výsledek nebo ho rovnou smažete\n   → Iterujte: 'Zkrať to', 'Víc formálně', 'Přidej konkrétní příklad'\n\n4. Kladete příliš složitý úkol najednou\n   → Rozdělte: nejdřív analýza, pak návrh, pak finální verze\n\n5. Vzdáte to při první špatné odpovědi\n   → Správná reakce: 'Toto není co jsem chtěl/a. Zkus to takto: [upřesnění]'\n\n💡 Váš první prompt bude špatný. To je v pořádku. AI vás nesoudí a každý nový chat začíná znovu." },
+      // ── NEW SECTION 1 (Dimension 2: "Co AI neumí — a proč je to dobře") ──
+      { title: "⚠️ Co AI neumí — a proč je to dobře", text: "AI je mocný nástroj, ale má limity. Znát je vám ušetří zklamání.\n\nCo AI nedělá spolehlivě:\n• Nezná aktuální zprávy a události (pokud nemá přístup k internetu)\n• Může si vymyslet konkrétní fakta — jména, čísla, citace — a uvést je s jistotou\n• Nerozumí vám jako člověk — analyzuje text, nepromýšlí situaci\n• Má znalostní cutoff — neví co se stalo po určitém datu\n\nProč je to vlastně dobře:\n→ Vy jste stále v kontrole. AI je nástroj, ne autorita.\n→ Pro psaní emailů, plánování a vysvětlení konceptů jsou tyto limity téměř bezvýznamné.\n→ Důležité informace (zdravotní, právní, finanční) si jednoduše ověřte u odborníka.\n\n💡 Pravidlo: Čím důležitější rozhodnutí, tím víc ověřujte. Pro každodenní úkoly ověřování nepotřebujete." },
+      // ── NEW SECTION 2 (Dimension 2: "Jak opravovat špatné odpovědi") ──
+      { title: "🔁 Jak opravovat špatné odpovědi", text: "Když výsledek není dobrý, většina lidí to vzdá. To je škoda — iterace je ta nejdůležitější dovednost při práci s AI.\n\nKdyž je odpověď špatná, nemazejte ji a nezačínejte znovu. Opravte ji:\n\n→ Příliš dlouhé? Napište: 'Zkrať to na 3 věty.'\n→ Příliš obecné? Napište: 'Přidej konkrétní příklad z praxe.'\n→ Špatný tón? Napište: 'Napiš to přátelštěji, méně formálně.'\n→ Chybí detaily? Napište: 'Rozveď bod číslo 2 podrobněji.'\n→ Úplně vedle? Napište: 'Zapomeň na předchozí odpověď. Zkusím to jinak:' a přeformulujte.\n\n5 kroků jak vylepšit jakýkoliv výstup:\n1. Identifikujte co přesně vadí (délka / tón / obsah / struktura)\n2. Napište konkrétní instrukci co změnit\n3. Přečtěte nový výsledek\n4. Opakujte max 2-3x\n5. Pokud nefunguje, začněte nový chat s lepším výchozím zadáním\n\n💡 Cíl není perfektní první výstup — cíl je ušetřit 80 % času na psaní, ne 100 %." },
+      // ── NEW SECTION 3 (Dimension 2: "AI v každodenním životě") ──
+      { title: "🇨🇿 AI v českém každodenním životě", text: "AI není jen pro techniky a mladé lidi. Nejrychleji rostoucí skupina uživatelů v Evropě je 45–65 let — lidé kteří ho používají na psaní a práci s dokumenty.\n\n10 situací kde AI opravdu pomůže:\n\n1. 📄 Dostali jste nesrozumitelný dopis z úřadu → AI ho vysvětlí lidsky\n2. 💼 Píšete žádost o práci → AI pomůže s motivačním dopisem\n3. 🏥 Nevíte co znamená lékařská zpráva → AI vysvětlí termíny\n4. 🚗 Dostali pokutu a chcete se odvolat → AI napíše odvolání\n5. 🏠 Plánujete rekonstrukci a potřebujete rozpočet → AI pomůže s výpočty\n6. 📚 Dítě má referát do školy → AI vysvětlí téma srozumitelně\n7. ⭐ Zákazník napsal negativní recenzi → AI navrhne profesionální odpověď\n8. 📧 Potřebujete napsat složitý email → AI navrhne znění\n9. 💊 Nevíte zda příznaky jsou urgentní → AI pomůže formulovat otázky pro lékaře\n10. 💰 Zvažujete finanční rozhodnutí → AI pomůže promyslet otázky\n\n💡 Vyzkoušejte jednu situaci ze svého života tento týden. Stačí otevřít ChatGPT a napsat co potřebujete." },
     ],
-    en:[
-      {title:"How to work with AI: your first guide",text:"Most important: AI is a tool, not an oracle. Write messages to it like a smart assistant. The more precisely you ask, the better the answer.\n\nStart here:\n1. Open claude.ai or chat.openai.com\n2. Sign in (Google account works)\n3. Type your first question\n4. Read the answer — then refine\n\nGolden rule: Write to AI like a colleague — full sentences with context. Not like a search engine.\n\nTry AI this week on one real problem."},
-      {title:"How much and where to start",text:"The vast majority of what you need as a beginner is completely free.\n\nFree (no card): Claude, ChatGPT, Gemini, DeepSeek, NotebookLM, Perplexity\n\nPaid (~$20/mo) unlocks more powerful models and fewer limits.\n\nRecommendation: Start with Claude or ChatGPT. Both work great in most languages."},
+    en: [
+      // ── REWRITTEN (Dimension 2: start with experience, empathetic) ──
+      { title: "🤔 What is AI?", text: "Think about the last time you wanted to ask something but didn't know who to ask. Now you have someone available 24 hours a day who knows a lot, never gets annoyed, and always has time for you.\n\nAI is not a robot. It's smart software you write messages to — like texting, but a very knowledgeable computer replies.\n\nAI can:\n• Answer questions (like an encyclopedia in your own words)\n• Write texts — emails, articles, letters\n• Translate languages\n• Create images from descriptions\n• Summarize long documents\n• Help with planning and decisions\n\nAnd it works in Czech, English, and most European languages." },
+      { title: "💰 How much does it cost?", text: "Most tools have a free version that's more than enough to start.\n\n🟢 Free: ChatGPT, Gemini, Claude, DeepSeek, NotebookLM\n\n🟡 More with subscription (~$20/mo): ChatGPT Plus, Claude Pro, Gemini Advanced\n\nStart free. A paid plan only makes sense once you know you're using it every day." },
+      { title: "🔐 How to register?", text: "1. Open browser (Chrome, Edge, Safari)\n2. Go to the tool — e.g. chat.openai.com\n3. Click 'Sign up'\n4. Enter email and password\n5. Confirm via the email link\n6. Done!\n\n💡 For Gemini, your Google account is enough. Most tools let you sign in with Google in one click.\n\n⚠️ You don't need to enter a credit card. If one is required immediately, look for a free alternative." },
+      // ── REWRITTEN (empathetic, conversational) ──
+      { title: "💬 How to write prompts?", text: "Your first prompt will be bad. That's fine — it's the same for everyone. AI is not Google. The more you tell it, the better it answers.\n\nThe difference in practice:\n❌ Bad: 'Write something about cooking'\n✅ Good: 'Write a simple beef stew recipe for 4 people. Grocery store ingredients. Step-by-step, simple language.'\n\nWhat helps:\n→ Say who it's for: 'explain like I know nothing about this'\n→ Set the length: 'in 3 sentences' or 'one page'\n→ Set the tone: 'formal' or 'friendly'\n→ Correct the result: 'shorten it', 'more detail', 'different tone'\n\nAI doesn't remember your previous questions and doesn't judge you. Ask again freely." },
+      // ── REWRITTEN (reassurance first) ──
+      { title: "🔒 Is it safe?", text: "For 95% of what you'll do — writing texts, answering questions, planning — AI is completely safe. Nothing can go wrong. The worst that happens is you get a bad answer, which you simply ignore.\n\nHere's what you don't want to do:\n• Don't enter ID numbers, passwords or card details\n• Verify important facts (medical, legal, financial) with a specialist\n• AI has no access to your computer or files\n\n💡 Think of AI like advice from a knowledgeable friend — very useful, but for major decisions consult an expert." },
+      { title: "📱 What devices?", text: "🖥️ Computer — just open a browser\n📱 Phone — browser or free app (App Store / Google Play)\n📱 Tablet — same as phone\n\nAll you need is internet. No installation, no special hardware.\n\n💡 On phone, download the ChatGPT or Gemini app — more comfortable than a browser." },
+      { title: "🆚 Which tool?", text: "🟢 ChatGPT — most universal, best to start\n🟠 Claude — best for long texts and precise answers\n🔵 Gemini — current info, connected to Google\n🟤 DeepSeek — completely free with no limits\n📘 NotebookLM — learning from documents, can create podcasts\n🔴 Kimi — extremely long documents\n\n💡 Start with ChatGPT. Works immediately, no setup. If it doesn't feel right, try Claude or Gemini." },
+      // ── NEW: Myths and first-task failures (Dimension 2) ──
+      { title: "🚫 5 biggest myths about AI", text: "Before you start, let's bust the most common misconceptions.\n\n❌ Myth 1: 'AI makes things up — I can't trust it'\n✅ Truth: AI can be wrong on specific facts, but for writing emails, planning, and explanations it's reliable. Simply verify important facts. You don't need to verify every sentence.\n\n❌ Myth 2: 'I need to know English'\n✅ Truth: ChatGPT, Claude and Gemini all work great in Czech and most European languages. Write in your language, get answers in your language.\n\n❌ Myth 3: 'I'll have to rewrite it anyway — not worth the time'\n✅ Truth: AI delivers a first draft in 10 seconds. Editing a draft takes a fraction of the time of writing from scratch. The goal is to save 80% of the work, not 100%.\n\n❌ Myth 4: 'AI has access to my data'\n✅ Truth: AI can't see your computer, email or files. It only sees what you type or upload into the chat.\n\n❌ Myth 5: 'AI is for young and technical people'\n✅ Truth: The fastest-growing user group in Europe is 45–65 year olds. If you can use Google, you can use AI." },
+      { title: "😤 Why it doesn't work first time", text: "60–70% of people feel after their first three attempts that AI 'doesn't work.' Almost always the problem is the prompt, not the AI.\n\n5 most common beginner mistakes:\n\n1. Searching like Google\n   ❌ 'best restaurants Prague'\n   ✅ 'Recommend a restaurant in central Prague for a romantic dinner, max 800 CZK per person, no fast food'\n\n2. Giving no context\n   ❌ 'Write an email'\n   ✅ 'Write an email to my boss apologizing for a delay. Formal tone, max 80 words.'\n\n3. Accepting the first result or deleting it immediately\n   → Iterate: 'Shorten it', 'More formal', 'Add a specific example'\n\n4. Asking something too complex in one go\n   → Break it down: first analysis, then draft, then final version\n\n5. Giving up after the first bad answer\n   → Right response: 'This is not what I wanted. Try it like this: [clarification]'\n\n💡 Your first prompt will be bad. That's fine. AI doesn't judge you and every new chat starts fresh." },
+      // ── NEW SECTION 1 ──
+      { title: "⚠️ What AI can't do — and why that's fine", text: "AI is a powerful tool but it has limits. Knowing them saves you disappointment.\n\nWhat AI doesn't do reliably:\n• Doesn't know current news and events (unless it has internet access)\n• Can invent specific facts — names, numbers, citations — and state them confidently\n• Doesn't understand you like a human — it analyzes text, doesn't think through situations\n• Has a knowledge cutoff — doesn't know what happened after a certain date\n\nWhy this is actually fine:\n→ You stay in control. AI is a tool, not an authority.\n→ For writing emails, planning, and explaining concepts, these limits barely matter.\n→ For important information (medical, legal, financial), simply verify with a specialist.\n\n💡 Rule: The more important the decision, the more you verify. For everyday tasks, you don't need to verify much." },
+      // ── NEW SECTION 2 ──
+      { title: "🔁 How to fix bad answers", text: "When the output isn't good, most people give up. That's a shame — iteration is the most important skill when working with AI.\n\nWhen the answer is wrong, don't delete it and start over. Fix it:\n\n→ Too long? Write: 'Shorten it to 3 sentences.'\n→ Too vague? Write: 'Add a specific real-world example.'\n→ Wrong tone? Write: 'Make it friendlier, less formal.'\n→ Missing detail? Write: 'Expand on point number 2 in more detail.'\n→ Completely off? Write: 'Forget the previous answer. Let me try again:' and rephrase.\n\n5 steps to improve any output:\n1. Identify exactly what's wrong (length / tone / content / structure)\n2. Write a specific instruction for what to change\n3. Read the new result\n4. Repeat max 2-3 times\n5. If it's still not working, start a new chat with a better initial prompt\n\n💡 The goal isn't a perfect first output — the goal is to save 80% of your writing time, not 100%." },
+      // ── NEW SECTION 3 ──
+      { title: "🌍 AI in everyday life", text: "AI isn't just for tech people and young people. The fastest-growing user group in Europe is 45–65 year olds using it for writing and document tasks.\n\n10 situations where AI genuinely helps:\n\n1. 📄 Got an incomprehensible official letter → AI explains it in plain language\n2. 💼 Writing a job application → AI helps with the cover letter\n3. 🏥 Don't understand a medical report → AI explains the terms\n4. 🚗 Got a fine and want to appeal → AI writes the appeal\n5. 🏠 Planning a renovation and need a budget → AI helps with calculations\n6. 📚 Your child has a school project → AI explains the topic clearly\n7. ⭐ A customer left a negative review → AI suggests a professional response\n8. 📧 Need to write a difficult email → AI drafts the wording\n9. 💊 Not sure if symptoms are urgent → AI helps formulate questions for a doctor\n10. 💰 Considering a financial decision → AI helps think through the questions\n\n💡 Try one situation from your own life this week. Just open ChatGPT and write what you need." },
     ],
   },
-  intermediate:{
-    cs:[
-      {title:"Systémový přístup k promptům",text:"Na této úrovni potřebujete předvídatelné, kvalitní výstupy. Klíč je struktura.\n\nTechnika Role + Task + Context + Format:\nROLE: 'Jsi zkušený finanční analytik pro malé firmy...'\nTASK: '...analyzuj přiložený cash flow report...'\nCONTEXT: '...pro majitele e-shopu zvažujícího expanzi. Bez finančního vzdělání.'\nFORMAT: '1) 3 klíčová zjištění, 2) 2 rizika, 3) doporučení v 1 větě. Žádný akademický jazyk.'\n\nPro iteraci výstupu:\n→ Příliš dlouhé: 'Zkrať na 3 věty, zachovej hlavní argument'\n→ Příliš obecné: 'Přidej 2 konkrétní příklady z praxe'\n→ Špatný tón: 'Přepis přímějším, asertivním tónem'\n→ Odborný žargon: 'Vysvětli tak, aby pochopil neodborník'"},
-      {title:"Nastavení AI na váš styl",text:"Chcete aby AI vždy psala vaším hlasem? Používejte trvalé instrukce.\n\nV Claude — Project Instructions:\n1. Vytvořte nový projekt (levý panel)\n2. Klikněte 'Project Instructions'\n3. Vložte instrukce které platí pro celý projekt\n\nPříklad: 'Jsem majitel marketingové agentury. Piš přátelsky ale profesionálně, česky bez anglicismů, přímočaře. Krátké odstavce, max 3-4 věty každý.'\n\nV ChatGPT — Settings > Customize ChatGPT.\n\nTip: Nahrajte AI vzorové texty a napište 'Analyzuj styl a napiš popis jak mám rád/a aby AI psala.' Výsledný popis vložte do Instructions."},
+  intermediate: {
+    cs: [
+      { title: "🎯 Pokročilé promptování", text: "Na této úrovni už nestačí jednoduché dotazy. Naučte se techniky:\n\n1. Role prompting — dejte AI konkrétní roli:\n'Jsi zkušený copywriter s 10 lety praxe v e-commerce. Napiš produktový popis pro...'\n\n2. Řetězení (chain) — rozdělte složitý úkol na kroky:\n'Nejdřív analyzuj cílovou skupinu. Pak navrhni 3 varianty nadpisu. Nakonec napiš text.'\n\n3. Few-shot — dejte příklady:\n'Tady je příklad dobrého popisu: [příklad]. Teď napiš podobný pro...'\n\n4. Formát výstupu:\n'Odpověz ve formátu: Problém → Příčina → 3 řešení → Doporučení. Použij odrážky.'\n\n5. Iterace:\n'Dobrý základ. Přidej konkrétní čísla a statistiky. Tón udělej energičtější.'" },
+      { title: "🔄 Jak fungují různé modely?", text: "Každý AI model má jiné silné stránky:\n\n🟢 GPT-4o — nejuniverzálnější, dobrý ve všem\n🟢 o1 — přemýšlí hluboko, nejlepší pro logiku a matematiku\n🟠 Claude Sonnet — výborný poměr rychlost/kvalita, skvělý na kód\n🟠 Claude Opus — nejchytřejší Claude, nejlepší analýzy\n🔵 Gemini Pro — přístup k internetu\n🟤 DeepSeek R1 — reasoning model, zdarma!\n\n💡 Pro analytické úkoly: Claude Opus nebo o1. Pro rychlé psaní: GPT-4o nebo Sonnet." },
+      { title: "⚡ Automatizace a workflow", text: "Na této úrovni můžete začít automatizovat:\n\n1. Custom GPTs — vlastní AI asistent v ChatGPT\n2. Projekty v Claude — sdílený kontext napříč konverzacemi\n3. Zapier/Make — propojte AI s dalšími aplikacemi:\n   Email přijde → AI shrne → Notifikace na Slack\n4. Šablony promptů pro opakující se úkoly\n\n💡 Začněte jednoduše: Custom GPT pro nejčastější úkol." },
+      { title: "📊 Práce s daty a soubory", text: "AI umí pracovat se soubory:\n\n• PDF, Word, Excel, CSV — nahrajte do ChatGPT nebo Claude\n• ChatGPT Code Interpreter — napíše a spustí Python kód, vytvoří grafy\n• Claude Artifacts — interaktivní vizualizace\n• NotebookLM — analyzuje až 50 dokumentů najednou\n\n💡 'Analyzuj tento Excel. Najdi top 10 produktů podle tržeb a vytvoř graf porovnávající Q1 vs Q2.'" },
+      { title: "🖼️ Pokročilá tvorba obrázků", text: "Od jednoduchých popisů k profesionálním promptům:\n\n1. Struktura: [subjekt], [styl], [osvětlení], [kompozice], [detaily]\n   'Portrait of a woman, oil painting style, soft golden light, rule of thirds'\n\n2. Negative prompting: --no text, blurry, low quality\n\n3. Parametry Midjourney:\n   --ar 16:9 (poměr stran)\n   --style raw (realističtější)\n   --chaos 30 (variabilita)\n   --stylize 200 (míra stylizace)\n\n4. img2img — nahrajte referenční obrázek a popište změny.\n\n💡 Prompt pište vždy anglicky — lepší výsledky ve všech nástrojích." },
     ],
-    en:[
-      {title:"Systematic approach to prompts",text:"At this level you need predictable, quality outputs. The key is structure.\n\nRole + Task + Context + Format technique:\nROLE: 'You are an experienced financial analyst for small businesses...'\nTASK: '...analyze the attached cash flow report...'\nCONTEXT: '...for an e-shop owner considering expansion. No financial background.'\nFORMAT: '1) 3 key findings, 2) 2 risks, 3) recommendation in 1 sentence. No academic language.'"},
+    en: [
+      { title: "🎯 Advanced Prompting", text: "At this level, simple queries aren't enough. Learn key techniques:\n\n1. Role prompting: 'You are an experienced copywriter with 10 years in e-commerce...'\n2. Chaining: break complex tasks into sequential steps\n3. Few-shot: give examples of desired output\n4. Output format: specify exactly what structure you want\n5. Iteration: 'Good base. Now add specific numbers. Make tone more energetic.'" },
+      { title: "🔄 How Different Models Work", text: "Each AI model has different strengths:\n\n🟢 GPT-4o — most universal, good at everything\n🟢 o1 — deep thinking, best for logic and math\n🟠 Claude Sonnet — excellent speed/quality, great for code\n🟠 Claude Opus — smartest Claude, best analyses\n🔵 Gemini Pro — internet access\n🟤 DeepSeek R1 — free reasoning model!\n\n💡 Analytics: Claude Opus or o1. Fast writing: GPT-4o or Sonnet." },
+      { title: "⚡ Automation & Workflow", text: "At this level you can start automating:\n\n1. Custom GPTs — your own AI assistant\n2. Projects in Claude — shared context across conversations\n3. Zapier/Make — connect AI with apps:\n   Email arrives → AI summarizes → Slack notification\n4. Prompt templates for recurring tasks\n\n💡 Start simple: create a Custom GPT for your most frequent task." },
+      { title: "📊 Working with Data & Files", text: "AI can work with files:\n\n• PDF, Word, Excel, CSV — upload to ChatGPT or Claude\n• ChatGPT Code Interpreter — Python analysis + charts\n• Claude Artifacts — interactive visualizations\n• NotebookLM — 50 documents at once\n\n💡 'Analyze this Excel. Find top 10 products by revenue and create a chart comparing Q1 vs Q2.'" },
+      { title: "🖼️ Advanced Image Creation", text: "From simple descriptions to professional prompts:\n\n1. Structure: [subject], [style], [lighting], [composition]\n   'Portrait of a woman, oil painting style, soft golden light, rule of thirds'\n\n2. Negative prompting: --no text, blurry, low quality\n\n3. Midjourney params: --ar 16:9, --style raw, --chaos 30, --stylize 200\n\n4. img2img — upload reference image + describe changes\n\n💡 Always write image prompts in English." },
     ],
   },
-  advanced:{
-    cs:[
-      {title:"Pokročilé promptování — XML a Extended Thinking",text:"Profesionální prompty mají strukturu. Claude byl trénován s XML tagy — výrazně zlepšují výstupy.\n\n\u003crole\u003eJsi senior growth stratég s 10 lety zkušeností v SaaS.\u003c/role\u003e\n\u003ctask\u003eVytvoř 90denní GTM plán pro nový AI produktivní nástroj.\u003c/task\u003e\n\u003ccontext\u003eProdukt: AI task manager pro foundrery. Tým: 2 lidé. Budget: lean. 15–20 beta uživatelů. Rizika: Adoption, Retention, Positioning.\u003c/context\u003e\n<stop_conditions>Zastav až bude roadmapa s 3–4 akcemi/týden a Launch Decision Gate.</stop_conditions>\n<o>Týdenní sprint plán: Action, Owner, Risk, Rationale.</o>\n\nExtended Thinking (Opus/Sonnet):\n→ Zapněte pro strategické analýzy, komplexní kód a právní analýzy\n→ Prompt: 'Před odpovědí projdi všechny perspektivy. Popiš reasoning. Pak dej finální odpověď.'\n→ Nevyplatí se: překlady, formátování, jednoduché texty"},
+  advanced: {
+    cs: [
+      { title: "🏆 Výběr modelu pro pokročilé úkoly", text: "Volba modelu přímo ovlivňuje kvalitu výstupu:\n\nHluboká analýza a strategie:\n→ Claude Opus — nejsilnější reasoning, byznys úkoly\n→ o1 — chain-of-thought, matematika a logika\n\nRychá iterace a kódování:\n→ Claude Sonnet — nejlepší poměr rychlost/výkon\n→ GPT-4o — multimodální, různorodé úkoly\n\nResearch a aktuální data:\n→ Perplexity Pro — cituje zdroje\n→ Gemini Pro — real-time internet\n\n💡 Pravidlo: Správný model šetří čas. Nepoužívejte Opus na jednoduché shrnutí." },
+      { title: "🏷️ XML promptování", text: "Pokročilí uživatelé používají XML tagy:\n\n\u003crole\u003eJsi zkušený finanční analytik\u003c/role\u003e\n\u003ccontext\u003eAnalyzuji startup v SaaS segmentu\u003c/context\u003e\n\u003ctask\u003eVytvoř finanční projekci na 3 roky\u003c/task\u003e\n\u003cconstraints\u003eKonzervativní odhady, sensitivity analysis\u003c/constraints\u003e\n\u003cformat\u003eTabulka + komentář v bodech\u003c/format\u003e\n\nProč XML funguje:\n• Jasně odděluje roli, kontext, úkol a omezení\n• Snižuje ambiguitu\n• Claude byl trénován s XML strukturou\n\n💡 Pro složité prompty vždy \u003ccontext\u003e + \u003ctask\u003e." },
+      { title: "⚙️ Návrh systémových promptů", text: "Systémový prompt je základ každého AI produktu:\n\n1. Definuje roli a osobnost\n2. Vymezuje znalostní bázi\n3. Definuje formát výstupů\n4. Obsahuje few-shot příklady (2–3)\n5. Řeší edge cases\n6. Obsahuje safety guardrails\n\n💡 Testujte s 10 různými vstupy včetně adversariálních před nasazením." },
+      { title: "🔌 API a automatizace", text: "Přímé API volání otevírá nové možnosti:\n\nClaude API:\n• claude-opus-4 pro hluboký reasoning\n• Batched API — 50% sleva\n• 200K tokenů context window\n\nOpenAI API:\n• GPT-4o, JSON mode, Function calling\n\nAutomatizace:\n• Make — vizuální workflow + HTTP modul\n• n8n — open-source, self-host\n\n💡 Make + HTTP → Claude API. Za odpoledne automatizace na emails." },
+      { title: "🤖 Agentické nástroje", text: "AI agenti vykonávají akce autonomně:\n\nClaude Code (CLI):\n• npm install -g @anthropic-ai/claude-code\n• Edituje soubory, spouští testy\n• Vy schvalujete, AI vykonává\n\nCursor IDE:\n• Composer — editace napříč soubory\n• .cursorrules — kontext projektu\n\nCrewAI:\n• Týmy agentů: Researcher → Writer → Editor\n• Každý má nástroje a předává výsledky\n\n💡 Začněte Claude Code pro kódovací projekty." },
     ],
-    en:[
-      {title:"Advanced prompting — XML and Extended Thinking",text:"Professional prompts have structure. Claude was trained with XML tags — they significantly improve outputs.\n\n\u003crole\u003eSenior growth strategist, 10 years SaaS experience.\u003c/role\u003e\n\u003ctask\u003eCreate 90-day GTM plan for new AI productivity tool.\u003c/task\u003e\n\u003ccontext\u003eProduct: AI task manager. Team: 2 people. Budget: lean. 15-20 beta users.\u003c/context\u003e\n<o>Weekly sprint plan: Action, Owner, Risk, Rationale.</o>"},
+    en: [
+      { title: "🏆 Model Selection for Advanced Tasks", text: "Model choice directly affects output quality:\n\nDeep analysis and strategy:\n→ Claude Opus — strongest reasoning\n→ o1 — chain-of-thought, math and logic\n\nFast iteration and coding:\n→ Claude Sonnet — best speed/performance ratio\n→ GPT-4o — multimodal, diverse tasks\n\nResearch and current data:\n→ Perplexity Pro — cites sources\n→ Gemini Pro — real-time internet\n\n💡 Rule: Right model saves time. Don't use Opus for simple summaries." },
+      { title: "🏷️ XML Prompting", text: "Advanced users use XML tags to structure prompts:\n\n\u003crole\u003eYou are an experienced financial analyst\u003c/role\u003e\n\u003ccontext\u003eI'm analyzing a SaaS startup\u003c/context\u003e\n\u003ctask\u003eCreate a 3-year financial projection\u003c/task\u003e\n\u003cconstraints\u003eConservative estimates, sensitivity analysis\u003c/constraints\u003e\n\u003cformat\u003eTable + bullet-point commentary\u003c/format\u003e\n\nWhy XML works:\n• Clearly separates role, context, task, constraints\n• Reduces ambiguity\n• Claude was trained with XML structure\n\n💡 For complex prompts always use \u003ccontext\u003e + \u003ctask\u003e." },
+      { title: "⚙️ System Prompt Design", text: "A system prompt is the foundation of every AI product:\n\n1. Define role and personality\n2. Define knowledge base\n3. Define output format\n4. Include few-shot examples (2–3)\n5. Handle edge cases\n6. Include safety guardrails\n\n💡 Test with 10 different inputs including adversarial ones before deploying." },
+      { title: "🔌 API & Automation", text: "Direct API calls unlock new possibilities:\n\nClaude API:\n• claude-opus-4 for deepest reasoning\n• Batched API — 50% discount\n• 200K token context window\n\nOpenAI API:\n• GPT-4o, JSON mode, Function calling\n\nAutomation:\n• Make — visual workflows + HTTP module\n• n8n — open-source, self-hostable\n\n💡 Make + HTTP → Claude API. Build email automation in an afternoon." },
+      { title: "🤖 Agentic Tools", text: "AI agents perform actions autonomously:\n\nClaude Code (CLI):\n• npm install -g @anthropic-ai/claude-code\n• Edits files, runs tests, you approve\n\nCursor IDE:\n• Composer — edit across files\n• .cursorrules — project context\n\nCrewAI:\n• Agent teams: Researcher → Writer → Editor\n• Each has tools and passes results\n\n💡 Start with Claude Code for coding projects." },
     ],
   },
 };
 
-// ─── TOOLS — organized by USE CASE ────────────────────────────────────────────
+
+// ─── TOOLS ───────────────────────────────────────────────────────────────────
 const TOOLS = {
-  beginner:[
-    {
-      task:{cs:"Psaní emailů a zpráv",en:"Writing emails & messages"},icon:"—",
-      url:"https://claude.ai",
-      urlLabel:{cs:"Otevřít Claude",en:"Open Claude"},
-      desc:{cs:"Popíšete situaci a AI napíše celý email za vás — formálně i neformálně. Funguje pro emaily šéfovi, klientovi, úřadu i kamarádovi.",en:"Describe the situation and AI writes the whole email for you — formal or informal."},
-      recommended:["Claude","ChatGPT"],
-      steps:{
-        cs:[
-          "Jděte na claude.ai (zdarma, stačí Google účet) nebo chat.openai.com",
-          "Do chatovacího pole dole napište svůj požadavek — například: 'Napiš formální email šéfovi. Omlouvám se za zpoždění projektu o 2 dny. Tón klidný, max 80 slov.'",
-          "AI napíše návrh emailu. Přečtěte ho — pokud se vám něco nelíbí, napište přímo do chatu třeba 'Zkrať to' nebo 'Piš méně formálně'",
-          "Výsledný text zkopírujte (Ctrl+C) a vložte do svého emailového klienta",
-        ],
-        en:[
-          "Go to claude.ai (free, Google account works) or chat.openai.com",
-          "Type your request into the chat box — for example: 'Write a formal email to my boss. Apologizing for a 2-day project delay. Calm tone, max 80 words.'",
-          "AI writes a draft email. Read it — if something's off, type directly: 'Make it shorter' or 'Less formal'",
-          "Copy the result (Ctrl+C) and paste into your email client",
-        ],
-      },
-      tip:{cs:"Nemusíte znát anglicky — Claude i ChatGPT rozumí česky perfektně. Pište přirozeně, jako byste vysvětlovali kamarádovi co potřebujete.",en:"No need to know English — Claude and ChatGPT understand perfectly. Write naturally, as if explaining to a friend what you need."},
-    },
-    {
-      task:{cs:"Vysvětlení složitého textu",en:"Explaining complex text"},icon:"—",
-      url:"https://claude.ai",
-      urlLabel:{cs:"Otevřít Claude",en:"Open Claude"},
-      desc:{cs:"Máte smlouvu, lékařskou zprávu nebo úřední dopis plný žargonu? Vložte ho do AI a dostanete srozumitelné vysvětlení v lidské řeči.",en:"Have a contract, medical report or official letter full of jargon? Paste it into AI and get a plain-language explanation."},
-      recommended:["Claude","ChatGPT"],
-      steps:{
-        cs:[
-          "Jděte na claude.ai — Claude je na analýzu textů a dokumentů nejlepší",
-          "Zkopírujte text který chcete vysvětlit (nebo nahrajte PDF — ikona sponky vedle pole pro psaní)",
-          "Vložte text do chatu a přidejte pokyn, například: 'Vysvětli mi tento text jednoduše. Co z toho pro mě vyplývá?'",
-          "Pokud vám něco stále není jasné, ptejte se dál: 'Co přesně znamená odstavec 3?' nebo 'Musím něco udělat do určitého termínu?'",
-        ],
-        en:[
-          "Go to claude.ai — Claude is the best for analyzing texts and documents",
-          "Copy the text you want explained (or upload PDF — the paperclip icon next to the text field)",
-          "Paste text into chat and add an instruction, e.g.: 'Explain this text simply. What does it mean for me?'",
-          "If something's still unclear, keep asking: 'What exactly does paragraph 3 mean?' or 'Do I need to do anything by a deadline?'",
-        ],
-      },
-      tip:{cs:"Claude zvládne nahrané PDF i Word dokumenty. Klikněte na ikonku sponky vedle textového pole a soubor nahrajte přímo — nemusíte text opisovat.",en:"Claude handles uploaded PDFs and Word documents. Click the paperclip icon next to the text field and upload the file directly — no need to retype."},
-    },
-    {
-      task:{cs:"Překlad textu",en:"Text translation"},icon:"—",
-      url:"https://www.deepl.com",
-      urlLabel:{cs:"Otevřít DeepL",en:"Open DeepL"},
-      desc:{cs:"Přeložte texty rychle a kvalitně. Pro jednoduché dokumenty je DeepL nejrychlejší, pro delší texty s kontextem je lepší ChatGPT nebo Claude.",en:"Translate texts quickly and accurately. For simple documents DeepL is fastest, for longer texts with context ChatGPT or Claude is better."},
-      recommended:["DeepL (zdarma)","ChatGPT","Claude"],
-      steps:{
-        cs:[
-          "Pro rychlý překlad: jděte na deepl.com — je zdarma do 5 000 znaků najednou, bez registrace",
-          "Vložte text vlevo, vyberte cílový jazyk vpravo — překlad se ukáže okamžitě",
-          "Pro delší nebo odborné texty (smlouvy, manuály): použijte Claude nebo ChatGPT a napište: 'Přelož tento text do češtiny. Jde o právní dokument — terminologii zachovej přesně.'",
-          "Přeložený text zkopírujte tlačítkem vpravo nahoře",
-        ],
-        en:[
-          "For quick translation: go to deepl.com — free up to 5,000 characters at once, no registration",
-          "Paste text on the left, select target language on the right — translation appears immediately",
-          "For longer or technical texts (contracts, manuals): use Claude or ChatGPT and type: 'Translate this text to English. It's a legal document — keep terminology precise.'",
-          "Copy the translated text using the button in the top right",
-        ],
-      },
-      tip:{cs:"DeepL je zdarma do 5 000 znaků. Potřebujete přeložit celý dokument (Word, PDF)? Nahrajte ho přímo na deepl.com — zdarma 3 dokumenty měsíčně.",en:"DeepL is free up to 5,000 characters. Need to translate a whole document (Word, PDF)? Upload it directly on deepl.com — 3 documents free per month."},
-    },
-    {
-      task:{cs:"Učení nového tématu",en:"Learning a new topic"},icon:"—",
-      url:"https://notebooklm.google.com",
-      urlLabel:{cs:"Otevřít NotebookLM",en:"Open NotebookLM"},
-      desc:{cs:"Nahrajte vlastní materiály (skripta, knihy, články) a AI vám z nich udělá shrnutí, testové otázky nebo dokonce podcast. Zdarma od Googlu.",en:"Upload your own materials (notes, books, articles) and AI creates summaries, test questions or even a podcast from them. Free from Google."},
-      recommended:["NotebookLM","Claude","ChatGPT"],
-      steps:{
-        cs:[
-          "Jděte na notebooklm.google.com — přihlaste se Google účtem (je zdarma)",
-          "Klikněte na '+ Nový notebook' a pak '+ Přidat zdroj'",
-          "Nahrajte PDF nebo Word soubor, vložte odkaz na YouTube video, nebo zkopírujte text — NotebookLM ho načte",
-          "V chatovém okně vpravo se ptejte: 'Shrň klíčové body', 'Vysvětli mi pojem X', nebo 'Vytvoř 10 otázek na test'",
-          "Bonus: klikněte na 'Audio Overview' — AI vygeneruje 10–15minutový podcast kde dva hlasy diskutují váš materiál",
-        ],
-        en:[
-          "Go to notebooklm.google.com — sign in with Google account (free)",
-          "Click '+ New notebook' then '+ Add source'",
-          "Upload PDF or Word file, paste a YouTube link, or copy text — NotebookLM loads it",
-          "In the chat window on the right ask: 'Summarize key points', 'Explain concept X', or 'Create 10 test questions'",
-          "Bonus: click 'Audio Overview' — AI generates a 10–15 minute podcast where two voices discuss your material",
-        ],
-      },
-      tip:{cs:"NotebookLM 'vidí' jen váš nahraný obsah — nikdy nevymyslí informaci z internetu. Každá odpověď odkazuje na konkrétní místo ve vašem dokumentu. Ideální pro studium.",en:"NotebookLM 'sees' only your uploaded content — never makes up information from the internet. Each answer references the specific place in your document. Ideal for studying."},
-    },
-    {
-      task:{cs:"Hledání aktuálních informací",en:"Finding current information"},icon:"—",
-      url:"https://www.perplexity.ai",
-      urlLabel:{cs:"Otevřít Perplexity",en:"Open Perplexity"},
-      desc:{cs:"Potřebujete aktuální fakta, novinky nebo ověřit informaci? Perplexity a Gemini prohledávají internet a vždy ukáží odkaz na zdroj.",en:"Need current facts, news or to verify information? Perplexity and Gemini search the internet and always show a source link."},
-      recommended:["Perplexity (zdarma)","Gemini"],
-      steps:{
-        cs:[
-          "Jděte na perplexity.ai — základní verze je zdarma bez registrace",
-          "Napište svůj dotaz přirozenou češtinou, například: 'Jaké jsou aktuální úrokové sazby hypoték v ČR?' nebo 'Co se stalo s firmou XY?'",
-          "Perplexity zobrazí odpověď a vedle každé informace číslo — kliknutím zjistíte zdroj",
-          "Alternativa: gemini.google.com — také prohledává web, navíc se propojí s vaším Google účtem",
-        ],
-        en:[
-          "Go to perplexity.ai — basic version is free without registration",
-          "Type your query in natural language, e.g.: 'What are current mortgage interest rates?' or 'What happened to company XY?'",
-          "Perplexity shows the answer and a number next to each fact — click it to see the source",
-          "Alternative: gemini.google.com — also searches the web, plus connects to your Google account",
-        ],
-      },
-      tip:{cs:"Claude a ChatGPT bez internetu mohou mít zastaralá data (jejich znalosti mají datum cutoff). Pro aktuální zprávy, ceny, kurzy a novinky vždy použijte Perplexity nebo Gemini.",en:"Claude and ChatGPT without internet may have outdated data (their knowledge has a cutoff date). For current news, prices, rates and recent events always use Perplexity or Gemini."},
-    },
-    {
-      task:{cs:"Generování obrázků",en:"Image generation"},icon:"—",
-      url:"https://nanobananapro.com",
-      urlLabel:{cs:"Otevřít Nano Banana",en:"Open Nano Banana"},
-      desc:{cs:"Popište obrázek česky a AI ho vygeneruje za pár sekund. Nano Banana Pro je nejjednodušší a nejrychlejší volba — bez registrace.",en:"Describe an image in your language and AI generates it in seconds. Nano Banana Pro is the simplest and fastest option — no registration needed."},
-      recommended:["Nano Banana Pro","ChatGPT (placený)"],
-      steps:{
-        cs:[
-          "Jděte na nanobananapro.com — není potřeba registrace ani platební karta",
-          "Do textového pole napište popis obrázku česky, například: 'Fotografie kávy v bílém šálku na dřevěném stole, ranní světlo z okna, útulná kavárna'",
-          "Klikněte na tlačítko generovat — obrázek je hotový za 10–20 sekund",
-          "Líbí se? Stáhněte ho kliknutím pravým tlačítkem → 'Uložit obrázek jako...'",
-          "Nechce se to? Upravte popis a generujte znovu — každé zadání dá jiný výsledek",
-        ],
-        en:[
-          "Go to nanobananapro.com — no registration or payment card needed",
-          "Type an image description, e.g.: 'Photo of coffee in a white cup on a wooden table, morning light from the window, cozy café'",
-          "Click the generate button — image is ready in 10–20 seconds",
-          "Like it? Download by right-clicking → 'Save image as...'",
-          "Not happy? Tweak the description and generate again — every prompt gives a different result",
-        ],
-      },
-      tip:{cs:"Čím konkrétnější popis, tím lepší výsledek. Zkuste přidat: styl ('jako olejomalba', 'fotorealistické'), náladu ('teplé světlo', 'dramatické stíny') nebo místo ('v pražské kavárně').",en:"The more specific the description, the better the result. Try adding: style ('like an oil painting', 'photorealistic'), mood ('warm light', 'dramatic shadows') or location ('in a Prague café')."},
-    },
+  beginner: [
+    { cat: { cs: "Konverzace s AI", en: "Chat with AI" }, icon: "💬", desc: { cs: "Ptejte se AI na cokoliv.", en: "Ask AI anything." }, items: [
+      { name: "ChatGPT", url: "https://chat.openai.com", price: "freemium", d: { cs: "Nejpopulárnější AI chatbot.", en: "Most popular AI chatbot." }, h: { cs: "Přihlaste se, napište otázku, Enter.", en: "Sign in, type question, press Enter." }, tip: { cs: "'Pokračuj' nebo 'zkrať to' pro úpravu délky.", en: "Say 'continue' or 'shorten it' to adjust length." } },
+      { name: "Claude", url: "https://claude.ai", price: "freemium", d: { cs: "AI od Anthropic. Velmi přesný.", en: "AI by Anthropic. Very precise, careful." }, h: { cs: "Výborný pro delší texty a přesné odpovědi.", en: "Excellent for long texts and precise answers." }, tip: { cs: "Claude zvládne celé PDF dokumenty.", en: "Claude handles entire PDFs — upload and ask." } },
+      { name: "Gemini", url: "https://gemini.google.com", price: "freemium", d: { cs: "AI od Googlu. Hledá aktuální info.", en: "Google AI. Searches current info." }, h: { cs: "Přihlaste se Google účtem.", en: "Sign in with Google." }, tip: { cs: "Ideální na aktuální události.", en: "Ideal for current events." } },
+      { name: "DeepSeek", url: "https://chat.deepseek.com", price: "free", d: { cs: "Úplně zdarma! R1 ukazuje myšlenkový postup.", en: "Completely free! R1 shows thinking process." }, h: { cs: "R1 ukazuje jak přemýšlí, než odpoví.", en: "R1 shows its thinking before answering." }, tip: { cs: "Na rozdíl od ostatních úplně zdarma.", en: "Unlike others, completely free. R1 is great for math." } },
+      { name: "Grok", url: "https://grok.com", price: "freemium", d: { cs: "AI od xAI. Propojený s X.", en: "AI by xAI. Connected to X." }, h: { cs: "Přihlaste se přes X účet.", en: "Sign in with X account." }, tip: { cs: "Dobrý na trendy, čte X v reálném čase.", en: "Good for trends, reads X posts in real time." } },
+    ]},
+    { cat: { cs: "Učení a studium", en: "Learning & Study" }, icon: "📚", desc: { cs: "AI jako váš osobní učitel.", en: "AI as your personal teacher." }, items: [
+      { name: "NotebookLM", url: "https://notebooklm.google.com", price: "free", d: { cs: "Pro práci s dokumenty. Zdarma.", en: "Google AI for documents. Free." }, h: { cs: "Nahrajte dokumenty a ptejte se. Umí podcast!", en: "Upload documents and ask. Can create podcasts!" }, tip: { cs: "'Vytvoř podcast' — vytvoří audio diskuzi!", en: "Upload materials and say 'create a podcast'!" } },
+      { name: "Perplexity", url: "https://perplexity.ai", price: "freemium", d: { cs: "AI vyhledávač s citacemi zdrojů.", en: "AI search engine with citations." }, h: { cs: "Ptejte se jako v Googlu, dostanete odpověď se zdroji.", en: "Ask like Google, get answer with sources." }, tip: { cs: "Každá odpověď má čísla — klikněte pro ověření.", en: "Every answer has numbers — click to verify sources." } },
+      { name: "Kimi", url: "https://kimi.moonshot.cn", price: "free", d: { cs: "Zvládá extrémně dlouhé dokumenty.", en: "Handles extremely long documents." }, h: { cs: "Nahrajte dlouhé dokumenty — miliony znaků.", en: "Upload long documents. Handles millions of characters." }, tip: { cs: "Ideální pro celé knihy, které jiné AI nezvládnou.", en: "Ideal for entire books that other AIs can't handle." } },
+    ]},
+    { cat: { cs: "Generování obrázků", en: "Image Generation" }, icon: "🎨", desc: { cs: "AI vytvoří obrázek z popisu.", en: "AI creates images from description." }, items: [
+      { name: "DALL-E 3 (ChatGPT)", url: "https://chat.openai.com", price: "freemium", d: { cs: "Generátor obrázků přímo v ChatGPT.", en: "Image generator built into ChatGPT." }, h: { cs: "Napište 'Vytvoř obrázek...' a popište.", en: "Type 'Create an image of...' and describe." }, tip: { cs: "Čím víc detailů, tím lepší obrázek.", en: "More details (colors, style, mood) = better image." } },
+      { name: "Ideogram", url: "https://ideogram.ai", price: "freemium", d: { cs: "Výborný pro obrázky s textem.", en: "Great for images with text (logos, posters)." }, h: { cs: "Přihlaste se, popište obrázek anglicky.", en: "Sign in, describe image in English." }, tip: { cs: "Spolehlivý na text v obrázcích — skvělý na loga.", en: "Only reliable generator for text in images — great for logos." } },
+      { name: "Microsoft Designer", url: "https://designer.microsoft.com", price: "free", d: { cs: "Jednoduchý, úplně zdarma.", en: "Simple, completely free." }, h: { cs: "Microsoft účet → popište nebo vyberte šablonu.", en: "Microsoft account → describe or choose template." }, tip: { cs: "Nejjednodušší na použití. Ideální pro sociální sítě.", en: "Easiest to use. Ideal for social media." } },
+    ]},
+    { cat: { cs: "Psaní textů", en: "Writing" }, icon: "✍️", desc: { cs: "Emaily, články, dopisy.", en: "Emails, articles, letters." }, items: [
+      { name: "ChatGPT", url: "https://chat.openai.com", price: "freemium", d: { cs: "Univerzální pomocník na psaní.", en: "Universal writing helper." }, h: { cs: "'Napiš formální email o...'", en: "'Write a formal email about...'" }, tip: { cs: "Vždy řekněte pro koho a jaký tón chcete.", en: "Always say who it's for and what tone you want." } },
+      { name: "Claude", url: "https://claude.ai", price: "freemium", d: { cs: "Nejlepší pro delší texty.", en: "Best for long texts. Very careful." }, h: { cs: "Popište text, pro koho, tón a délku.", en: "Describe text, who it's for, tone and length." }, tip: { cs: "Claude nepřidává zbytečnosti.", en: "Claude doesn't add fluff — gives exactly what you ask." } },
+    ]},
+    { cat: { cs: "Překlad", en: "Translation" }, icon: "🌐", desc: { cs: "Kvalitní překlad textů.", en: "Quality text translation." }, items: [
+      { name: "DeepL", url: "https://deepl.com", price: "freemium", d: { cs: "Nejkvalitnější AI překladač.", en: "Highest quality AI translator." }, h: { cs: "Vložte text vlevo, vyberte jazyk vpravo.", en: "Paste left, select language right." }, tip: { cs: "Překládá přirozeněji než Google Translate.", en: "Translates more naturally than Google Translate." } },
+    ]},
+    { cat: { cs: "Shrnutí dokumentů", en: "Summarization" }, icon: "📝", desc: { cs: "AI shrne dlouhé texty.", en: "AI summarizes long texts." }, items: [
+      { name: "Claude", url: "https://claude.ai", price: "freemium", d: { cs: "Zvládne 200+ stran.", en: "Handles 200+ pages." }, h: { cs: "Nahrajte PDF nebo vložte text.", en: "Upload PDF or paste text." }, tip: { cs: "'Shrň pro člověka bez času' — nejdůležitější body.", en: "Say 'summarize for someone with no time' — key points only." } },
+      { name: "NotebookLM", url: "https://notebooklm.google.com", price: "free", d: { cs: "Zdarma. Až 50 zdrojů najednou.", en: "Free. Up to 50 sources." }, h: { cs: "Nahrajte dokumenty, ptejte se.", en: "Upload docs, ask questions." }, tip: { cs: "Nahrajte více dokumentů a ptejte se na propojení.", en: "Upload multiple docs and ask about connections." } },
+    ]},
   ],
-  intermediate:[
-    {task:{cs:"Profesionální generování obrázků",en:"Professional image generation"},icon:"—",
-     url:"https://midjourney.com",
-     urlLabel:{cs:"Otevřít Midjourney",en:"Open Midjourney"},
-     desc:{cs:"Midjourney generuje fotografie a ilustrace v profesionální kvalitě. Výsledky jsou výrazně lepší než u bezplatných nástrojů — používají ho grafici, marketéři i filmaři. Není zdarma.",en:"Midjourney generates photos and illustrations in professional quality. Results are significantly better than free tools — used by designers, marketers and filmmakers. Not free."},
-     recommended:["Midjourney (placený)","Nano Banana Pro (zdarma)"],
-     steps:{
-       cs:[
-         "Jděte na midjourney.com a zaregistrujte se — Midjourney není zdarma, vyžaduje placený účet",
-         "Midjourney funguje dvěma způsoby: přímo na webu midjourney.com (jednodušší) nebo přes Discord. Discord je chatovací aplikace — pokud ji neznáte, použijte web",
-         "Na webu klikněte na 'Create' a do pole napište popis obrázku anglicky. Prompt má strukturu: CO chcete vidět → styl → nálada → formát",
-         "Příklad hotového promptu: 'portrait of a woman drinking coffee in a Prague café, warm morning light, film photography style, shallow depth of field --ar 3:2 --v 7' — --ar je poměr stran (3:2 = fotografie), --v 7 je verze Midjourney",
-         "Tip: nevíte jak prompt napsat? Otevřete Claude a napište: 'Napiš mi Midjourney prompt pro: [popište česky co chcete]' — Claude vám celý prompt vygeneruje",
-       ],
-       en:[
-         "Go to midjourney.com and sign up — Midjourney is not free, requires a paid account",
-         "Midjourney works two ways: directly on midjourney.com (simpler) or through Discord. Discord is a chat app — if you don't know it, use the website",
-         "On the website click 'Create' and type your image description in English. Prompt structure: WHAT you want to see → style → mood → format",
-         "Example finished prompt: 'portrait of a woman drinking coffee in a Prague café, warm morning light, film photography style, shallow depth of field --ar 3:2 --v 7' — --ar is aspect ratio (3:2 = photo), --v 7 is Midjourney version",
-         "Tip: not sure how to write a prompt? Open Claude and type: 'Write me a Midjourney prompt for: [describe in plain language what you want]' — Claude generates the whole prompt",
-       ],
-     },
-     tip:{cs:"Nejčastější chyba: popis v češtině. Midjourney rozumí anglicky mnohem lépe. Napište popis česky Claudovi a on vám ho přeloží do správného formátu pro Midjourney.",en:"Most common mistake: description in your language. Midjourney understands English much better. Write description in your language to Claude and it translates it into the right Midjourney format."},
-    },
-    {task:{cs:"Tvorba videí s AI",en:"AI video creation"},icon:"—",
-     url:"https://runwayml.com",
-     urlLabel:{cs:"Otevřít Runway",en:"Open Runway"},
-     desc:{cs:"AI dokáže vygenerovat krátké video z fotografie nebo textového popisu. Hodí se na obsah pro Instagram, TikTok nebo YouTube — například animovaný záběr produktu, pozadí za mluvícím člověkem nebo krátká scéna bez kamery.",en:"AI can generate short videos from a photo or text description. Great for Instagram, TikTok or YouTube content — animated product shot, background behind a speaker, or a short scene without a camera."},
-     recommended:["Runway","Kling","Higgsfield","Sora"],
-     steps:{
-       cs:[
-         "Nejjednodušší způsob: jděte na runwayml.com a zaregistrujte se — základní verze je zdarma s omezeným počtem generací",
-         "Klikněte na 'Image to Video' — tato funkce vezme vaši fotku a zanimuje ji (např. vlasy se pohybují ve větru, káva se kouří, auto projíždí ulicí)",
-         "Nahrajte fotku a do textového pole popište pohyb: 'vlasy se pomalu pohybují ve větru, jemný pohyb kamery doleva' — čím konkrétnější, tím lepší výsledek",
-         "Klikněte Generate — video trvá 30–60 sekund na zpracování",
-         "Výsledek se vám nelíbí? Nevadí — klikněte Generate znovu se stejným nebo upraveným popisem. Každé generování dá jiný výsledek. Většina lidí generuje 3–5× než najde ten správný",
-         "Alternativy: Kling (kling.ai) — velmi realistické pohyby, oblíbený pro portréty. Higgsfield (higgsfield.ai) — umí otestovat více nástrojů najednou a porovnat výsledky",
-       ],
-       en:[
-         "Easiest way: go to runwayml.com and sign up — basic version is free with limited generations",
-         "Click 'Image to Video' — this takes your photo and animates it (e.g. hair moves in wind, coffee steams, car drives down street)",
-         "Upload a photo and describe the motion in the text box: 'hair slowly moves in the wind, gentle camera pan left' — more specific = better result",
-         "Click Generate — video takes 30–60 seconds to process",
-         "Don't like the result? No problem — click Generate again with the same or adjusted description. Each generation gives a different result. Most people generate 3–5 times before finding the right one",
-         "Alternatives: Kling (kling.ai) — very realistic motion, popular for portraits. Higgsfield (higgsfield.ai) — can test multiple tools at once and compare results",
-       ],
-     },
-     tip:{cs:"Nejčastější chyba: příliš vágní popis pohybu. Místo 'pohybující se video' napište konkrétně: 'kamera se pomalu přibližuje k obličeji, vlasy se lehce pohybují, pozadí je rozostřené'. AI potřebuje přesné instrukce.",en:"Most common mistake: too vague motion description. Instead of 'moving video' write specifically: 'camera slowly zooms toward face, hair moves slightly, background is blurred'. AI needs precise instructions."},
-    },
-    {task:{cs:"Generování hlasu — ElevenLabs",en:"Voice generation — ElevenLabs"},icon:"—",
-     url:"https://elevenlabs.io",
-     urlLabel:{cs:"Otevřít ElevenLabs",en:"Open ElevenLabs"},
-     desc:{cs:"ElevenLabs přemění psaný text na mluvené slovo — realistickým hlasem, ne roboticky. Hodí se na: komentář k videu, audioknihu, hlasový průvodce v aplikaci, nebo dabování obsahu do jiného jazyka. Základní verze je zdarma (10 000 znaků měsíčně).",en:"ElevenLabs turns written text into spoken audio — with a realistic voice, not robotic. Great for: video voiceover, audiobook, voice guide in an app, or dubbing content into another language. Basic version is free (10,000 characters per month)."},
-     recommended:["ElevenLabs"],
-     steps:{
-       cs:[
-         "Jděte na elevenlabs.io a zaregistrujte se — základní plán je zdarma",
-         "Klikněte na 'Text to Speech' v levém menu",
-         "Vyberte hlas z knihovny (stovky hlasů) — nebo klikněte na 'Voice Design' a popište hlas přirozeně: 'klidný ženský hlas, profesionální, mírně pomalejší tempo'",
-         "Vložte text do pole a klikněte na šipku (generovat) — audio je hotové za pár sekund",
-         "Stáhněte výsledek tlačítkem 'Download' nebo rovnou zkopírujte odkaz",
-         "Chcete naklonovat vlastní hlas? Klikněte na 'Voices' → 'Add Voice' → 'Instant Voice Cloning'. Nahrajte nahrávku svého hlasu (alespoň 1 minuta čistého záznamu bez hudby nebo šumu na pozadí) a pojmenujte ji",
-       ],
-       en:[
-         "Go to elevenlabs.io and sign up — basic plan is free",
-         "Click 'Text to Speech' in the left menu",
-         "Choose a voice from the library (hundreds of voices) — or click 'Voice Design' and describe naturally: 'calm female voice, professional, slightly slower pace'",
-         "Paste text into the field and click the arrow (generate) — audio is ready in a few seconds",
-         "Download the result with the 'Download' button or copy the link directly",
-         "Want to clone your own voice? Click 'Voices' → 'Add Voice' → 'Instant Voice Cloning'. Upload a recording of your voice (at least 1 minute of clean audio without music or background noise) and name it",
-       ],
-     },
-     tip:{cs:"Zdarma dostanete 10 000 znaků měsíčně — to je přibližně 7 minut mluveného slova. Na otestování nebo kratší videa to bohatě stačí. Placený plán od $5/měs odemkne více znaků a klonování hlasu.",en:"Free gives you 10,000 characters per month — roughly 7 minutes of spoken audio. Plenty for testing or short videos. Paid plan from $5/mo unlocks more characters and voice cloning."},
-    },
-    {task:{cs:"Generování hudby — Suno",en:"Music generation — Suno"},icon:"—",
-     url:"https://suno.ai",
-     urlLabel:{cs:"Otevřít Suno",en:"Open Suno"},
-     desc:{cs:"Suno vygeneruje celou skladbu s vokálem z textového popisu — za 30 sekund. Hodí se na: hudební podkres do videa, reklamní jingle, nebo jen pro zábavu. Základní verze zdarma.",en:"Suno generates a complete song with vocals from a text description — in 30 seconds. Great for: background music for video, ad jingle, or just for fun. Basic version is free."},
-     recommended:["Suno"],
-     steps:{
-       cs:[
-         "Jděte na suno.ai — přihlaste se přes Google nebo Discord účet, základní plán je zdarma",
-         "Na hlavní stránce najdete textové pole — napište popis skladby. Příklad: 'veselá česká lidová píseň o jaru, akustická kytara, ženský hlas'",
-         "Klikněte na 'Create' — Suno vygeneruje 2 varianty skladby najednou, každá trvá asi 30 sekund zpracování",
-         "Poslechněte si obě varianty — líbí se vám jedna? Klikněte na tři tečky a 'Download' pro stažení jako MP3",
-         "Chcete mít nad skladbou větší kontrolu? Klikněte na 'Custom mode' — tam můžete napsat vlastní text písně a přesněji určit styl",
-       ],
-       en:[
-         "Go to suno.ai — sign in with Google or Discord, basic plan is free",
-         "On the main page find the text field — write a song description. Example: 'happy folk song about spring, acoustic guitar, female vocals'",
-         "Click 'Create' — Suno generates 2 song variants at once, each takes about 30 seconds to process",
-         "Listen to both variants — like one? Click the three dots and 'Download' to save as MP3",
-         "Want more control? Click 'Custom mode' — there you can write your own song lyrics and specify the style more precisely",
-       ],
-     },
-     tip:{cs:"Suno zdarma dává 50 generací denně — každá generace = 2 skladby. Na zkoušení je to víc než dost. Výsledky jsou autorsky chráněné Sunem pokud máte zdarma plán — pro komerční použití potřebujete placený plán.",en:"Suno free gives 50 generations per day — each generation = 2 songs. More than enough for experimenting. Results are copyright-protected by Suno on the free plan — for commercial use you need a paid plan."},
-    },
-    {task:{cs:"Tvorba webu nebo aplikace (bez kódu)",en:"Website or app creation (no code)"},icon:"—",
-     url:"https://bolt.new",
-     urlLabel:{cs:"Otevřít Bolt",en:"Open Bolt"},
-     desc:{cs:"Popíšete co chcete vytvořit a AI za vás napíše celý web nebo jednoduchou aplikaci — bez nutnosti znát programování. Výsledek si rovnou prohlédnete v prohlížeči a sdílíte jako odkaz. Bolt a v0 jsou zdarma pro základní použití.",en:"Describe what you want to create and AI writes the whole website or simple app for you — no coding knowledge needed. You see the result immediately in the browser and can share it as a link. Bolt and v0 are free for basic use."},
-     recommended:["Bolt.new","v0 (Vercel)","Lovable"],
-     steps:{
-       cs:[
-         "Jděte na bolt.new — základní verze je zdarma, není potřeba nic instalovat, vše běží v prohlížeči",
-         "Do textového pole napište co chcete vytvořit — pište jako byste to zadávali grafickému designérovi. Příklad: 'Vytvoř jednoduchou landing page pro moje fotografické studio. Tmavý design, elegantní. Nahoře velká fotka, pod ní seznam služeb se cenami, kontaktní formulář dole.'",
-         "Bolt zobrazí výsledek živě vpravo — vidíte stránku v reálném čase jak ji AI píše",
-         "Chcete něco změnit? Napište do chatu: 'Změň barvu tlačítek na zlatou' nebo 'Přidej sekci s referencemi od klientů' — AI zapracuje úpravy okamžitě",
-         "Výsledek sdílíte jako odkaz (tlačítko Share) nebo si stáhnete kód (tlačítko Download) pokud chcete stránku nahrát na vlastní hosting",
-         "Alternativa pro samotné komponenty (jen část stránky): v0.dev — tam popisujete konkrétní prvek, např. 'Vytvoř přihlašovací formulář s polem na email a heslo'",
-       ],
-       en:[
-         "Go to bolt.new — basic version is free, nothing to install, everything runs in the browser",
-         "Type what you want to create — write as if briefing a graphic designer. Example: 'Create a simple landing page for my photography studio. Dark design, elegant. Large photo at top, service list with prices below, contact form at the bottom.'",
-         "Bolt shows the result live on the right — you see the page in real time as AI writes it",
-         "Want to change something? Type in the chat: 'Change button color to gold' or 'Add a client testimonials section' — AI applies changes immediately",
-         "Share the result as a link (Share button) or download the code (Download button) if you want to upload the page to your own hosting",
-         "Alternative for individual components (just one part of a page): v0.dev — describe a specific element, e.g. 'Create a login form with email and password fields'",
-       ],
-     },
-     tip:{cs:"Čím konkrétnější popis, tím lepší výsledek. Nezapomeňte zmínit: jaký typ stránky (portfolio, e-shop, landing page), jaký styl (tmavý/světlý, minimalistický/barevný) a co na ní má být. AI není věštec — řekněte mu přesně co chcete.",en:"The more specific the description, the better the result. Don't forget to mention: what type of page (portfolio, shop, landing page), what style (dark/light, minimal/colorful) and what should be on it. AI isn't a mind reader — tell it exactly what you want."},
-    },
-    {task:{cs:"Automatizace — Make (propojení aplikací)",en:"Automation — Make (connecting apps)"},icon:"—",
-     url:"https://make.com",
-     urlLabel:{cs:"Otevřít Make",en:"Open Make"},
-     desc:{cs:"Automatizace znamená: nastavíte jednou, pak to funguje samo. Příklad: každý nový email od klienta se automaticky uloží do tabulky. Nebo: každé pondělí se vám vygeneruje týdenní přehled. Make je vizuální nástroj kde propojujete aplikace klikáním — žádné programování. Základní plán je zdarma.",en:"Automation means: set it up once, then it runs by itself. Example: every new email from a client automatically saves to a spreadsheet. Or: every Monday a weekly summary generates itself. Make is a visual tool where you connect apps by clicking — no programming. Basic plan is free."},
-     recommended:["Make (Integromat)","Manus","n8n"],
-     steps:{
-       cs:[
-         "Nejdřív pochopte rozdíl: běžná AI (Claude, ChatGPT) odpovídá na vaše otázky. AI agent pracuje samostatně — sám čte emaily, sám rozhoduje co s nimi udělat, sám vyplňuje tabulku. Vy jen zkontrolujete výsledek.",
-         "Jděte na make.com a zaregistrujte se — základní plán zdarma zahrnuje 1 000 automatizovaných akcí měsíčně",
-         "Klikněte na 'Create a new scenario' — uvidíte prázdné plátno kde budujete svůj automatický proces",
-         "Nejjednodušší první automatizace pro začátečníka: Gmail → Google Sheets. Klikněte na '+', vyberte Gmail, zvolte 'Watch emails' (hlídej nové emaily). Přidejte druhý blok: Google Sheets, zvolte 'Add a row' (přidej řádek). Propojte je. Teď se každý nový email uloží do vaší tabulky.",
-         "Chcete přidat AI? Mezi Gmail a Sheets přidejte blok 'Claude' nebo 'ChatGPT'. Nastavte instrukci: 'Přečti tento email a napiš mi jednovětové shrnutí.' Výsledek se uloží do tabulky vedle emailu.",
-         "Hotové šablony: klikněte na 'Templates' — najdete stovky hotových automatizací. Hledejte např. 'Gmail to Google Sheets' nebo 'Save email attachments to Drive'",
-         "Další nástroje: Manus (manus.im) — AI agent který běží sám přímo na vašem zařízení, Zapier (zapier.com) — podobný Make, více integrací, n8n (n8n.io) — open-source varianta pro technicky zdatnější",
-       ],
-       en:[
-         "First understand the difference: regular AI (Claude, ChatGPT) answers your questions. An AI agent works independently — reads emails on its own, decides what to do with them, fills in the spreadsheet itself. You just check the result.",
-         "Go to make.com and sign up — basic free plan includes 1,000 automated actions per month",
-         "Click 'Create a new scenario' — you'll see an empty canvas where you build your automated process",
-         "Simplest first automation for beginners: Gmail → Google Sheets. Click '+', select Gmail, choose 'Watch emails'. Add second block: Google Sheets, choose 'Add a row'. Connect them. Now every new email saves to your spreadsheet.",
-         "Want to add AI? Between Gmail and Sheets add a 'Claude' or 'ChatGPT' block. Set the instruction: 'Read this email and write me a one-sentence summary.' The result saves to the spreadsheet next to the email.",
-         "Ready-made templates: click 'Templates' — hundreds of ready automations. Search e.g. 'Gmail to Google Sheets' or 'Save email attachments to Drive'",
-         "Other tools: Manus (manus.im) — AI agent that runs independently directly on your device, Zapier (zapier.com) — similar to Make, more integrations, n8n (n8n.io) — open-source option for more technical users",
-       ],
-     },
-     tip:{cs:"Rozdíl mezi AI a AI agentem jednoduše: AI = ptáte se, dostanete odpověď. AI agent = řeknete co chcete dosáhnout, agent to sám udělá (přečte emaily, vyplní tabulku, pošle odpověď). Make vám umožní postavit takového agenta bez programování — propojujete bloky jako LEGO.",en:"Difference between AI and AI agent simply: AI = you ask, you get an answer. AI agent = you say what you want to achieve, agent does it itself (reads emails, fills spreadsheet, sends reply). Make lets you build such an agent without coding — you connect blocks like LEGO."},
-    },
-    {task:{cs:"Tvorba tabulek a prezentací",en:"Creating spreadsheets and presentations"},icon:"—",
-     url:"https://claude.ai",
-     urlLabel:{cs:"Otevřít Claude",en:"Open Claude"},
-     desc:{cs:"AI pomůže vytvořit tabulku v Excelu nebo Google Sheets, navrhnout strukturu prezentace nebo napsat texty na slidy. Ušetříte hodiny formátování a přemýšlení co kam dát.",en:"AI helps create a spreadsheet in Excel or Google Sheets, design a presentation structure or write slide texts. Save hours of formatting and thinking about what goes where."},
-     recommended:["Claude","ChatGPT","Google Slides AI"],
-     steps:{
-       cs:[
-         "── TABULKY (Excel / Google Sheets) ──",
-         "Pro jednoduchou tabulku: jděte na claude.ai a napište: 'Vytvoř tabulku v Excelu pro [co chcete sledovat]. Sloupce: [vyjmenujte co chcete mít]. Přidej vzorce pro [součty / průměry / podmínky].'\nClaude napíše tabulku jako text nebo přímo jako CSV soubor ke stažení.",
-         "Pro složitější tabulku s daty: nahrajte existující Excel nebo CSV přímo do Claude (ikona sponky) a napište: 'Přidej sloupec který vypočítá [co]. Zvýrazni řádky kde [podmínka]. Udělej kontingenční tabulku podle [sloupec].'",
-         "Google Sheets má vlastní AI — klikněte na buňku a napište = a pak popis v češtině. Nebo použijte Extensions → Apps Script pro automatizaci.",
-         "── TVORBA Z VAŠICH MATERIÁLŮ ──",
-         "Máte smlouvu, report, zápisky ze schůzky nebo PDF a chcete z toho tabulku nebo prezentaci? Nahrajte soubor přímo do Claude (ikona sponky vedle textového pole) a napište:\n\nZ dokumentu do tabulky: 'Z tohoto dokumentu vytvoř tabulku. Sloupce: [co chcete sledovat]. Přidej řádek pro každou [položku / osobu / termín].'\n\nZ dokumentu do prezentace: 'Z tohoto dokumentu vytvoř strukturu prezentace. 8 slidů. Každý slide: nadpis + 3 odrážky. Přidej poznámky pro přednášejícího.'\n\nZ zápisků do přehledu: 'Z těchto zápisků ze schůzky vytvoř přehlednou tabulku: Úkol | Kdo zodpovídá | Termín | Stav'\n\nZ dat do grafu: 'Z těchto čísel navrhni jak udělat graf v Excelu. Jaký typ grafu by byl nejlepší a proč?'\n\nClaude zvládne: PDF, Word, Excel, zápisky v textu, emaily, výroční zprávy, faktury — cokoliv nahrajete.",
-         "Struktura a texty: jděte na claude.ai a napište: 'Navrhni strukturu prezentace na téma [téma] pro [koho]. Počet slidů: [číslo]. Na každý slide napiš: nadpis, 3–4 odrážky a poznámku pro přednášejícího.'",
-         "Vizuální design: texty od Clauda zkopírujte do Canvy (canva.com → Prezentace) — má stovky šablon a AI navrhne rozložení automaticky. Nebo do Google Slides kde klikněte na Nástroje → Pomoc od AI.",
-         "Gamma (gamma.app): nejjednodušší cesta — napište téma a Gamma sama vytvoří celou vizuální prezentaci včetně designu. Zdarma s limitem.",
-       ],
-       en:[
-         "── SPREADSHEETS (Excel / Google Sheets) ──",
-         "For a simple spreadsheet: go to claude.ai and type: 'Create a spreadsheet in Excel for [what you want to track]. Columns: [list what you want]. Add formulas for [totals / averages / conditions].'\nClaude writes the spreadsheet as text or directly as a CSV file to download.",
-         "For a more complex spreadsheet with data: upload existing Excel or CSV directly to Claude (paperclip icon) and type: 'Add a column that calculates [what]. Highlight rows where [condition]. Make a pivot table by [column].'",
-         "Google Sheets has its own AI — click a cell and type = then a description in plain language. Or use Extensions → Apps Script for automation.",
-         "── PRESENTATIONS (PowerPoint / Google Slides) ──",
-         "Structure and texts: go to claude.ai and type: 'Design a presentation structure on topic [topic] for [who]. Number of slides: [number]. For each slide write: heading, 3–4 bullet points and a speaker note.'",
-         "Visual design: copy texts from Claude into Canva (canva.com → Presentations) — has hundreds of templates and AI suggests layout automatically. Or into Google Slides where you click Tools → Help me organize.",
-         "Gamma (gamma.app): simplest path — write the topic and Gamma creates the entire visual presentation including design. Free with limit.",
-       ],
-     },
-     tip:{cs:"Největší časová úspora: nechte Claude navrhnout strukturu a napsat texty, pak teprve otevřete PowerPoint nebo Canvu a přidejte vizuální stránku. Nepište texty a nedesignujte zároveň — mozek to dělá špatně.",en:"Biggest time saver: let Claude suggest structure and write texts, then open PowerPoint or Canva and add the visual side. Don't write texts and design at the same time — the brain is bad at both simultaneously."},
-    },
-    {task:{cs:"Obsah na sociální sítě",en:"Social media content"},icon:"—",
-     url:"https://claude.ai",
-     urlLabel:{cs:"Otevřít Claude",en:"Open Claude"},
-     desc:{cs:"AI vám pomůže napsat příspěvky na LinkedIn, Instagram nebo TikTok — navrhne strukturu, text i vizuální koncepty. Nemusíte vymýšlet co napsat od nuly.",en:"AI helps you write posts for LinkedIn, Instagram or TikTok — suggests structure, text and visual concepts. No need to come up with content from scratch."},
-     recommended:["Claude","ChatGPT","Canva (canva.com)"],
-     steps:{
-       cs:[
-         "LINKEDIN POST — jděte na claude.ai a napište: 'Napiš LinkedIn příspěvek o [téma]. Začni jednou větou která zaujme (to je tzv. hook — první věta která přiměje lidi číst dál). Pak vysvětli proč je to důležité. Na konci přidej otázku pro čtenáře.' LinkedIn příspěvky bez háčku na začátku nikdo nečte.",
-         "CTA = výzva k akci (Call To Action) — je to věta na konci příspěvku která říká čtenáři co má udělat. Příklady: 'Napište do komentářů jak to řešíte vy', 'Sdílejte s někým komu by to pomohlo', 'Sledujte mě pro více tipů'",
-         "INSTAGRAM CAROUSEL (série obrázků kde se swipuje) — Claude Artifacts je funkce v Claude.ai kde AI může vytvořit vizuální obsah přímo v chatu. Jděte na claude.ai, napište: 'Vytvoř Instagram carousel o [téma] — 7 slidů. První slid: šokující tvrzení nebo číslo. Prostřední slidy: tipy. Poslední slid: co mají udělat.' Claude vygeneruje celý vizuální carousel přímo v chatu — udělejte screenshot každého slidu.",
-         "TIKTOK / REELS SKRIPT — napište Claudovi: 'Napiš skript pro 60sekundové video o [téma]. Styl: vzdělávací a přímý. Každá věta na nový řádek — budu číst z papíru.'",
-         "CANVA AI — jděte na canva.com a přihlaste se (zdarma). Klikněte na 'Vytvořit návrh' a vyberte formát (Instagram post, LinkedIn banner...). V pravém panelu najdete tlačítko 'Magic Write' nebo 'AI' — vložte téma a Canva navrhne text i vizuální design automaticky.",
-       ],
-       en:[
-         "LINKEDIN POST — go to claude.ai and type: 'Write a LinkedIn post about [topic]. Start with one sentence that grabs attention (that's called a hook — the first sentence that makes people keep reading). Then explain why it matters. End with a question for readers.'",
-         "CTA = Call To Action — a sentence at the end of the post telling readers what to do. Examples: 'Write in the comments how you handle it', 'Share with someone who'd find this helpful', 'Follow me for more tips'",
-         "INSTAGRAM CAROUSEL (series of images you swipe through) — Claude Artifacts is a feature in Claude.ai where AI can create visual content directly in the chat. Go to claude.ai, type: 'Create an Instagram carousel about [topic] — 7 slides. First slide: shocking claim or number. Middle slides: tips. Last slide: what they should do.' Claude generates the whole visual carousel in chat — screenshot each slide.",
-         "TIKTOK / REELS SCRIPT — type to Claude: 'Write a script for a 60-second video about [topic]. Style: educational and direct. Each sentence on a new line — I'll read from paper.'",
-         "CANVA AI — go to canva.com and sign in (free). Click 'Create a design' and choose format (Instagram post, LinkedIn banner...). In the right panel find 'Magic Write' or 'AI' button — enter your topic and Canva suggests text and visual design automatically.",
-       ],
-     },
-     tip:{cs:"Nejlepší postup: nejdřív si v Claudovi napište text příspěvku. Pak jděte do Canvy a přidejte vizuální stránku. AI za vás zvládne obojí — ale každý nástroj je lepší na něco jiného: Claude na text, Canva na vzhled.",en:"Best approach: first write the post text in Claude. Then go to Canva and add the visual side. AI handles both for you — but each tool is better at something different: Claude for text, Canva for looks."},
-    },
+  intermediate: [
+    { cat: { cs: "Pokročilé obrázky", en: "Advanced Images" }, icon: "🎨", desc: { cs: "Profesionální generování s plnou kontrolou.", en: "Professional generation with full control." }, items: [
+      { name: "Midjourney", url: "https://midjourney.com", price: "paid", d: { cs: "Nejkvalitnější generátor.", en: "Top quality generator." }, h: { cs: "Parametry --ar, --style raw, --chaos.", en: "Params --ar, --style raw, --chaos." }, tip: { cs: "'cinematic portrait, golden hour lighting, shallow depth of field'", en: "English prompt: 'cinematic portrait, golden hour lighting, shallow depth of field'" } },
+      { name: "Leonardo.ai", url: "https://leonardo.ai", price: "freemium", d: { cs: "Webový nástroj s mnoha modely.", en: "Web tool with many models." }, h: { cs: "Vyberte model, napište prompt.", en: "Choose model, write prompt." }, tip: { cs: "DreamShaper pro fotorealistické výsledky.", en: "DreamShaper for photorealistic results." } },
+      { name: "Flux (Replicate)", url: "https://replicate.com/black-forest-labs/flux-schnell", price: "freemium", d: { cs: "Excelentní kvalita, dobrá práce s textem.", en: "Excellent quality, good text handling." }, h: { cs: "Flux Schnell = rychlý. Flux Pro = kvalitnější.", en: "Flux Schnell = fast, free. Flux Pro = higher quality." }, tip: { cs: "Open-source — lokálně přes ComfyUI.", en: "Open-source — run locally via ComfyUI." } },
+    ]},
+    { cat: { cs: "Video tvorba", en: "Video Creation" }, icon: "🎬", desc: { cs: "Generování videí, AI avatary.", en: "Text-to-video, AI avatars." }, items: [
+      { name: "Runway", url: "https://runwayml.com", price: "freemium", d: { cs: "Profesionální AI video.", en: "Professional AI video." }, h: { cs: "Text to Video nebo Image to Video.", en: "Text to Video or Image to Video." }, tip: { cs: "Začněte s Image to Video — nahrajte Midjourney obrázek.", en: "Start with Image to Video — upload a Midjourney image." } },
+      { name: "HeyGen", url: "https://heygen.com", price: "freemium", d: { cs: "AI avatary pro prezentace.", en: "AI avatars for presentations." }, h: { cs: "Vyberte avatara, napište skript.", en: "Choose avatar, write script." }, tip: { cs: "Skvělé pro firemní videa a onboarding.", en: "Great for company and onboarding videos." } },
+      { name: "CapCut", url: "https://capcut.com", price: "freemium", d: { cs: "Video editor s AI. Auto-titulky.", en: "Video editor with AI. Auto-captions." }, h: { cs: "Nahrajte video, použijte auto-titulky.", en: "Upload video, use auto-captions." }, tip: { cs: "Auto-titulky ušetří hodiny práce.", en: "Auto-captions save hours of work." } },
+    ]},
+    { cat: { cs: "Hudba a zvuky", en: "Music & Audio" }, icon: "🎵", desc: { cs: "Celé písně, klonování hlasu.", en: "Full songs, voice cloning." }, items: [
+      { name: "Suno", url: "https://suno.com", price: "freemium", d: { cs: "Generuje kompletní písně z textu.", en: "Generates complete songs from text." }, h: { cs: "Popište žánr, náladu, téma.", en: "Describe genre, mood, topic." }, tip: { cs: "Napište vlastní text a specifikujte žánr přesně.", en: "Write your own lyrics and specify genre precisely." } },
+      { name: "ElevenLabs", url: "https://elevenlabs.io", price: "freemium", d: { cs: "Nejkvalitnější AI hlas a klonování.", en: "Top quality AI voice and cloning." }, h: { cs: "Vložte text, vyberte hlas nebo naklonujte vlastní.", en: "Paste text, select or clone your voice." }, tip: { cs: "30s nahrávka → ElevenLabs čte vaším hlasem.", en: "30s recording → ElevenLabs reads in your voice." } },
+    ]},
+    { cat: { cs: "Analýza dat", en: "Data Analysis" }, icon: "📊", desc: { cs: "Tabulky, grafy bez programování.", en: "Tables, charts — no coding." }, items: [
+      { name: "ChatGPT (Code Interpreter)", url: "https://chat.openai.com", price: "freemium", d: { cs: "CSV/Excel → Python kód → grafy.", en: "Upload CSV/Excel, GPT writes Python and creates charts." }, h: { cs: "'Analyzuj, najdi trendy, vytvoř 3 grafy.'", en: "Upload file. 'Analyze, find trends, create 3 charts.'" }, tip: { cs: "Říkejte přesně jak má graf vypadat.", en: "Be specific about how the chart should look." } },
+      { name: "Julius AI", url: "https://julius.ai", price: "freemium", d: { cs: "Specializovaný na analýzu. Bez kódu.", en: "Specialized in analysis. No code." }, h: { cs: "Nahrajte dataset, ptejte se přirozeně.", en: "Upload dataset, ask naturally." }, tip: { cs: "Ideální pokud nechcete vidět kód.", en: "Ideal if you don't want to see code." } },
+    ]},
+    { cat: { cs: "Automatizace", en: "Automation" }, icon: "⚡", desc: { cs: "Propojte aplikace bez programování.", en: "Connect apps without coding." }, items: [
+      { name: "Zapier", url: "https://zapier.com", price: "freemium", d: { cs: "Tisíce aplikací. Trigger → akce.", en: "Thousands of apps. Trigger → action." }, h: { cs: "Když X → udělej Y. Email → Drive → Slack.", en: "When X → do Y. Email → Drive → Slack." }, tip: { cs: "Začněte jednoduše a přidávejte kroky.", en: "Start simple and gradually add steps." } },
+      { name: "Make", url: "https://make.com", price: "freemium", d: { cs: "Vizuální automatizace. Pokročilejší.", en: "Visual automation. More advanced." }, h: { cs: "Přetahujte moduly na plátno.", en: "Drag modules onto canvas." }, tip: { cs: "Má AI modul pro volání ChatGPT/Claude.", en: "Has AI module for calling ChatGPT/Claude." } },
+    ]},
+    { cat: { cs: "Programování s AI", en: "Coding with AI" }, icon: "💻", desc: { cs: "AI píše, opravuje a testuje kód.", en: "AI writes, fixes and tests code." }, items: [
+      { name: "Cursor", url: "https://cursor.sh", price: "freemium", d: { cs: "AI-first editor kódu.", en: "AI-first code editor." }, h: { cs: "Cmd+K pro inline, Cmd+I pro Composer.", en: "Cmd+K for inline, Cmd+I for Composer." }, tip: { cs: ".cursorrules definuje pravidla pro AI.", en: ".cursorrules file defines rules AI always follows." } },
+      { name: "Claude (Sonnet)", url: "https://claude.ai", price: "freemium", d: { cs: "Excelentní na kód. Python, JS, TS.", en: "Excellent at code. Python, JS, TS." }, h: { cs: "Vložte kód: 'oprav', 'vysvětli', 'optimalizuj'.", en: "Paste code and say 'fix', 'explain' or 'optimize'." }, tip: { cs: "Sonnet je v benchmarcích nejlepší na kód.", en: "Sonnet often ranks #1 in code benchmarks." } },
+      { name: "DeepSeek R1", url: "https://chat.deepseek.com", price: "free", d: { cs: "Zdarma! Silný v kódu a matematice.", en: "Free! Strong in code and math." }, h: { cs: "R1 ukazuje reasoning — skvělé pro učení.", en: "R1 shows reasoning — great for learning." }, tip: { cs: "Ukazuje celý myšlenkový postup.", en: "Shows full thinking process — better than textbooks." } },
+    ]},
   ],
-  advanced:[
-    {task:{cs:"Vývoj aplikací — Vibe Coding",en:"App development — Vibe Coding"},icon:"—",
-     url:"https://bolt.new",
-     urlLabel:{cs:"Začít v Bolt.new",en:"Start in Bolt.new"},
-     desc:{cs:"Vibe Coding = popisujete co chcete vytvořit přirozenou řečí a AI napíše celý kód za vás. Nemusíte rozumět programování. Výsledkem je funkční web nebo aplikace — ne jen mockup.",en:"Vibe Coding = describe what you want to create in plain language and AI writes all the code for you. No programming knowledge needed. The result is a working website or app — not just a mockup."},
-     recommended:["Bolt.new","Cursor","Claude Code"],
-     steps:{
-       cs:[
-         "── CESTA 1: Nevývojář (nechcete se učit kódovat) ──",
-         "Jděte na bolt.new — popište svoji aplikaci nebo web česky: 'Chci vytvořit web pro mé fotografické studio s galérií fotek, ceníkem a kontaktním formulářem. Tmavý elegantní design.'",
-         "Bolt postaví celou aplikaci v prohlížeči — vidíte živý výsledek vpravo. Chcete změnu? Napište do chatu: 'Přidej sekci s referencemi' nebo 'Změň barvu tlačítek na zlatou'",
-         "Hotovou stránku sdílíte jako odkaz nebo stáhnete — žádná instalace není potřeba. Chcete stránku opravdu spustit online? Klikněte na 'Deploy' v Bolt.new — nasadí ji automaticky na Netlify nebo Vercel (hosting = server kde váš web žije). Dostanete vlastní odkaz který funguje pro kohokoliv. Pro vlastní doménu (např. mojefirma.cz) si ji kupte na Wedos.cz nebo Namecheap.com za ~300 Kč/rok a v nastavení ji propojte s Netlify.",
-         "── CESTA 2: Vývojář (kódujete ale chcete AI jako parťáka) ──",
-         "Claude Code je AI přímo v terminálu (příkazová řádka = okno kde píšete příkazy počítači). Nainstalujete ho příkazem: npm install -g @anthropic/claude-code",
-         "V projektu napište /init — Claude prozkoumá vaše soubory a vytvoří dva pomocné dokumenty: ARCHITECTURE.md (přehled jak je projekt postavený) a CLAUDE.md (vaše coding standardy a pravidla). Tyto soubory Claude čte před každou změnou, aby věděl kontext",
-         "Claude Skills: v složce ~/.claude/skills/ si vytvoříte .md soubory s instrukcemi pro opakované úkoly — např. 'brand-voice.md' říká Claudovi jak psát texty ve vašem stylu, nebo 'seo-checklist.md' co kontrolovat u každého článku",
-         "Cursor je VS Code editor (program pro psaní kódu) s vestavěnou AI. Cmd+K = opravit nebo přepsat konkrétní část kódu přirozenou řečí. Cmd+L = chat který vidí celý váš projekt",
-         "/clear použijte když Claude začne dávat horší odpovědi v delším sezení — smaže historii konverzace a znovu se soustředí",
-         "Antigravity + Claude Code: Antigravity je bezplatná Chrome rozšíření od Googlu která nainstaluje Claude Code přímo do prohlížeče jako coding asistenta. Dobrý start pokud chcete vyzkoušet Claude Code bez plného nastavení terminálu.",
-       ],
-       en:[
-         "── PATH 1: Non-developer (don't want to learn coding) ──",
-         "Go to bolt.new — describe your app or website: 'I want to create a website for my photography studio with a photo gallery, price list and contact form. Dark elegant design.'",
-         "Bolt builds the entire app in the browser — you see the live result on the right. Want a change? Type in chat: 'Add a testimonials section' or 'Change button color to gold'",
-         "Share the finished page as a link or download it — no installation needed",
-         "── PATH 2: Developer (you code but want AI as a partner) ──",
-         "Claude Code is AI directly in the terminal. Install it with: npm install -g @anthropic/claude-code",
-         "In your project type /init — Claude explores your files and creates two helper documents: ARCHITECTURE.md (overview of how the project is built) and CLAUDE.md (your coding standards and rules). Claude reads these before every change so it knows the context",
-         "Claude Skills: in the ~/.claude/skills/ folder create .md files with instructions for repeated tasks — e.g. 'brand-voice.md' tells Claude how to write texts in your style",
-         "Cursor is a VS Code editor with built-in AI. Cmd+K = fix or rewrite specific code in plain language. Cmd+L = chat that sees your entire project",
-         "Use /clear when Claude starts giving worse answers in a longer session — clears conversation history and refocuses",
-         "Antigravity (Google Antigravity) + Claude Code: Antigravity is a free extension that installs Claude Code directly into Chrome as a coding assistant. Good starting point if you want to try Claude Code without the full terminal setup.",
-       ],
-     },
-     tip:{cs:"Nevývojář: Bolt.new je nejrychlejší start — výsledek za minuty. Vývojář: Claude Code + Cursor je nejsilnější kombinace pro vývoj s AI. Startovací stack pro aplikaci v 2026 vychází na ~$20/měs: Claude Pro + Supabase (databáze, zdarma) + Vercel (hosting, zdarma).",en:"Non-developer: Bolt.new is the fastest start — results in minutes. Developer: Claude Code + Cursor is the most powerful combination for AI-assisted development. Starting stack for an app in 2026 costs ~$20/mo: Claude Pro + Supabase (database, free) + Vercel (hosting, free)."},
-    },
-    {task:{cs:"Vibe Coding — web nebo aplikace: kompletní průvodce",en:"Vibe Coding — website or app: complete guide"},icon:"—",
-     url:"https://bolt.new",
-     urlLabel:{cs:"Otevřít Bolt.new",en:"Open Bolt.new"},
-     desc:{cs:"Rychlý přehled co použít, jak začít a jak dostat výsledek online — podle toho jestli chcete web nebo funkční aplikaci.",en:"Quick guide on what to use, how to start and how to get live — depending on whether you want a website or a working app."},
-     recommended:["Bolt.new","v0.dev","Lovable"],
-     steps:{
-       cs:[
-         "── CHCI WEB (prezentace, portfolio, landing page) ──",
-         "Bolt.new: nejrychlejší. Napište vše do jedné zprávy — sekce, obsah, styl, barvy. Příklad: 'Vytvoř landing page pro mé účetnictví. Sekce: Hlavní banner s CTA tlačítkem, Služby (3 karty), O mně s fotkou, Ceník, Kontakt. Styl: čistý, bílý, profesionální, modrý akcent.' Bolt stránku sestaví živě — vidíte výsledek vpravo.",
-         "v0.dev: ideální když chcete jen jednu část — kontaktní formulář, cenovou tabulku nebo galerii. Popište komponentu → dostanete kód který vložíte do existující stránky.",
-         "Spuštění online: klikněte 'Deploy' v Bolt.new → automaticky nahraje na Vercel nebo Netlify (hosting = server kde web žije) zdarma. Dostanete odkaz jako mujweb.vercel.app. Pro vlastní doménu (mojefirma.cz) ~300 Kč/rok na Wedos.cz — v nastavení Vercelu pak doménu propojíte.",
-         "── CHCI APLIKACI (registrace, přihlášení, ukládání dat, platby) ──",
-         "Lovable (lovable.dev): nejjednodušší cesta k funkční aplikaci. Popište co aplikace dělá → Lovable sestaví přihlašování, databázi i platby automaticky. Příklad: 'Chci aplikaci kde se uživatelé registrují, přidávají úkoly a označují je jako hotové. Platba přes Stripe za prémiové funkce.'",
-         "Bolt.new zvládne i aplikace — přidejte do popisu: 's přihlašováním přes Google a ukládáním do databáze'. Bolt propojí Supabase (databáze, zdarma do 50 000 uživatelů) automaticky.",
-         "Platby: Stripe (stripe.com) — nejjednodušší platební brána. Lovable i Bolt ho nastaví na váš pokyn: 'Přidej Stripe platby za 199 Kč/měs'.",
-         "Spuštění: Lovable → tlačítko 'Publish' → online okamžitě zdarma. Pro vlastní doménu stejný postup jako u webu — Wedos + propojení v nastavení.",
-       ],
-       en:[
-         "── I WANT A WEBSITE (presentation, portfolio, landing page) ──",
-         "Bolt.new: fastest. Write everything in one message — sections, content, style, colors. Example: 'Create a landing page for my accounting firm. Sections: Main banner with CTA button, Services (3 cards), About me with photo, Pricing, Contact. Style: clean, white, professional, blue accent.' Bolt builds the page live — you see the result on the right.",
-         "v0.dev: ideal when you want just one part — contact form, pricing table or photo gallery. Describe the component → get code you paste into an existing page.",
-         "Going live: click 'Deploy' in Bolt.new → automatically uploads to Vercel or Netlify (hosting = server where your site lives) for free. You get a link like mysite.vercel.app. For a custom domain (~$12/year on Namecheap.com) — connect it in Vercel settings.",
-         "── I WANT AN APP (registration, login, data storage, payments) ──",
-         "Lovable (lovable.dev): easiest path to a working app. Describe what the app does → Lovable builds login, database and payments automatically. Example: 'I want an app where users register, add tasks and mark them as done. Payment via Stripe for premium features.'",
-         "Bolt.new handles apps too — add to your description: 'with Google login and database storage'. Bolt connects Supabase (database, free up to 50,000 users) automatically.",
-         "Payments: Stripe (stripe.com) — simplest payment gateway. Lovable and Bolt set it up on request: 'Add Stripe payments for $9/month'.",
-         "Going live: Lovable → 'Publish' button → online instantly for free. For a custom domain same process as for websites — Namecheap + connect in settings.",
-       ],
-     },
-     tip:{cs:"Zlaté pravidlo: napište VŠE do prvního promptu — všechny sekce, funkce, barvy, texty. AI potřebuje celý obrázek najednou. Pokud přidáváte funkce postupně, výsledek bývá nekonzistentní a hůř se opravuje.",en:"Golden rule: write EVERYTHING into the first prompt — all sections, features, colors, texts. AI needs the complete picture at once. Adding features gradually tends to produce inconsistent results that are harder to fix."},
-    },
-    {task:{cs:"SEO — jak být výše ve výsledcích Googlu",en:"SEO — how to rank higher in Google"},icon:"—",
-     url:"https://claude.ai",
-     urlLabel:{cs:"Otevřít Claude",en:"Open Claude"},
-     desc:{cs:"SEO (Search Engine Optimization) = úpravy webu a obsahu tak, aby vás Google zobrazoval výš ve výsledcích vyhledávání. Čím výš jste, tím víc lidí vás najde. AI dokáže SEO výrazně zrychlit — analýzu, psaní článků i technické kontroly.",en:"SEO (Search Engine Optimization) = adjusting your website and content so Google shows you higher in search results. The higher you are, the more people find you. AI can significantly speed up SEO — analysis, writing articles and technical checks."},
-     recommended:["Claude","Perplexity"],
-     steps:{
-       cs:[
-         "ZÁKLADNÍ POJMY — přečtěte před začátkem:\n• Keyword (klíčové slovo) = slovo nebo fráze kterou lidé zadávají do Googlu, např. 'nejlepší kavárna Praha'\n• Search intent (záměr hledání) = proč to lidé hledají — chtějí informaci, porovnat produkty, nebo rovnou koupit?\n• EEAT = čtyři věci které Google hodnotí: Experience (máte přímou zkušenost s tématem?), Expertise (jste odborník?), Authoritativeness (odkazují na vás jiné weby?), Trustworthiness (je váš web důvěryhodný?). Čím víc EEAT, tím výš v Googlu.\n• Meta popis = krátký text pod nadpisem ve výsledcích Googlu — píšete ho vy, láká lidi ke kliknutí\n• H1, H2, H3 = nadpisy na stránce — H1 je hlavní nadpis (jeden na stránku), H2 jsou podnadpisy, H3 pod-podnadpisy",
-         "KROK 1 — Najděte správná klíčová slova. Jděte na claude.ai a napište: 'Jaká klíčová slova by lidé hledali když chtějí [váš produkt nebo služba] v [místo nebo obor]? Navrhni 10 konkrétních frází včetně delších dotazů (3–5 slov) a otázek začínajících na jak, proč, co.'\n\nPříklad: 'Jaká klíčová slova by lidé hledali když chtějí fotografa na svatbu v Praze? Navrhni 10 konkrétních frází včetně delších dotazů a otázek.'",
-         "KROK 2 — Napište nebo vylepšete článek. Vložte do Claude: 'Napiš SEO článek pro klíčové slovo [váš keyword]. Cílový čtenář: [kdo to bude číst]. Délka: 1000–1500 slov. Přidej konkrétní příklady a čísla — Google odměňuje články které ukazují reálné zkušenosti.'\n\nPříklad: 'Napiš SEO článek pro klíčové slovo svatební fotograf Praha cena. Cílový čtenář: páry plánující svatbu. Délka: 1200 slov. Přidej příklady cenových rozmezí a tipy jak vybrat fotografa.'",
-         "KROK 3 — Zkontrolujte technické věci na webu. Zkopírujte celý text vaší stránky (Ctrl+A, Ctrl+C) nebo URL a vložte do Claude.ai s touto zprávou: 'Zkontroluj tuto stránku z pohledu SEO. Má správný H1 nadpis? Je meta popis do 155 znaků a láká ke kliknutí? Jsou klíčová slova přirozeně v textu? Co bys zlepšil jako první?' Claude vám konkrétně řekne co změnit.",
-         "KROK 4 — Maximalizujte SEO celého webu najednou. Zkopírujte URL vašeho webu a napište Claudovi nebo Perplexity: 'Prozkoumej web [URL]. Jaká klíčová slova mu chybí? Co dělá konkurence lépe? Navrhni 5 konkrétních kroků jak zlepšit pozici v Googlu do 30 dní.'",
-         "KROK 5 — Podívejte se co dělá konkurence. Napište Perplexity: 'Vyhledej co píší top 3 weby v Googlu pro klíčové slovo [keyword]. Co mají co já nemám? Jaká témata nebo otázky přeskočili?'",
-         "Pozn: Claude Code /seo je pokročilá funkce pro vývojáře s nainstalovaným Claude Code — pokud Claude Code nemáte, kroky 1–5 výše vám plně postačí",
-       ],
-       en:[
-         "KEY TERMS — read before starting:\n• Keyword = word or phrase people type into Google, e.g. 'best coffee shop Prague'\n• Search intent = why people search it — do they want information, to compare products, or to buy?\n• EEAT = four things Google evaluates: Experience (do you have direct experience with the topic?), Expertise (are you an expert?), Authoritativeness (do other sites link to you?), Trustworthiness (is your site credible?). More EEAT = higher in Google.\n• Meta description = short text under the headline in Google results — you write it, it entices people to click\n• H1, H2, H3 = headings on the page — H1 is the main heading (one per page), H2 are subheadings, H3 sub-subheadings",
-         "STEP 1 — Find the right keywords. Go to claude.ai and type: 'What keywords would people search when looking for [your product or service] in [location or field]? Suggest 10 specific phrases including longer queries (3–5 words) and questions starting with how, why, what.'\n\nExample: 'What keywords would people search when looking for a wedding photographer in Prague? Suggest 10 specific phrases including longer queries and questions.'",
-         "STEP 2 — Write or improve an article. Paste into Claude: 'Write an SEO article for keyword [your keyword]. Target reader: [who will read it]. Length: 1000–1500 words. Add specific examples and numbers — Google rewards articles that show real experience.'\n\nExample: 'Write an SEO article for keyword wedding photographer Prague price. Target reader: couples planning a wedding. Length: 1200 words. Add pricing range examples and tips on choosing a photographer.'",
-         "STEP 3 — Check the technical things on your site. Copy all text from your page (Ctrl+A, Ctrl+C) or the URL and paste into Claude.ai with this message: 'Check this page from an SEO perspective. Does it have the correct H1 heading? Is the meta description under 155 characters and enticing to click? Are keywords naturally in the text? What would you improve first?' Claude will tell you specifically what to change.",
-         "STEP 4 — Maximize SEO of your whole website at once. Copy your website URL and tell Claude or Perplexity: 'Analyze website [URL]. What keywords is it missing? What does the competition do better? Suggest 5 specific steps to improve Google ranking in 30 days.'",
-         "STEP 5 — See what competitors do. Tell Perplexity: 'Search what the top 3 Google sites write for keyword [keyword]. What do they have that I don't? What topics or questions did they miss?'",
-       ],
-     },
-     tip:{cs:"Moderní SEO nevyhraje ten kdo má nejvíc klíčových slov — vyhraje ten kdo má nejlepší a nejdůvěryhodnější obsah. Přidejte do článků vždy: konkrétní čísla, vaše vlastní zkušenosti a odpovědi na otázky které zákazníci skutečně kladou.",en:"Modern SEO isn't won by who has the most keywords — it's won by who has the best and most trustworthy content. Always add to articles: specific numbers, your own experiences and answers to questions customers actually ask."},
-    },
-    {task:{cs:"Marketing — strategie, obsah a kampaně",en:"Marketing — strategy, content and campaigns"},icon:"—",
-     url:"https://claude.ai",
-     urlLabel:{cs:"Otevřít Claude",en:"Open Claude"},
-     desc:{cs:"AI dokáže pokrýt celý marketingový proces: od strategie přes tvorbu obsahu až po automatizaci kampaní. Hodí se pro freelancery, majitele firem i marketéry — bez nutnosti mít velký tým.",en:"AI can cover the entire marketing process: from strategy through content creation to campaign automation. Great for freelancers, business owners and marketers — no big team needed."},
-     recommended:["Claude","ChatGPT","Canva","ElevenLabs","Runway"],
-     steps:{
-       cs:[
-         "── CO VŠECHNO AI V MARKETINGU ZVLÁDNE ──",
-         "Psaní obsahu: LinkedIn posty, Instagram popisky, emaily, reklamní texty, blog články\nTvorba strategie: 90denní plán co publikovat, kdy a kde\nVisuály a video: carousel pro Instagram (viz mírně pokročilý), skripty pro Reels/TikTok, hlasový komentář přes ElevenLabs, animace přes Runway\nAutomatizace: AI agent který třídí příchozí zprávy, odpovídá na komentáře nebo posílá follow-up emaily (viz sekce Automatizace)",
-         "── KROK 1: Sestavte 90denní obsahovou strategii ──",
-         "Nejdřív pár pojmů:\n• ICP (Ideal Customer Profile) = přesný popis vašeho ideálního zákazníka — věk, profese, největší problémy, kde tráví čas online\n• Content pillars (obsahové pilíře) = 3–4 hlavní témata o kterých budete pravidelně komunikovat\n• Editorial kalendář = plán co zveřejníte kdy a na jaké platformě\n\nNapište do Claude: 'Sestav mi 90denní obsahovou strategii pro [popis vaší firmy/produktu]. Můj ideální zákazník: [věk, profese, největší problém]. Platformy: [Instagram / LinkedIn / email]. Cíl: [více sledujících / víc poptávek / prodeje].\n\nChci:\n1) Popis mého ideálního zákazníka — kdo je, co ho trápí, kde ho najdu online\n2) 3 hlavní témata o kterých budu komunikovat a proč\n3) Týdenní plán: co zveřejnit každý den a v jakém formátu\n4) 3 věci které udělám tento týden jako první'",
-         "── KROK 2: Plňte strategii obsahem ──",
-         "LinkedIn post: 'Napiš LinkedIn příspěvek o [téma z vaší strategie]. Hook (první věta která zaujme): [váš nápad nebo nechte AI]. Tón: [osobní / odborný]. Max 250 slov.'\nInstagram popisek: 'Napiš Instagram popisek pro fotku kde [popis fotky]. Téma: [pilíř]. CTA (výzva k akci = co má follower udělat): ulož si, sdílej, napiš do komentářů.'\nEmail kampaň: 'Napiš 3 emaily pro lidi kteří se přihlásili k odběru ale ještě nekoupili. Email 1 (ihned): uvítání + jedna rychlá hodnota. Email 2 (den 3): příběh zákazníka. Email 3 (den 7): nabídka s důvodem jednat teď.'\nReklamní text (AIDA / PAS): PAS = Problem (popiš problém) → Agitate (zdůrazni jak moc to bolí) → Solution (nabídni řešení). Příklad: 'Každý večer nevíte co zveřejnit? Scrollujete prázdnou obrazovku a čas utíká? Tady je 90denní plán obsahu sestavený za 5 minut.'",
-         "── KROK 3: Instagram carousel bez Canvy ──",
-         "Claude Artifacts = funkce v Claude.ai kde AI může generovat vizuální obsah (HTML stránku) přímo v chatu. Carousel = série obrázků/slidů které se na Instagramu swipují.\n\nJděte na claude.ai a napište: 'Vytvoř Instagram carousel jako HTML artefakt. Téma: [vaše téma]. 7 slidů. Slide 1: šokující číslo nebo tvrzení. Slidy 2–6: jeden tip na každém. Slide 7: výzva k akci. Design: tmavý, velká bílá písma, [vaše barva] jako akcent.'\n\nClaude vygeneruje celý vizuální carousel přímo v chatu. Na mobilu udělejte screenshot každého slidu → přidejte na Instagram. Více o carouselu → viz nástroj 'Obsah na sociální sítě' v mírně pokročilém.",
-         "── KROK 4: Skripty pro videa a Reels ──",
-         "Napište do Claude: 'Napiš scénář pro 60sekundové Reels video o [téma]. Styl: [vzdělávací / zábavný / osobní]. Každá věta na nový řádek — budu číst z papíru. Na konci otázka pro komentáře.'\nHlas k videu: text ze scénáře vložte do ElevenLabs (elevenlabs.io) → vygeneruje profesionální hlas jako komentář\nAnimace záběrů: výchozí snímek z Midjourney nebo Nano Banana → nahrajte do Runway (runwayml.com) → AI ho zanimuje",
-         "── KROK 5: Automatizace marketingu ──",
-         "AI agenti vám ušetří hodiny týdně:\n• Třídění DM zpráv a komentářů: Make.com + Claude — nová zpráva → Claude vyhodnotí → připraví návrh odpovědi\n• Follow-up emaily: Make.com + Gmail — někdo vyplnil formulář → Claude napíše personalizovaný email → vy schválíte → odešle se\n• Reporty: každý týden Make.com stáhne data z Instagram / LinkedIn → Claude napíše shrnutí → přijde vám na email\nViz nástroj 'Automatizace' v mírně pokročilém pro postup krok za krokem.",
-       ],
-       en:[
-         "── WHAT AI CAN HANDLE IN MARKETING ──",
-         "Content writing: LinkedIn posts, Instagram captions, emails, ad copy, blog articles\nStrategy: 90-day plan of what to publish, when and where\nVisuals and video: carousel for Instagram (see intermediate), scripts for Reels/TikTok, voiceover via ElevenLabs, animation via Runway\nAutomation: AI agent that sorts incoming messages, replies to comments or sends follow-up emails (see Automation section)",
-         "── STEP 1: Build a 90-day content strategy ──",
-         "A few terms first:\n• ICP (Ideal Customer Profile) = exact description of your ideal customer — age, profession, biggest problems, where they spend time online\n• Content pillars = 3–4 main topics you'll communicate about regularly\n• Editorial calendar = plan of what you'll publish when and on which platform\n\nType into Claude: 'Build me a 90-day content strategy for [description of your business/product]. My ideal customer: [age, profession, biggest problem]. Platforms: [Instagram / LinkedIn / email]. Goal: [more followers / more inquiries / sales].\n\nI want:\n1) Description of my ideal customer — who they are, what troubles them, where I find them online\n2) 3 main topics I'll communicate about and why\n3) Weekly plan: what to publish each day and in what format\n4) 3 things to do this week first'",
-         "── STEP 2: Fill the strategy with content ──",
-         "LinkedIn post: 'Write a LinkedIn post about [topic from your strategy]. Hook (first sentence that grabs attention): [your idea or let AI]. Tone: [personal / professional]. Max 250 words.'\nInstagram caption: 'Write an Instagram caption for a photo where [describe photo]. Topic: [pillar]. CTA (call to action = what should the follower do): save this, share, write in comments.'\nEmail campaign: 'Write 3 emails for people who subscribed but haven't bought yet. Email 1 (immediately): welcome + one quick value. Email 2 (day 3): customer story. Email 3 (day 7): offer with reason to act now.'\nAd copy (AIDA / PAS): PAS = Problem (describe problem) → Agitate (emphasize how much it hurts) → Solution (offer solution).",
-         "── STEP 3: Instagram carousel without Canva ──",
-         "Claude Artifacts = feature in Claude.ai where AI can generate visual content (HTML page) directly in chat. Carousel = series of images/slides that users swipe through on Instagram.\n\nGo to claude.ai and type: 'Create an Instagram carousel as HTML artifact. Topic: [your topic]. 7 slides. Slide 1: shocking number or claim. Slides 2–6: one tip each. Slide 7: call to action. Design: dark, large white text, [your color] as accent.'\n\nClaude generates the entire visual carousel in chat. On mobile screenshot each slide → add to Instagram. More about carousels → see 'Social media content' tool in intermediate.",
-         "── STEP 4: Scripts for videos and Reels ──",
-         "Type into Claude: 'Write a script for a 60-second Reels video about [topic]. Style: [educational / entertaining / personal]. Each sentence on a new line — I'll read from paper. End with a question for comments.'\nVoiceover: paste the script text into ElevenLabs (elevenlabs.io) → generates professional voice as commentary\nAnimation: starting frame from Midjourney or Nano Banana → upload to Runway (runwayml.com) → AI animates it",
-         "── STEP 5: Marketing automation ──",
-         "AI agents save you hours per week:\n• Sorting DMs and comments: Make.com + Claude — new message → Claude evaluates → prepares draft reply\n• Follow-up emails: Make.com + Gmail — someone filled out form → Claude writes personalized email → you approve → it sends\n• Reports: every week Make.com pulls data from Instagram/LinkedIn → Claude writes summary → arrives in your email\nSee 'Automation' tool in intermediate for step-by-step instructions.",
-       ],
-     },
-     tip:{cs:"Zlaté pravidlo: strategie nejdřív, pak obsah. Bez jasných pilířů a ICP budete produkovat obsah do prázdna. Dejte Claudovi 10 minut na strategii — ušetříte hodiny týdně.",en:"Golden rule: strategy first, then content. Without clear pillars and ICP you'll produce content into a void. Give Claude 10 minutes for strategy — save hours per week."},
-    },
-    {task:{cs:"Byznys — strategie a plánování",en:"Business — strategy and planning"},icon:"—",
-     url:"https://claude.ai",
-     urlLabel:{cs:"Otevřít Claude",en:"Open Claude"},
-     desc:{cs:"AI vám pomůže sestavit byznys plán, analyzovat konkurenci, nacenit vaše služby nebo naplánovat jak oslovit první zákazníky. Vše bez konzultanta — za hodinu místo týdnů.",en:"AI helps you build a business plan, analyze competition, price your services or plan how to reach first customers. All without a consultant — in an hour instead of weeks."},
-     recommended:["Claude","Perplexity"],
-     steps:{
-       cs:[
-         "KROK 1 — Byznys plán\n\nByznys plán = dokument který popisuje co děláte, pro koho, jak na tom vyděláte a co vás čeká. Hodí se před spuštěním firmy, při žádosti o půjčku nebo jen abyste měli jasno sami sobě.\n\nNejlepší výsledek dostanete když Claudovi dáte strukturovaný vstup. XML = speciální formát ohraničený značkami — Claude ho čte lépe než volný text.\n\nNapište do Claude.ai:\n\u003cbusiness\u003e\nCo děláme: [popis produktu nebo služby]\nJak to vydělává peníze: [poplatky / předplatné / provize]\n\u003c/business\u003e\n\u003cmarket\u003e\nKdo jsou zákazníci: [věk, profese, problém který řeší]\nGeografie: [ČR / Evropa / online]\n\u003c/market\u003e\n\u003cgoals\u003e\nCíl za 6 měsíců: [konkrétní číslo]\nCíl za 1 rok: [konkrétní číslo]\n\u003c/goals\u003e\n\u003cconstraints\u003e\nTým: [kolik lidí]\nRozpočet: [malý / střední / velký]\nHlavní rizika: [co by mohlo nevyjít]\n\u003c/constraints\u003e\n\nNa základě toho mi vytvoř byznys plán s: shrnutím pro investora (max 150 slov), analýzou trhu, popisem konkurence, finančními projekcemi na 3 roky a 5 konkrétními kroky pro první měsíc.\n\n→ PŘÍKLAD: viz sekce Prompty → Byznys",
-         "KROK 2 — Analýza konkurence\n\nNejdřív zjistěte kdo jsou konkurenti — pak Claude navrhne jak se odlišit.\n\nFáze 1: Jděte na perplexity.ai a napište:\n'Kdo jsou hlavní konkurenti pro [váš produkt/službu] v [ČR / online]? Co nabízejí, jaké mají ceny a co zákazníci chválí nebo kritizují?'\n\nFáze 2: Výsledky zkopírujte a vložte do Claude.ai:\n'Toto je konkurence v mém oboru: [vložte výsledky z Perplexity]. Kde jsou slabí? Jak se odlišit? Navrhni 3 konkrétní způsoby jak získat část jejich zákazníků.'\n\n→ PŘÍKLAD vyplněného promptu: viz sekce Prompty → Byznys",
-         "KROK 3 — Nacenění vaší služby\n\nHigh-ticket offer = dražší nabídka (obvykle 15 000 Kč+) zaměřená na konkrétní výsledek pro zákazníka. Hodí se pro kouče, konzultanty, freelancery nebo specialisty.\n\nNapište do Claude.ai:\n'Chci sestavit dražší nabídku svých služeb. Zeptej se mě postupně na: moje zkušenosti, konkrétní výsledky které klientům přináším a co mě odlišuje od jiných. Pak navrhni jak nabídku nazvat, co do ní zahrnout, jak ji nacenit (na základě hodnoty pro klienta, ne mého času) a jak ji prezentovat za 60 sekund.'\n\nClaude vás bude vyzvívat otázkami — jen odpovídejte. Na konci dostanete hotovou nabídku.",
-         "KROK 4 — Plán jak oslovit první zákazníky\n\nGTM (Go-to-Market) strategie = plán jak dostat produkt k prvním platícím zákazníkům. KPIs = měřitelné cíle jako počet zákazníků, tržby nebo počet registrací.\n\nNapište do Claude.ai:\n'Pomoz mi sestavit plán jak získat prvních [10 / 50 / 100] zákazníků za [1 / 3 / 6] měsíců.\nProdukt/služba: [popis]\nIdeální zákazník: [kdo je]\nRozpočet na marketing: [nulový / malý / střední]\nCo už mám: [web / sociální sítě / kontakty / nic]\nChci týdenní plán: co přesně dělat každý týden, jak měřit výsledky a kdy přehodnotit přístup.'\n\n→ PŘÍKLAD: viz sekce Prompty → Byznys",
-       ],
-       en:[
-         "STEP 1 — Business plan\n\nBusiness plan = document describing what you do, for whom, how you make money and what to expect. Useful before launching, applying for a loan or just getting clarity.\n\nBest results come from structured input. XML = special format with tags — Claude reads it better than plain text.\n\nType into Claude.ai:\n\u003cbusiness\u003e\nWhat we do: [product or service]\nHow it makes money: [fees / subscription / commission]\n\u003c/business\u003e\n\u003cmarket\u003e\nWho are customers: [age, profession, problem]\nGeography: [local / Europe / online]\n\u003c/market\u003e\n\u003cgoals\u003e\nGoal in 6 months: [specific number]\nGoal in 1 year: [specific number]\n\u003c/goals\u003e\n\u003cconstraints\u003e\nTeam: [how many people]\nBudget: [small / medium / large]\nMain risks: [what could go wrong]\n\u003c/constraints\u003e\n\nBased on this create a business plan with: investor summary (max 150 words), market analysis, competition, 3-year projections and 5 concrete first-month steps.",
-         "STEP 2 — Competitor analysis\n\nFirst find competitors — then Claude suggests how to differentiate.\n\nPhase 1: Go to perplexity.ai and type:\n'Who are main competitors for [your product/service] in [country / online]? What do they offer, what are prices and what do customers praise or criticize?'\n\nPhase 2: Copy results and paste into Claude.ai:\n'This is the competition in my field: [paste Perplexity results]. Where are they weak? How can I differentiate? Suggest 3 concrete ways to win some of their customers.'",
-         "STEP 3 — Pricing your service\n\nHigh-ticket offer = higher-priced offer ($1,000+) focused on a specific result. Great for coaches, consultants, freelancers or specialists.\n\nType into Claude.ai:\n'I want to build a premium offer. Ask me step by step about: my experience, specific results I deliver to clients and what differentiates me. Then suggest: what to call the offer, what to include, how to price it (based on client value, not my time) and how to present it in 60 seconds.'\n\nClaude asks you questions — just answer. At the end you get a finished offer.",
-         "STEP 4 — Plan to reach first customers\n\nGTM (Go-to-Market) strategy = plan to get product to first paying customers. KPIs = measurable goals like number of customers, revenue or sign-ups.\n\nType into Claude.ai:\n'Help me plan how to get the first [10 / 50 / 100] customers in [1 / 3 / 6] months.\nProduct/service: [description]\nIdeal customer: [who they are]\nMarketing budget: [zero / small / medium]\nWhat I already have: [website / social / contacts / nothing]\nI want a weekly plan: exactly what to do, how to measure results and when to reconsider.'",
-       ],
-     },
-     tip:{cs:"Extended Thinking = funkce v Claude.ai kde AI přemýšlí déle a hlouběji — hodí se pro složité byznys analýzy. Zapnete ho kliknutím na ikonu 'rozšířené přemýšlení' v chatu, nebo napište: 'Přemýšlej důkladně ze všech úhlů než odpovíš.'",en:"Extended Thinking = feature in Claude.ai where AI thinks longer and deeper — great for complex business analyses. Turn it on by clicking the 'extended thinking' icon in chat, or type: 'Think thoroughly from all angles before answering.'"},
-    },
-    {task:{cs:"AI Agenti — automatizace která pracuje za vás",en:"AI Agents — automation that works for you"},icon:"—",
-     url:"https://retell.ai",
-     urlLabel:{cs:"Otevřít Retell AI",en:"Open Retell AI"},
-     desc:{cs:"AI agent = program který nepotřebuje vaše instrukce při každém kroku — sám čte vstupy, rozhoduje a provádí akce. Rozdíl od normální AI: Claude odpovídá na otázky. AI agent přijme hovor, zarezervuje termín a pošle potvrzení — bez vás.",en:"AI agent = program that doesn't need your instructions at every step — reads inputs, makes decisions and takes actions on its own. Difference from regular AI: Claude answers questions. An AI agent picks up a call, books an appointment and sends confirmation — without you."},
-     recommended:["Retell AI","n8n","Claude Code","Perplexity Computer","agentskill.sh"],
-     steps:{
-       cs:[
-         "── CO JE AI AGENT A KDY HO CHCETE ──\n\nNormální AI (Claude, ChatGPT): napíšete dotaz → dostanete odpověď → vy rozhodnete co dál.\nAI agent: nastavíte jednou → agent sám sleduje emaily, přijímá hovory, rezervuje termíny, třídí zprávy — a vy jen kontrolujete výsledky.\n\nPříklady kdy se hodí:\n• Zvedáte telefon sami? → hlasový agent zvedá za vás 24/7\n• Trávíte hodinu denně tříděním emailů? → emailový agent třídí a připravuje odpovědi\n• Opakujete stále stejné odpovědi zákazníkům? → chatbot agent odpovídá automaticky",
-         "── KROK 1: Hlasový recepční agent ──\n\nCo to je: AI která přijímá telefonní hovory za vás, odpovídá na otázky, rezervuje termíny v kalendáři a přepojuje složitější hovory na vás.\n\nPotřebné nástroje (všechny se propojí dohromady):\n• Retell AI (retell.ai) — mozek agenta, nastavíte co má říkat a jak reagovat\n• Cal.com (cal.com) — váš online kalendář, agent do něj rezervuje termíny\n• ElevenLabs (elevenlabs.io) — hlas agenta, zní jako člověk\n• Telefonní číslo — koupíte přímo v Retell AI za ~$2/měs\n\nPostup:\n1. Zaregistrujte se na retell.ai\n2. Vytvořte nového agenta, vyberte hlas z ElevenLabs\n3. Napište systémový prompt (viz sekce Prompty → AI Agenti)\n4. Propojte s Cal.com přes API klíč (Retell AI vás provede)\n5. Kupte telefonní číslo v Retell AI → agent začne přijímat hovory",
-         "── KROK 2: Emailový AI agent (n8n) ──\n\nN8n se liší od Make (z mírně pokročilého): Make je jednodušší a vhodný pro začátečníky. N8n je výkonnější, open-source (= zdarma ke stažení) a více přizpůsobitelný — hodí se pro složitější workflow.\n\nNejjednodušší emailový agent:\n1. Nainstalujte n8n: jděte na n8n.io → 'Get started' → cloud verze je placená, nebo stáhněte zdarma a spusťte lokálně\n2. Vytvořte nový workflow: Trigger = Gmail (nový email přijde)\n3. Přidejte Claude node: prompt = 'Zařaď tento email: urgent / lead / support / jiné. Odpověz jen názvem kategorie.'\n4. Podle kategorie: urgent → Slack notifikace, lead → CRM, support → helpdesk\n5. Přidejte draft odpovědi: Claude napíše návrh → jde do Gmailu jako koncept → vy schválíte a odešlete\n\nDůležité: nikdy nenastavujte automatické odesílání bez vašeho schválení.",
-         "── KROK 3: MCP protokol — Claude propojený s vašimi nástroji ──\n\nMCP (Model Context Protocol) = způsob jak propojit Claude s externími nástroji — vaší databází, GitHubem, Google Drive nebo firemním systémem. Místo kopírování dat do chatu Claude sám sahá na živá data.\n\nPříklad: Claude vidí váš GitHub a může číst kód, vidí váš CRM a může hledat zákazníky, vidí vaší databázi a může analyzovat data.\n\nNastavení (pro vývojáře): v Claude.ai jděte do Settings → Integrations → přidejte MCP server. Nebo v Claude Code nastavte v souboru ~/.claude/settings.json.\n\nPro nevývojáře: MCP je zatím spíš pro technické uživatele. Prozatím vám plně postačí Make nebo n8n.",
-         "── KROK 5: Hotové agenty — kde je najít a rovnou použít ──\n\nNechcete stavět agenta od nuly? Existují hotové řešení:\n\n• Perplexity Computer (perplexity.ai → záložka Computer): nejjednodušší start. Agent který sám prochází web, vyhledává informace, vyplňuje formuláře a sbírá data — bez nastavování. Popište úkol česky a Perplexity ho splní sám. Hodí se pro výzkum, sbírání dat, monitorování konkurence.\n\n• Relevance AI (relevanceai.com): marketplace hotových AI agentů — sales agent, support agent, research agent. Vyberte šablonu, propojte se svými nástroji a spusťte. Zdarma do limitu.\n\n• Claude.ai Projects: ne agent v pravém slova smyslu, ale Project Instructions = trvalá paměť pro Claude. Nastavíte jednou: 'Jsi můj marketingový asistent, vždy piš v tomto stylu...' → Claude si to pamatuje v celém projektu.\n\n• Manus (manus.im): agent který pracuje přímo ve vašem prohlížeči — prochází weby, vyplňuje formuláře, sbírá informace. Popíšete úkol česky → Manus ho splní sám.\n\n• Zapier Agents (zapier.com/agents): hotové AI agenty propojené s 6 000+ aplikacemi. Jednodušší než n8n, placené.",
-         "── KROK 6: Jak napsat dobrého agenta — prompt šablona ──\n\nKde si agenta vytvořit (fungující platformy):\n• claude.ai → Projects → Project Instructions (nejjednodušší, zdarma)\n• relevanceai.com → Create Agent (více funkcí, zdarma do limitu)\n• retell.ai → pro hlasového agenta\n• make.com → pro agenta propojeného s aplikacemi\n\nJak napsat dobrý systémový prompt pro agenta — musí mít 5 částí:\n\nJméno a role: 'Jsi Jana, asistentka zákaznické podpory firmy XY.'\n\nCo dělá: 'Tvůj úkol je odpovídat na dotazy zákazníků o doručení, vrácení zboží a reklamacích.'\n\nJak se chová: 'Vždy odpovídej přátelsky a stručně. Max 3 věty. Nikdy neslibuj co nevíš.'\n\nCo NESMÍ dělat: 'Neposkytuj informace o cenách — přesměruj na obchodní oddělení. Neodpovídej na témata mimo zákaznickou podporu.'\n\nKdy přepojit na člověka: 'Pokud zákazník vyjadřuje frustraci nebo problém přesahuje tvoje znalosti, řekni: Předám vás kolegovi který vám pomůže lépe.'\n\n→ Celý systémový prompt ke zkopírování: viz sekce Prompty → AI Agenti",
-       ],
-       en:[
-         "── WHAT IS AN AI AGENT AND WHEN DO YOU WANT ONE ──\n\nRegular AI (Claude, ChatGPT): you write a query → get answer → you decide what next.\nAI agent: set up once → agent monitors emails, answers calls, books appointments, sorts messages — you only review results.\n\nExamples of when it helps:\n• Answer calls yourself? → voice agent answers 24/7\n• Spend an hour daily sorting emails? → email agent sorts and prepares replies\n• Repeat the same answers to customers? → chatbot agent responds automatically",
-         "── STEP 1: Voice receptionist agent ──\n\nWhat it is: AI that takes phone calls for you, answers questions, books appointments in your calendar and transfers complex calls to you.\n\nTools needed (all connect together):\n• Retell AI (retell.ai) — agent's brain, you set what it says and how it reacts\n• Cal.com (cal.com) — your online calendar, agent books appointments into it\n• ElevenLabs (elevenlabs.io) — agent's voice, sounds like a human\n• Phone number — buy directly in Retell AI for ~$2/month\n\nProcess:\n1. Sign up at retell.ai\n2. Create new agent, choose voice from ElevenLabs\n3. Write system prompt (see Prompts section → AI Agents)\n4. Connect Cal.com via API key (Retell AI guides you)\n5. Buy phone number in Retell AI → agent starts taking calls",
-         "── STEP 2: Email AI agent (n8n) ──\n\nn8n differs from Make (from intermediate): Make is simpler and better for beginners. n8n is more powerful, open-source (= free to download) and more customizable — great for complex workflows.\n\nSimplest email agent:\n1. Install n8n: go to n8n.io → 'Get started' → cloud version is paid, or download free and run locally\n2. Create new workflow: Trigger = Gmail (new email arrives)\n3. Add Claude node: prompt = 'Classify this email: urgent / lead / support / other. Reply with category name only.'\n4. By category: urgent → Slack notification, lead → CRM, support → helpdesk\n5. Add draft reply: Claude writes draft → goes to Gmail as concept → you approve and send\n\nImportant: never set automatic sending without your approval.",
-         "── STEP 3: MCP protocol — Claude connected to your tools ──\n\nMCP (Model Context Protocol) = way to connect Claude with external tools — your database, GitHub, Google Drive or company system. Instead of copying data into chat, Claude accesses live data directly.\n\nExample: Claude sees your GitHub and can read code, sees your CRM and can look up customers, sees your database and can analyze data.\n\nSetup (for developers): in Claude.ai go to Settings → Integrations → add MCP server. Or in Claude Code configure in ~/.claude/settings.json file.\n\nFor non-developers: MCP is currently more for technical users. Make or n8n will fully cover your needs for now.",
-         "── STEP 4: Claude Skills — teach Claude your style ──\n\nClaude Skills = files with instructions that Claude Code reads before each task. Works like permanent memory — Claude always knows how to write in your voice, what coding style to use or what to check in every email.\n\nWhere to find them: in ~/.claude/skills/ folder (folder on your computer, written to via terminal)\n\nWhat to put in Skills:\n• brand-voice.md: 'Write friendly but professional. Short sentences. No jargon. Always address by name.'\n• email-style.md: 'Subject max 6 words. Body max 5 sentences. Always CTA at end.'\n• meeting-notes.md: 'From notes create: Decisions / Tasks with deadlines / Open questions'\n\nActivation: type into Claude Code 'Read skill brand-voice and write email for...'",
-         "── STEP 5: Ready-made agents — where to find and use them ──\n\nDon't want to build an agent from scratch? Ready solutions exist:\n\n• Relevance AI (relevanceai.com): marketplace of ready AI agents — sales agent, support agent, research agent. Pick a template, connect your tools, launch. Free up to a limit.\n\n• AgentGPT (agentgpt.reworkd.ai): enter a goal ('Research competitors and write a report') → agent browses the web, collects data and assembles output. Free.\n\n• Claude.ai Projects: not a full agent but Project Instructions = permanent memory for Claude. Set once: 'You are my marketing assistant, always write in this style...' → Claude remembers it across the whole project.\n\n• Manus (manus.im): agent that works directly in your browser — browses sites, fills forms, collects information. Describe task → Manus does it independently.\n\n• Zapier Agents (zapier.com/agents): ready AI agents connected to 6,000+ apps. Simpler than n8n, paid.",
-         "── STEP 6: How to write a good agent — prompt template ──\n\nWhere to create an agent (working platforms):\n• claude.ai → Projects → Project Instructions (simplest, free)\n• relevanceai.com → Create Agent (more features, free up to limit)\n• retell.ai → for voice agent\n• make.com → for agent connected to apps\n\nHow to write a good system prompt for an agent — needs 5 parts:\n\nName and role: 'You are Jana, customer support assistant for company XY.'\n\nWhat it does: 'Your job is to answer customer questions about delivery, returns and complaints.'\n\nHow it behaves: 'Always reply in a friendly and concise way. Max 3 sentences. Never promise what you don't know.'\n\nWhat it MUST NOT do: 'Don't provide pricing information — redirect to sales team. Don't respond to topics outside customer support.'\n\nWhen to hand off to a human: 'If the customer expresses frustration or the problem exceeds your knowledge, say: I'll transfer you to a colleague who can help better.'\n\n→ Full system prompt to copy: see Prompts section → AI Agents",
-       ],
-     },
-     tip:{cs:"Největší ROI v 2026: hlasový agent. Retell AI + Cal.com + ElevenLabs = funkční recepční za jedno odpoledne. Zvedá telefony 24/7, rezervuje termíny, přepojuje složité hovory — od ~$50/měs za celý stack.",en:"Highest ROI in 2026: voice agent. Retell AI + Cal.com + ElevenLabs = working receptionist in one afternoon. Answers calls 24/7, books appointments, transfers complex calls — from ~$50/mo for the whole stack."},
-    },
+  advanced: [
+    { cat: { cs: "SEO optimalizace", en: "SEO" }, icon: "🔍", desc: { cs: "AI nástroje pro vyhledávače.", en: "AI for search engines." }, items: [
+      { name: "Surfer SEO", url: "https://surferseo.com", price: "paid", d: { cs: "AI analýza obsahu a doporučení.", en: "AI content analysis and recommendations." }, h: { cs: "Klíčové slovo → analýza → doporučení.", en: "Keyword → analysis → recommendations." }, tip: { cs: "Content Editor: držte skóre nad 70.", en: "Content Editor: stay above 70 score." } },
+      { name: "SEMrush", url: "https://semrush.com", price: "paid", d: { cs: "Komplexní SEO platforma.", en: "Comprehensive SEO platform." }, h: { cs: "Keyword Magic, Site Audit, AI Writing.", en: "Keyword Magic, Site Audit, AI Writing." }, tip: { cs: "Keyword Gap — klíčová slova konkurence.", en: "Keyword Gap — competitor keywords." } },
+      { name: "Ahrefs", url: "https://ahrefs.com", price: "paid", d: { cs: "Zpětné odkazy, klíčová slova.", en: "Backlinks, keywords." }, h: { cs: "Site Explorer, Content Explorer.", en: "Site Explorer, Content Explorer." }, tip: { cs: "Content Explorer: témata s potenciálem, nízká konkurence.", en: "Content Explorer: high potential, low competition topics." } },
+    ]},
+    { cat: { cs: "Tvorba webů", en: "Web Development" }, icon: "🌐", desc: { cs: "Celé weby s AI.", en: "Full websites with AI." }, items: [
+      { name: "Cursor", url: "https://cursor.sh", price: "freemium", d: { cs: "AI editor pro profesionální vývoj.", en: "AI editor for pro development." }, h: { cs: "Composer pro multi-file, @ reference pro docs.", en: "Composer for multi-file, @ references for docs." }, tip: { cs: "@ reference zahrne dokumentaci do kontextu.", en: "@ references include docs in context." } },
+      { name: "v0 (Vercel)", url: "https://v0.dev", price: "freemium", d: { cs: "React komponenty z textu.", en: "React components from text." }, h: { cs: "Popište → Shadcn/Tailwind kód.", en: "Describe → Shadcn/Tailwind code." }, tip: { cs: "Rychlý prototyp → dopracovat v Cursoru.", en: "Quick prototype → refine in Cursor." } },
+      { name: "Bolt", url: "https://bolt.new", price: "freemium", d: { cs: "Full-stack v prohlížeči.", en: "Full-stack in browser." }, h: { cs: "Popište → celý projekt.", en: "Describe → full project frontend + backend." }, tip: { cs: "Ideální pro MVP — celá app za hodinu.", en: "Ideal for MVP — full app in an hour." } },
+    ]},
+    { cat: { cs: "Byznys a strategie", en: "Business & Strategy" }, icon: "💼", desc: { cs: "Plánování, analýza trhu.", en: "Planning, market analysis." }, items: [
+      { name: "Claude (Opus)", url: "https://claude.ai", price: "freemium", d: { cs: "Nejchytřejší pro hlubokou analýzu.", en: "Smartest for deep analysis." }, h: { cs: "SWOT, finanční modely, byznys plány.", en: "SWOT, financial models, business plans." }, tip: { cs: "XML: \u003ccontext\u003eváš byznys\u003c/context\u003e\u003ctask\u003eúkol\u003c/task\u003e", en: "XML: \u003ccontext\u003eyour business\u003c/context\u003e\u003ctask\u003etask\u003c/task\u003e" } },
+      { name: "Perplexity Pro", url: "https://perplexity.ai", price: "freemium", d: { cs: "AI search s aktuálními daty.", en: "AI search with current data." }, h: { cs: "Trendy, konkurence, tržní data.", en: "Trends, competition, market data." }, tip: { cs: "Pro Mode dá hlubší analýzu.", en: "Pro Mode gives deeper analysis." } },
+    ]},
+    { cat: { cs: "AI agenti", en: "AI Agents" }, icon: "🤖", desc: { cs: "Autonomní AI.", en: "Autonomous AI." }, items: [
+      { name: "Claude Code", url: "https://docs.anthropic.com/en/docs/claude-code", price: "paid", d: { cs: "CLI pro agentické kódování.", en: "CLI for agentic coding." }, h: { cs: "Terminál. Edituje soubory, spouští příkazy.", en: "Terminal. Edits files, runs commands." }, tip: { cs: "Prochází celý projekt, najde bug a opraví.", en: "Browses entire project, finds bug and fixes — you just approve." } },
+      { name: "CrewAI", url: "https://crewai.com", price: "freemium", d: { cs: "Týmy AI agentů.", en: "Teams of AI agents." }, h: { cs: "Definujte role, úkoly, nástroje.", en: "Define roles, tasks, tools." }, tip: { cs: "Researcher → Writer → Editor: agenti spolupracují.", en: "Researcher → Writer → Editor: agents collaborate." } },
+    ]},
+    { cat: { cs: "Obsah ve velkém", en: "Content at Scale" }, icon: "📝", desc: { cs: "Škálování obsahu.", en: "Scale content." }, items: [
+      { name: "ChatGPT API", url: "https://platform.openai.com", price: "paid", d: { cs: "GPT-4o přes API.", en: "GPT-4o via API." }, h: { cs: "API klíč → automatizace.", en: "API key → automation." }, tip: { cs: "Batch API: 50% sleva pro tisíce dokumentů.", en: "Batch API: 50% discount for thousands of docs." } },
+      { name: "Claude API", url: "https://console.anthropic.com", price: "paid", d: { cs: "Claude přes API.", en: "Claude via API." }, h: { cs: "Batched API pro velké objemy.", en: "Batched API for large volumes." }, tip: { cs: "200K tokenů — celá kniha v jednom volání.", en: "200K tokens — entire book in one API call." } },
+    ]},
   ],
 };
-
-// ─── ALL MODELS ────────────────────────────────────────────────────────────────
-const ALL_MODELS = [
-  {name:"Claude Haiku 4.5",maker:"Anthropic",url:"https://claude.ai",price:"free",
-   oneLiner:{cs:"Nejrychlejší Claude — jednoduché dotazy, překlady, subtasky v AI workflow.",en:"Fastest Claude — simple queries, translations, subtasks in AI workflows."},
-   bestFor:{cs:["Rychlé překlady a shrnutí","FAQ a customer support chatboty","Subtasky v multi-agent systémech (Haiku vykonává, Sonnet řídí)","Prototypy a UI scaffolding — 2× rychlejší než Sonnet"],en:["Quick translations and summaries","FAQ and customer support chatbots","Subtasks in multi-agent systems (Haiku executes, Sonnet orchestrates)","Prototypes and UI scaffolding — 2× faster than Sonnet"]},
-   notFor:{cs:["Komplexní strategické analýzy","Hluboký reasoning — použijte Opus"],en:["Complex strategic analyses","Deep reasoning — use Opus"]},
-   idealPrompts:{
-     cs:["Přelož tento text do angličtiny. Zachovej formální tón.\n\n[vložte text]","Shrň tento email do 3 odrážek s tím, co musím udělat.\n\n[vložte email]","Zařaď tento email do kategorie: urgent / lead / support / jiné.\nOdpověz jen názvem kategorie.\n\n[vložte email]"],
-     en:["Translate this text to Czech. Keep formal tone.\n\n[paste text]","Summarize this email into 3 bullet points with what I need to do.\n\n[paste email]","Classify this email as: urgent / lead / support / other.\nReply only with category name.\n\n[paste email]"],
-   },
-   versions:{cs:"Haiku 4.5 — zdarma, nejrychlejší odpovědi. Extended thinking: nová funkce 2026.",en:"Haiku 4.5 — free, fastest responses. Extended thinking: new 2026 feature."},
-   tags:["rychlý","zdarma","agenti","subtasky"],
-  },
-  {name:"Claude Sonnet 4.6",maker:"Anthropic",url:"https://claude.ai",price:"freemium",
-   oneLiner:{cs:"Nejlepší model pro každodenní práci — texty, analýza, kódování. Ideální rovnováha.",en:"Best model for everyday work — texts, analysis, coding. Ideal balance."},
-   bestFor:{cs:["Psaní, copywriting a analýza dokumentů (200K tokenů — celé knihy)","Frontend a UI kódování — pixel-perfect React/Tailwind, SWE-bench 77.2 %","Orchestrátor v multi-agent workflow","Nejlepší coding AI na trhu dle benchmarků"],en:["Writing, copywriting and document analysis (200K tokens — entire books)","Frontend and UI coding — pixel-perfect React/Tailwind, SWE-bench 77.2%","Orchestrator in multi-agent workflow","Best coding AI on market per benchmarks"]},
-   notFor:{cs:["Aktuální informace z internetu","Jednoduché rychlé dotazy — Haiku je rychlejší"],en:["Current information from internet","Simple quick queries — Haiku is faster"]},
-   idealPrompts:{
-     cs:["Napiš článek na téma '[téma]' — 1800 slov. Cílový čtenář: [kdo]. Přidej konkrétní čísla nebo příklady z praxe. Na konci shrnutí a co dál.",
-         "Analyzuj přiložený dokument. Řekni mi:\n1) 3 nejdůležitější věci\n2) 2 rizika nebo problémy\n3) Co bych měl udělat jako první?\n\n[nahrajte soubor]",
-         "Udělej stránku v React + Tailwind pro [produkt]. Tmavý design, plynulé scrollování, responzivní. Sekce: Hlavní banner, Výhody, Jak to funguje, Ceny, Otázky, Patička."],
-     en:["Write article on '[topic]' — 1800 words. Target reader: [who]. Add specific numbers or real examples. End with summary and next step.","Analyze attached document. Tell me:\n1) 3 most important things\n2) 2 risks or problems\n3) What should I do first?\n\n[upload file]","Build a page in React + Tailwind for [product]. Dark design, smooth scroll, responsive. Sections: Hero, Benefits, How it works, Pricing, FAQ, Footer."],
-   },
-   versions:{cs:"Sonnet 4.6 — výchozí model, dostupný zdarma i v Claude Pro. Extended Thinking pro komplexní problémy.",en:"Sonnet 4.6 — default model, available free and in Claude Pro. Extended Thinking for complex problems."},
-   tags:["texty","kód","analýza","denní práce"],
-  },
-  {name:"Claude Opus 4.6",maker:"Anthropic",url:"https://claude.ai",price:"paid",
-   oneLiner:{cs:"Nejpokročilejší Claude — strategické analýzy, složitý kód, hluboký vícevrstvý reasoning.",en:"Most advanced Claude — strategic analyses, complex code, deep multilayered reasoning."},
-   bestFor:{cs:["Byznys strategie, byznys plány a investor pitche","Code review před mergem — chytí async bugy, memory leaky, edge cases","Právní a finanční analýzy s nuancemi","Extended Thinking (max effort) — nejhlubší reasoning dostupný v 2026"],en:["Business strategy, business plans and investor pitches","Code review before merge — catches async bugs, memory leaks, edge cases","Legal and financial analyses with nuances","Extended Thinking (max effort) — deepest reasoning available in 2026"]},
-   notFor:{cs:["Každodenní jednoduché úkoly — zbytečně pomalý a drahý","Rychlé překlady nebo shrnutí"],en:["Everyday simple tasks — unnecessarily slow and expensive","Quick translations or summaries"]},
-   idealPrompts:{
-     cs:["Pomoz mi sestavit plán na prvních 90 dní po spuštění naší firmy/produktu.\n\nFirma: [co děláme]\nZákazníci: [kdo jsou]\nTým: [kolik lidí]\nNejvětší rizika: [co se může pokazit]\nRozpočet: [malý/střední/velký]\n\nChci týdenní přehled co dělat, kdo za co zodpovídá a jak měřit úspěch.",
-         "Zkontroluj tento kód před tím, než ho nasadím na produkci.\nHledej: chyby které se projeví až pod zátěží, úniky paměti, bezpečnostní díry, neošetřené situace.\n\n[vložte kód]",
-         "Porovnej nás s konkurencí: [naše firma] vs [konkurent 1], [konkurent 2].\n\nŘekni mi:\n1) Kde jsou slabší než my?\n2) Kde jsou lepší?\n3) Co bychom měli udělat v příštích 30 dnech?\n\nBuď upřímný — i když to nebude příjemné."],
-     en:["Help me build a plan for the first 90 days after launching our company/product.\n\nCompany: [what we do]\nCustomers: [who they are]\nTeam: [how many people]\nBiggest risks: [what could go wrong]\nBudget: [small/medium/large]\n\nI want a weekly overview of what to do, who is responsible and how to measure success.","Check this code before I deploy it to production.\nLook for: bugs that appear under load, memory leaks, security holes, unhandled situations.\n\n[paste code]","Compare us with competition: [our company] vs [competitor 1], [competitor 2].\n\nTell me:\n1) Where are they weaker than us?\n2) Where are they better?\n3) What should we do in the next 30 days?\n\nBe honest — even if it's uncomfortable."],
-   },
-   versions:{cs:"Opus 4.6 — jen Claude Pro ($20/měs). Effort parameter: high/medium/low. 1M token kontext v preview.",en:"Opus 4.6 — Claude Pro only ($20/mo). Effort parameter: high/medium/low. 1M token context in preview."},
-   tags:["strategie","deep reasoning","Pro only","code review"],
-  },
-  {name:"ChatGPT / GPT-4o",maker:"OpenAI",url:"https://chat.openai.com",price:"freemium",
-   oneLiner:{cs:"Nejrozšířenější AI — multimodální, DALL-E obrázky, Voice mode a bohatý GPT Store.",en:"Most widely used AI — multimodal, DALL-E images, Voice mode and rich GPT Store."},
-   bestFor:{cs:["Generování obrázků (DALL-E 3 přímo v chatu)","Voice mode — mluvená konverzace s AI v reálném čase","GPT Store — tisíce specializovaných AI asistentů","Kreativní psaní, brainstorming, příběhy"],en:["Image generation (DALL-E 3 directly in chat)","Voice mode — spoken real-time conversation with AI","GPT Store — thousands of specialized AI assistants","Creative writing, brainstorming, stories"]},
-   notFor:{cs:["Extrémně dlouhé dokumenty (nižší context limit než Claude)","Kódování — Claude Sonnet je lepší"],en:["Extremely long documents (lower context limit than Claude)","Coding — Claude Sonnet is better"]},
-   idealPrompts:{
-     cs:["Vygeneruj obrázek:\nCo na něm má být: [popište scénu]\nStyl: [fotografie / ilustrace / umění]\nFormát: [na šířku / čtvereček / na výšku]",
-         "Jsi [role — např. marketér, učitel, trenér]. Vymysli 20 nápadů na [téma].\nZahrň i neobvyklé — neboj se být kreativní.",
-         "Napiš krátký příběh o [téma] ve stylu [žánr nebo autor]. Maximálně 500 slov."],
-     en:["Generate image:\nWhat should be in it: [describe the scene]\nStyle: [photography / illustration / art]\nFormat: [landscape / square / portrait]","You are [role — e.g. marketer, teacher, coach]. Come up with 20 ideas for [topic].\nInclude unusual ones — don't be afraid to be creative.","Write a short story about [topic] in the style of [genre or author]. Maximum 500 words."],
-   },
-   versions:{cs:"GPT-4o Mini (zdarma) · GPT-4o (zdarma s limity) · o3-mini (Plus $20) · o3 (Pro $200).",en:"GPT-4o Mini (free) · GPT-4o (free with limits) · o3-mini (Plus $20) · o3 (Pro $200)."},
-   tags:["kreativita","obrázky","voice","multimodální"],
-  },
-  {name:"o3 / o3-mini",maker:"OpenAI",url:"https://chat.openai.com",price:"paid",
-   oneLiner:{cs:"OpenAI reasoning model — nejlepší na matematiku, vědu, logiku a složité kódovací architektury.",en:"OpenAI reasoning model — best at math, science, logic and complex coding architectures."},
-   bestFor:{cs:["Matematika a vědecké výpočty","Logické hádanky a formální důkazy","Komplexní kódovací problémy vyžadující architekturu","Analýza dat s numerickými výpočty"],en:["Math and scientific calculations","Logic puzzles and formal proofs","Complex coding problems requiring architecture","Data analysis with numerical computations"]},
-   notFor:{cs:["Kreativní psaní — analytický model, ne kreativní","Jednoduché konverzační úkoly"],en:["Creative writing — analytical model, not creative","Simple conversational tasks"]},
-   idealPrompts:{
-     cs:["Dokaž nebo vyvrať toto tvrzení: [tvrzení].\nUkaž mi každý krok — chci pochopit postup, nejen výsledek.",
-         "Analyzuj tato data a řekni mi co je zajímavé:\n[vložte data]\n\nChci: tabulku + co to znamená + co bych měl udělat dál.",
-         "Navrhni jak postavit [systém/aplikaci/nástroj].\nDůležité je: aby to zvládlo hodně uživatelů, bylo bezpečné a snadno opravitelné.\nVysvětli proč jsi zvolil toto řešení."],
-     en:["Prove or disprove this claim: [claim].\nShow me every step — I want to understand the process, not just the result.","Analyze this data and tell me what's interesting:\n[paste data]\n\nI want: a table + what it means + what I should do next.","Design how to build [system/app/tool].\nImportant: it should handle many users, be secure and easy to fix.\nExplain why you chose this approach."],
-   },
-   versions:{cs:"o3-mini (ChatGPT Plus $20/měs) · o3 (ChatGPT Pro $200/měs). API přístup pro vývojáře.",en:"o3-mini (ChatGPT Plus $20/mo) · o3 (ChatGPT Pro $200/mo). API access for developers."},
-   tags:["reasoning","matematika","věda","architektura"],
-  },
-  {name:"Gemini 2.5 Pro",maker:"Google",url:"https://gemini.google.com",price:"freemium",
-   oneLiner:{cs:"Google AI s přístupem k internetu, Deep Research a integrací s celým Google Workspace.",en:"Google AI with internet access, Deep Research and integration with entire Google Workspace."},
-   bestFor:{cs:["Aktuální research s citacemi zdrojů","Deep Research: 30min hloubková analýza (50+ zdrojů)","Google Workspace integrace (Gmail, Docs, Sheets, Drive)","1M token kontext — celá kódová base nebo celá kniha najednou"],en:["Current research with source citations","Deep Research: 30min in-depth analysis (50+ sources)","Google Workspace integration (Gmail, Docs, Sheets, Drive)","1M token context — entire codebase or entire book at once"]},
-   notFor:{cs:["Kreativní psaní — Claude/ChatGPT jsou lepší","Kódování — Claude Sonnet je lepší"],en:["Creative writing — Claude/ChatGPT are better","Coding — Claude Sonnet is better"]},
-   idealPrompts:{
-     cs:["Chci vědět vše o tomto tématu: [téma]\nNajdi aktuální informace z internetu a dej mi přehled s odkazem na zdroje.\nZaměř se na: [co vás zajímá konkrétně]",
-         "Najdi co se za poslední 3 měsíce dělo kolem [firmy/tématu].\nCo jsou nejdůležitější změny a co to znamená pro [váš obor]?",
-         "Prohledej mé Google Dokumenty a najdi vše o [tématu].\nSeřaď výsledky od nejrelevantnějšího."],
-     en:["I want to know everything about this topic: [topic]\nFind current information from the internet and give me an overview with source links.\nFocus on: [what specifically interests you]","Find what happened in the last 3 months around [company/topic].\nWhat are the most important changes and what does it mean for [your field]?","Search my Google Documents and find everything about [topic].\nSort results from most relevant."],
-   },
-   versions:{cs:"2.0 Flash (zdarma, rychlý) · 2.5 Pro (Google One Premium nebo Gemini Advanced).",en:"2.0 Flash (free, fast) · 2.5 Pro (Google One Premium or Gemini Advanced)."},
-   tags:["internet","research","Google integrace","1M kontext"],
-  },
-  {name:"NotebookLM",maker:"Google",url:"https://notebooklm.google.com",price:"free",
-   oneLiner:{cs:"Osobní AI asistent pro vaše vlastní dokumenty — shrnutí, FAQ, studijní kartičky a audio podcast.",en:"Personal AI assistant for your own documents — summaries, FAQ, study cards and audio podcast."},
-   bestFor:{cs:["Studium z vlastních materiálů — PDF, Word, YouTube odkaz","Audio Overview: 10–15min podcast ze vašich dokumentů","Analýza výročních zpráv, smluv a technické dokumentace","Propojení informací z více dokumentů najednou"],en:["Studying from your own materials — PDF, Word, YouTube link","Audio Overview: 10–15min podcast from your documents","Analysis of annual reports, contracts and technical documentation","Connecting information across multiple documents at once"]},
-   notFor:{cs:["Informace z internetu — vidí jen vaše nahrané dokumenty","Generování nového obsahu od nuly"],en:["Internet information — sees only your uploaded documents","Generating new content from scratch"]},
-   idealPrompts:{
-     cs:["Shrň tento dokument do 5 nejdůležitějších bodů.\nPiš tak, aby to pochopil někdo bez odborného vzdělání.",
-         "Vytvoř z těchto materiálů 10 testových otázek.\nKaždá otázka musí mít správnou odpověď a odkaz na místo v dokumentu.",
-         "Porovnej dokument A a dokument B.\nKde souhlasí? Kde si odporují? Co je v jednom a ne ve druhém?"],
-     en:["Summarize this document into 5 most important points.\nWrite so someone without expert knowledge understands it.","Create 10 test questions from these materials.\nEach question must have the correct answer and a reference to where it appears in the document.","Compare document A and document B.\nWhere do they agree? Where do they contradict? What's in one but not the other?"],
-   },
-   versions:{cs:"NotebookLM zdarma · NotebookLM Plus (Google One) — více notebooků, prioritní přístup.",en:"NotebookLM free · NotebookLM Plus (Google One) — more notebooks, priority access."},
-   tags:["dokumenty","studium","podcast","zdarma"],
-  },
-  {name:"DeepSeek R1",maker:"DeepSeek",url:"https://chat.deepseek.com",price:"free",
-   oneLiner:{cs:"Open-source reasoning model zcela zdarma — srovnatelný s o1, viditelný chain-of-thought.",en:"Open-source reasoning model completely free — comparable to o1, visible chain-of-thought."},
-   bestFor:{cs:["Matematika, logika a technické problémy","Kódování a debugging — chain-of-thought reasoning viditelný","Lokální nasazení přes Ollama pro soukromá data","Bezplatná alternativa k o1 bez žádných limitů"],en:["Math, logic and technical problems","Coding and debugging — chain-of-thought reasoning visible","Local deployment via Ollama for private data","Free alternative to o1 with no limits at all"]},
-   notFor:{cs:["Kreativní psaní","Pozor: data zpracovávána na čínských serverech"],en:["Creative writing","Note: data processed on Chinese servers"]},
-   idealPrompts:{
-     cs:["Vyřeš tento příklad krok za krokem:\n[problém]\n\nNepiš jen výsledek — ukaž mi jak jsi k němu dospěl.",
-         "Tenhle kód nefunguje. Najdi chybu a vysvětli mi proč tam je:\n\n[kód]\n\nChyba: [co se děje]\nMělo by se dít: [popis]",
-         "Přečti tento argument a řekni mi kde je logická chyba:\n[argument]\n\nBuď konkrétní — ukáž přesně kde a proč to nefunguje."],
-     en:["Solve this example step by step:\n[problem]\n\nDon't just write the result — show me how you got there.","This code doesn't work. Find the bug and explain why it's there:\n\n[code]\n\nError: [what's happening]\nShould do: [description]","Read this argument and tell me where the logical error is:\n[argument]\n\nBe specific — show exactly where and why it doesn't work."],
-   },
-   versions:{cs:"V3 (rychlý, zdarma) · R1 (reasoning, zdarma) · Lokálně přes Ollama (open-source).",en:"V3 (fast, free) · R1 (reasoning, free) · Locally via Ollama (open-source)."},
-   tags:["zdarma","reasoning","matematika","open-source"],
-  },
-  {name:"Perplexity",maker:"Perplexity AI",url:"https://perplexity.ai",price:"freemium",
-   oneLiner:{cs:"AI vyhledávač s citacemi zdrojů — pro research, ověřování faktů a aktuální data.",en:"AI search engine with source citations — for research, fact-checking and current data."},
-   bestFor:{cs:["Aktuální fakta a novinky — vždy cituje zdroje","Deep Research (Pro): 20–30min hloubkový výzkum s 50+ zdroji","Srovnání produktů s aktuálními recenzemi a cenami","Spaces: sdílené výzkumné prostory pro týmy"],en:["Current facts and news — always cites sources","Deep Research (Pro): 20–30min in-depth research with 50+ sources","Product comparisons with current reviews and prices","Spaces: shared research spaces for teams"]},
-   notFor:{cs:["Generování textového obsahu — Claude/ChatGPT jsou lepší","Kódování"],en:["Generating text content — Claude/ChatGPT are better","Coding"]},
-   idealPrompts:{
-     cs:["Co se aktuálně děje kolem [tématu]? Hledej z posledního měsíce.\nUveď odkud informace pocházejí.",
-         "Porovnej [nástroj A] a [nástroj B]:\n• Cena\n• Co umí\n• Hodnocení uživatelů\n• Pro koho se hodí lépe",
-         "Potřebuji podrobný přehled o [trh/firma/technologie].\nBude sloužit k: [rozhodnutí nebo projekt]\nChci citace zdrojů u každého tvrzení."],
-     en:["What's currently happening around [topic]? Search from the last month.\nState where the information comes from.","Compare [tool A] and [tool B]:\n• Price\n• Features\n• User ratings\n• Who is each better for","I need a detailed overview of [market/company/technology].\nWill be used for: [decision or project]\nI want source citations for each claim."],
-   },
-   versions:{cs:"Zdarma (základní dotazy) · Pro ($20/měs) — Deep Research, Claude/GPT-4o backend, více dotazů.",en:"Free (basic queries) · Pro ($20/mo) — Deep Research, Claude/GPT-4o backend, more queries."},
-   tags:["vyhledávání","citace","research","aktuální info"],
-  },
-  {name:"Midjourney v7",maker:"Midjourney",url:"https://midjourney.com",price:"paid",
-   oneLiner:{cs:"Nejlepší AI generátor obrázků — fotografická kvalita a umělecká estetika bez konkurence.",en:"Best AI image generator — photographic quality and artistic aesthetics without competition."},
-   bestFor:{cs:["Profesionální komerční vizuály a produktová fotografie","Umělecké ilustrace a konceptuální vizuály","Konzistentní vizuální identita (--cref pro konzistentní postavu)","Brand moodboardy a marketingové kampaně"],en:["Professional commercial visuals and product photography","Artistic illustrations and conceptual visuals","Consistent visual identity (--cref for character consistency)","Brand moodboards and marketing campaigns"]},
-   notFor:{cs:["Text v obrázcích — Ideogram.ai je lepší","Bezplatné testování — placeno od $10/měs"],en:["Text in images — Ideogram.ai is better","Free testing — paid from $10/month"]},
-   idealPrompts:{
-     cs:["[co chcete vidět], filmová fotografie, 85mm objektiv, zlaté světlo, melancholická atmosféra, zrno filmu --ar 16:9 --v 7",
-         "Produktová fotografie: [produkt], studijní osvětlení, bílé pozadí, komerční kvalita --ar 1:1 --v 7",
-         "Nevíte jak napsat prompt? Napište to Claude:\n'Napiš Midjourney v7 prompt — chci vytvořit:\n[popište česky co chcete]'"],
-     en:["[what you want to see], cinematic photography, 85mm lens, golden light, melancholic atmosphere, film grain --ar 16:9 --v 7","Product photography: [product], studio lighting, white background, commercial quality --ar 1:1 --v 7","Don't know how to write a prompt? Tell Claude:\n'Write a Midjourney v7 prompt — I want to create:\n[describe in plain language]'"],
-   },
-   versions:{cs:"v7 (výchozí, nejnovější) · --niji 7 (anime styl). Plány: Basic $10, Standard $30, Pro $60/měs.",en:"v7 (default, latest) · --niji 7 (anime style). Plans: Basic $10, Standard $30, Pro $60/mo."},
-   tags:["obrázky","fotografie","komerční","kreativní"],
-  },
-  {name:"Nano Banana Pro",maker:"Nano Banana",url:"https://nanobananapro.com",price:"freemium",
-   oneLiner:{cs:"Nejjednodušší AI generátor obrázků — napíšete popis česky a obrázek je hotový za 10 sekund.",en:"Simplest AI image generator — write description and image is ready in 10 seconds."},
-   bestFor:{cs:["Úplní začátečníci — bez registrace a nastavení","Rychlé prototypy a vizuály pro prezentace","Generování obrázků bez znalosti anglické terminologie","Sociální sítě, příspěvky, miniatury videí"],en:["Complete beginners — no registration or setup","Quick prototypes and visuals for presentations","Generating images without knowledge of English terminology","Social media, posts, video thumbnails"]},
-   notFor:{cs:["Profesionální komerční fotografie — Midjourney je lepší","Konzistentní vizuální identity přes více obrázků"],en:["Professional commercial photography — Midjourney is better","Consistent visual identity across multiple images"]},
-   idealPrompts:{
-     cs:["Fotografie kávového šálku na dřevěném stole, teplé světlo, rozostřené pozadí",
-         "Profesionální portrét ženy v kanceláři, přirozené světlo z okna, neutrální pozadí",
-         "Logo pro [typ firmy], minimalistické, moderní, barvy: [barvy]"],
-     en:["Photo of coffee cup on wooden table, warm light, blurred background","Professional portrait of woman in office, natural window light, neutral background","Logo for [type of business], minimalist, modern, colors: [colors]"],
-   },
-   versions:{cs:"Nano Banana Pro — zdarma s limity, placený plán pro více obrázků.",en:"Nano Banana Pro — free with limits, paid plan for more images."},
-   tags:["obrázky","začátečníci","jednoduché","zdarma"],
-  },
-  {name:"ElevenLabs",maker:"ElevenLabs",url:"https://elevenlabs.io",price:"freemium",
-   oneLiner:{cs:"Nejrealističtější AI hlasy — klonování hlasu, podcasty, dubbing videí a hlasové API.",en:"Most realistic AI voices — voice cloning, podcasts, video dubbing and voice API."},
-   bestFor:{cs:["Klonování vlastního hlasu (stačí 1 minuta nahrávky)","Podcasty, videokurzy a audio obsah bez studia","Dubbing a překlad videí do dalších jazyků","Hlasový agent v aplikaci — API integrace"],en:["Voice cloning (just 1 minute recording)","Podcasts, video courses and audio content without studio","Video dubbing and translation to other languages","Voice agent in app — API integration"]},
-   notFor:{cs:["Rychlé jednoduché prototypy — Google TTS je rychlejší a levnější","Masová produkce bez kontroly kvality"],en:["Quick simple prototypes — Google TTS is faster and cheaper","Mass production without quality control"]},
-   idealPrompts:{
-     cs:["Vytvořte hlas s těmito vlastnostmi:\nKlidný ženský hlas, profesionální jako novinářka.\nMírně pomalejší tempo. Středoevropský přízvuk.",
-         "Postup pro dabování videa:\n1. Nahrajte video\n2. Zvolte cílový jazyk\n3. ElevenLabs zachová váš hlas i emoce — jen v jiném jazyce",
-         "Naklonovat svůj hlas:\n1. Nahrajte 1 minutu čistého záznamu vašeho hlasu\n2. Pojmenujte hlas\n3. Použijte ho pro generování libovolného textu"],
-     en:["Create a voice with these qualities:\nCalm female voice, professional like a journalist.\nSlightly slower pace. Central European accent.","Steps for video dubbing:\n1. Upload video\n2. Choose target language\n3. ElevenLabs preserves your voice and emotions — just in a different language","Clone your own voice:\n1. Upload 1 minute of clean voice recording\n2. Name the voice\n3. Use it to generate any text"],
-   },
-   versions:{cs:"Free (10k znaků/měs) · Starter $5 · Creator $22 · Pro $99/měs.",en:"Free (10k chars/mo) · Starter $5 · Creator $22 · Pro $99/mo."},
-   tags:["hlas","audio","klonování","dubbing"],
-  },
-  {name:"Claude Code",maker:"Anthropic",url:"https://claude.ai/code",price:"paid",
-   oneLiner:{cs:"Terminálový AI vývojář — čte celý projekt, píše, edituje a testuje kód přímo ve vašem repozitáři.",en:"Terminal AI developer — reads entire project, writes, edits and tests code directly in your repo."},
-   bestFor:{cs:["Multi-file editace celého projektu v terminálu","Claude Skills (~/.claude/skills/) — uložte coding standards jako .md","SEO audit přes /seo skill, CI/CD pipeline generování","Sub-agent orchestrace: Sonnet plánuje, Haiku vykonává paralelně"],en:["Multi-file editing of entire project in terminal","Claude Skills (~/.claude/skills/) — save coding standards as .md","SEO audit via /seo skill, CI/CD pipeline generation","Sub-agent orchestration: Sonnet plans, Haiku executes in parallel"]},
-   notFor:{cs:["Jednorázové jednoduché skripty — claude.ai chat stačí","Bez Claude Pro nebo API klíče"],en:["One-off simple scripts — claude.ai chat is enough","Without Claude Pro or API key"]},
-   idealPrompts:{
-     cs:["/init  ← tímto začněte každý nový projekt\nClaude prozkoumá vaše soubory a vytvoří dokumentaci\n\n/clear  ← použijte když Claude začne dávat horší odpovědi\nVyresetuje paměť a znovu se soustředí",
-         "Přečti ARCHITECTURE.md a CLAUDE.md.\nPak přidej tuto funkci: [popis co chcete]\nDodržuj stávající styl kódu.\nPo každé změně otestuj jestli vše funguje.",
-         "Vytvoř složku ~/.claude/skills/ a v ní soubor [název].md\nTento soubor bude obsahovat instrukce jak [co má dělat — např. psát emaily, dělat SEO audit, zapisovat poznámky ze schůzek]"],
-     en:["/init  ← start every new project with this\nClaude explores your files and creates documentation\n\n/clear  ← use when Claude starts giving worse answers\nResets memory and refocuses","Read ARCHITECTURE.md and CLAUDE.md.\nThen add this feature: [description of what you want]\nFollow the existing code style.\nAfter each change test that everything works.","Create folder ~/.claude/skills/ and in it a file [name].md\nThis file will contain instructions for how to [what it should do — e.g. write emails, do SEO audit, take meeting notes]"],
-   },
-   versions:{cs:"Terminál — npm install -g @anthropic/claude-code. Potřebuje Claude Pro nebo API klíč.",en:"Terminal — npm install -g @anthropic/claude-code. Requires Claude Pro or API key."},
-   tags:["kódování","terminál","multi-agent","SEO"],
-  },
-];
 
 // ─── PROMPTS ──────────────────────────────────────────────────────────────────
 const PROMPTS = {
-  beginner:[
-    {task:{cs:"Psaní emailu",en:"Writing emails"},icon:"▸",mods:["Claude","ChatGPT"],
-     ptip:{cs:"Klíč je kontext: komu, proč, co chcete dosáhnout. Čím víc řeknete, tím méně budete muset opravovat.",en:"Key is context: who, why, what you want to achieve. The more you say, the less you'll have to fix."},
-     ps:[
-       {label:{cs:"Formální email — šablona",en:"Formal email — template"},p:{
-         cs:"Napiš formální email.\n\nKomu: [šéf / klient / úřad / kolega]\nTéma: [o čem píšete]\nSituace: [1–2 věty co se stalo nebo co chcete]\nPožadovaný výsledek: [co má příjemce udělat]\n\nPravidla:\n• Max 100 slov\n• Profesionální, věcný tón\n• Na konci jasný next step nebo termín\n• Předmět emailu jako první řádek",
-         en:"Write a formal email.\n\nTo: [boss / client / office / colleague]\nSubject: [what it's about]\nSituation: [1–2 sentences about what happened]\nDesired outcome: [what recipient should do]\n\nRules:\n• Max 100 words\n• Professional, factual tone\n• Clear next step or deadline at the end\n• Email subject as the first line",
-       }},
-       {label:{cs:"Omluva za zpoždění",en:"Apology for delay"},p:{
-         cs:"Napiš email — omluva za zpoždění.\n\nKomu: [šéf / klient]\nCo bylo zpožděno: [projekt / dodávka / odpověď]\nPříčina: [1 věta — krátce]\nCo teď udělám: [konkrétní krok + termín]\n\nMax 80 slov. Formální tón. Jednou se omluv — pak přejdi na řešení.",
-         en:"Write email — apology for delay.\n\nTo: [boss / client]\nWhat was delayed: [project / delivery / response]\nReason: [1 sentence — briefly]\nWhat I'll do now: [concrete step + deadline]\n\nMax 80 words. Formal tone. Apologize once — then move to solution.",
-       }},
-       {label:{cs:"Žádost o schůzku",en:"Meeting request"},p:{
-         cs:"Napiš email — žádost o 30minutovou schůzku.\n\nKomu: [jméno / pozice]\nProč: [1 věta — jasný důvod]\nCo jim přinesu: [1–2 věty hodnoty pro ně]\nNabízené časy: [2–3 možnosti]\n\nMax 5 vět v těle emailu. Předmět: max 6 slov.",
-         en:"Write email — request for 30-minute meeting.\n\nTo: [name / position]\nWhy: [1 sentence — clear reason]\nWhat I bring them: [1–2 sentences of value for them]\nSuggested times: [2–3 options]\n\nMax 5 sentences in email body. Subject: max 6 words.",
-       }},
-     ],
-    },
-    {task:{cs:"Vysvětlení a shrnutí",en:"Explanation and summary"},icon:"▸",mods:["Claude","ChatGPT"],
-     ptip:{cs:"Vždy specifikujte KOMU je vysvětlení určeno — 'jako laik' vs 'jako expert' výrazně mění odpověď.",en:"Always specify WHO the explanation is for — 'as a layperson' vs 'as an expert' significantly changes the response."},
-     ps:[
-       {label:{cs:"Vysvětlení pro laika",en:"Layperson explanation"},p:{
-         cs:"Vysvětli mi tento text srozumitelně.\nJsem [vaše profese / vzdělání].\n\n[Vložte text nebo popište téma]\n\nChci vědět:\n1. Hlavní myšlenka v 1–2 větách\n2. Co to znamená pro mě v praxi?\n3. Jsou v tom rizika nebo věci na pozor?\n4. Co udělat jako první krok?\n\nPoužívej příklady z každodenního života. Bez odborného žargonu bez vysvětlení.",
-         en:"Explain this text to me simply.\nI am [your profession / background].\n\n[Paste text or describe topic]\n\nI want to know:\n1. Main idea in 1–2 sentences\n2. What does it mean for me in practice?\n3. Are there risks or things to watch out for?\n4. What to do as first step?\n\nUse everyday examples. No jargon without explanation.",
-       }},
-       {label:{cs:"Shrnutí dokumentu pro manažera",en:"Document summary for manager"},p:{
-         cs:"Shrň tento dokument.\n\n[nahrajte soubor nebo vložte text]\n\nVýstup:\n• 5 klíčových bodů (bullet points)\n• Co je nejdůležitější pro osobu v roli [vaše role]?\n• Jaké jsou moje povinnosti nebo nutné akce?\n\nMax 200 slov. Bez přímého citování celých vět.",
-         en:"Summarize this document.\n\n[upload file or paste text]\n\nOutput:\n• 5 key points (bullet points)\n• What's most important for someone in role [your role]?\n• What are my obligations or required actions?\n\nMax 200 words. No direct quotation of full sentences.",
-       }},
-     ],
-    },
-    {task:{cs:"Stížnosti a úřední dopisy",en:"Complaints and official letters"},icon:"▸",mods:["Claude","ChatGPT"],
-     ptip:{cs:"AI je výborný na formální dopisy — ví jak komunikovat věcně a citovat zákon bez emocí.",en:"AI is excellent at formal letters — knows how to communicate factually and reference law without emotion."},
-     ps:[
-       {label:{cs:"Odvolání nebo stížnost",en:"Appeal or complaint"},p:{
-         cs:"Pomoz mi napsat formální stížnost nebo odvolání.\n\nKomu: [úřad / firma / pojišťovna / banka]\nCo se stalo: [přesný popis s daty a čísly]\nCo jsem už zkusil/a: [předchozí kroky]\nCo konkrétně chci: [přesný výsledek]\n\nPožadavky:\n• Tón: věcný, bez emocí\n• S odkazem na zákon nebo smlouvu (pokud relevantní)\n• Formát: datum — věc — tělo — žádost s termínem odpovědi\n• Působím jako někdo kdo zná svá práva",
-         en:"Help me write a formal complaint or appeal.\n\nTo: [office / company / insurance / bank]\nWhat happened: [exact description with dates and numbers]\nWhat I've already tried: [previous steps]\nWhat I specifically want: [exact outcome]\n\nRequirements:\n• Tone: factual, without emotion\n• Reference law or contract (if relevant)\n• Format: date — subject — body — request with response deadline\n• I come across as someone who knows their rights",
-       }},
-       {label:{cs:"Motivační dopis",en:"Cover letter"},p:{
-         cs:"Napiš motivační dopis na tuto pozici.\n\nPozice: [název]\nFirma: [název — doplň co víš]\nMoje zkušenosti: [2–3 věty co umíš]\nJejich požadavky: [hlavní body z inzerátu]\n\nPravidla:\n• Max 180 slov\n• Začni PROČ tě tato firma zajímá — NE 'Dovolte mi představit se'\n• Žádná klišé (komunikativní, týmový hráč)\n• Ukaž co přineseš jim, ne jen co hledáš ty\n• Výzva k dalšímu kroku na konci",
-         en:"Write a cover letter for this position.\n\nPosition: [title]\nCompany: [name — add what you know]\nMy experience: [2–3 sentences about skills]\nTheir requirements: [key points from job posting]\n\nRules:\n• Max 180 words\n• Start with WHY this company interests you — NOT 'I would like to introduce myself'\n• No clichés (communicative, team player)\n• Show what you bring them, not just what you want\n• Call to action at the end",
-       }},
-     ],
-    },
+  beginner: [
+
+    // ── EMAIL ────────────────────────────────────────────────────────────────
+    { task: { cs: "Napsat email", en: "Write email" }, icon: "📧", mods: ["ChatGPT", "Claude", "Gemini"],
+      promptTip: {
+        cs: "Proč to funguje: AI potřebuje vědět KDO píše, KOMU, v jakém VZTAHU a s jakým CÍLEM. Čím konkrétnější jsi, tím méně roboticky email zní. Vždy říkej co NECHCEŠ — to zabrání nejčastějším chybám.",
+        en: "Why it works: AI needs to know WHO is writing, TO WHOM, in what RELATIONSHIP, and with what GOAL. The more specific you are, the less robotic the result. Always say what you DON'T want — this prevents the most common AI failures.",
+      },
+      ps: [
+        { label: { cs: "Omluva šéfovi", en: "Apologize to boss" }, p: {
+          cs: "Napiš email šéfovi [jméno], kde se omlouvám za zpoždění projektu [název].\nDůvod: byl/a jsem nemocný/á [X] dní.\nTón: profesionální, ale lidský — ne přehnaně servilní.\nMax 80 slov.\nNezačínej pozdravem 'Dobrý den' — použij přirozený oslovení.\nNezačínej větou 'Omlouvám se' — nejdřív krátce vysvětli situaci, pak se omluv.",
+          en: "Write an email to my manager [name] apologizing for the delay on project [name].\nReason: I was sick for [X] days.\nTone: professional but human — not groveling.\nMax 80 words.\nDon't start with 'Dear' — use a natural opener.\nDon't lead with 'I apologize' — briefly explain first, then apologize.",
+        }},
+        { label: { cs: "Žádost o schůzku", en: "Meeting request" }, p: {
+          cs: "Napiš email kolegovi/ě [jméno], navrhuji pracovní schůzku.\nTéma schůzky: [téma — buď konkrétní, např. 'revize Q3 rozpočtu'].\nNabídni 3 konkrétní termíny s časem.\nŘekni předem co bude potřeba připravit.\nTón: přátelský a přímý. Max 100 slov.",
+          en: "Write an email to [name] proposing a work meeting.\nMeeting topic: [topic — be specific, e.g. 'Q3 budget review'].\nOffer 3 specific dates and times.\nMention what they should prepare in advance.\nTone: friendly and direct. Max 100 words.",
+        }},
+        { label: { cs: "Reklamace produktu", en: "Product complaint" }, p: {
+          cs: "Napiš reklamační email firmě [název firmy].\nProdukt: [název], koupeno: [datum], cena: [částka].\nProblém: [přesný popis vady nebo situace].\nCo chci: [výměnu / vrácení peněz / opravu — vyber].\nTón: věcný a nekompromisní, ne agresivní.\nZmíň že jsi zákonná práva ze zákona o ochraně spotřebitele.",
+          en: "Write a complaint email to [company name].\nProduct: [name], purchased: [date], price: [amount].\nIssue: [exact description of the defect or problem].\nWhat I want: [replacement / refund / repair — choose one].\nTone: factual and firm, not aggressive.\nMention that I have rights under consumer protection law.",
+        }},
+        { label: { cs: "Úřední dotaz", en: "Government office inquiry" }, p: {
+          cs: "Dostal/a jsem tento dopis / rozhodnutí od [název úřadu / pojišťovny / banky]:\n[vlož text dopisu nebo hlavní body]\n\nNapiš mi odpověď, kde zdvořile žádám o:\n1) Vysvětlení co toto rozhodnutí znamená\n2) Co přesně se po mně požaduje a do kdy\n3) Jaké mám možnosti nebo práva\n\nTón: zdvořilý, sebejistý — neptám se jako prosebník, ale jako občan, který zná svá práva.",
+          en: "I received this letter / decision from [name of office / insurer / bank]:\n[paste letter text or key points]\n\nWrite a reply politely asking for:\n1) An explanation of what this decision means\n2) Exactly what is required of me and by when\n3) What options or rights I have\n\nTone: polite, confident — not pleading, but as a citizen who knows their rights.",
+        }},
+      ]},
+
+    // ── ARTICLE ──────────────────────────────────────────────────────────────
+    { task: { cs: "Napsat článek", en: "Write article" }, icon: "📝", mods: ["ChatGPT", "Claude"],
+      promptTip: {
+        cs: "Proč to funguje: AI píše genericky, pokud nedostane kontext. Klíč je definovat PERSONU autora, ČTENÁŘE a zakázat klišé. Výsledek zní jako skutečný člověk, ne jako šablona.",
+        en: "Why it works: AI writes generically without context. The key is defining the AUTHOR persona, the READER, and banning clichés. The result sounds like a real person, not a template.",
+      },
+      ps: [
+        { label: { cs: "Blog post (osobní styl)", en: "Blog post (personal style)" }, p: {
+          cs: "Napiš blogový článek o [téma] z pohledu [tvoje role, např. 'freelancer s 5 lety praxe' nebo 'rodič dvou dětí'].\nCílový čtenář: [kdo to přečte a co potřebuje vědět].\nDélka: 500 slov.\nStruktura: konkrétní úvodní situace (ne obecná otázka) → 3 praktické tipy s reálnými příklady → závěr s jedním jasným doporučením.\nStyl: osobní, mluv na čtenáře jako 'ty'. Zakaž si klišé jako 'v dnešní době', 'je důležité' nebo 'každý z nás'.",
+          en: "Write a blog post about [topic] from the perspective of [your role, e.g. 'freelancer with 5 years experience' or 'parent of two kids'].\nTarget reader: [who will read it and what they need to know].\nLength: 500 words.\nStructure: concrete opening situation (not a generic question) → 3 practical tips with real examples → conclusion with one clear recommendation.\nStyle: personal, speak to reader as 'you'. Ban clichés like 'in today's world', 'it's important to' or 'we all know'.",
+        }},
+        { label: { cs: "LinkedIn příspěvek", en: "LinkedIn post" }, p: {
+          cs: "Napiš LinkedIn příspěvek (max 200 slov) o [téma nebo zkušenost z práce].\nZačni konkrétní situací nebo překvapivým číslem — ne obecným tvrzením.\nUprostřed: 3 konkrétní poznatky ve formátu 'Co jsem zjistil/a:'\nZávěr: jedno konkrétní doporučení pro čtenáře.\nNezačínej slovy 'Jsem rád/a', 'Hrdě oznamuji' nebo 'Skvělá příležitost'.\nTón: přemýšlivý odborník, ne sebepropagace.",
+          en: "Write a LinkedIn post (max 200 words) about [topic or work experience].\nStart with a specific situation or surprising number — not a generic statement.\nMiddle: 3 concrete insights in the format 'What I discovered:'\nEnd: one specific recommendation for the reader.\nDon't start with 'I'm excited to', 'Proud to announce' or 'Great opportunity'.\nTone: thoughtful expert, not self-promotion.",
+        }},
+      ]},
+
+    // ── SUMMARIZE ────────────────────────────────────────────────────────────
+    { task: { cs: "Shrnout dokument", en: "Summarize document" }, icon: "📋", mods: ["Claude", "NotebookLM"],
+      promptTip: {
+        cs: "Proč to funguje: bez struktury AI vyprodukuje zeď textu. Přesný formát výstupu je důležitější než délka — říkej AI přesně co chceš vidět, ne jen 'shrň'.",
+        en: "Why it works: without structure AI produces a wall of text. Specifying the exact output format matters more than length — tell AI exactly what you want to see, not just 'summarize'.",
+      },
+      ps: [
+        { label: { cs: "Strukturované shrnutí", en: "Structured summary" }, p: {
+          cs: "Shrň tento dokument. Výstup musí mít přesně tuto strukturu:\n• SITUACE (1 věta): o čem dokument je\n• KLÍČOVÉ ZJIŠTĚNÍ (1 věta): nejdůležitější věc\n• CO TO ZNAMENÁ PRO NÁS (2-3 věty): praktický dopad\n• DOPORUČENÍ (1 věta): co dělat dál\nMax 120 slov celkem.\n\n[vlož text nebo nahraj PDF]",
+          en: "Summarize this document. Output must follow this exact structure:\n• SITUATION (1 sentence): what the document is about\n• KEY FINDING (1 sentence): the most important thing\n• WHAT THIS MEANS FOR US (2-3 sentences): practical impact\n• RECOMMENDATION (1 sentence): what to do next\nMax 120 words total.\n\n[paste text or upload PDF]",
+        }},
+        { label: { cs: "Zápis ze schůzky → úkoly", en: "Meeting notes → action items" }, p: {
+          cs: "Z těchto poznámek ze schůzky vytvoř:\n1) Rozhodnutí (max 3 odrážky — co bylo odsouhlaseno)\n2) Úkoly ve formátu: [Kdo] udělá [Co] do [Kdy]\n3) Otevřené otázky (co ještě nebylo rozhodnuto)\n\nPoznámky ze schůzky:\n[vlož text]",
+          en: "From these meeting notes create:\n1) Decisions (max 3 bullets — what was agreed)\n2) Action items in format: [Who] will [Do what] by [When]\n3) Open questions (what still hasn't been decided)\n\nMeeting notes:\n[paste text]",
+        }},
+        { label: { cs: "Porozumět úřednímu dopisu", en: "Understand official letter" }, p: {
+          cs: "Přečti tento text z úřadu / pojišťovny / banky a vysvětli mi ho jednoduše:\n[vlož text dokumentu]\n\nPotřebuji vědět:\n1) Co po mně chtějí?\n2) Musím něco udělat? Co a do kdy?\n3) Co se stane pokud nic neudělám?\n4) Na co si dát pozor?\n\nVysvětli to jako kamarád, ne jako právník. Bez zbytečného opakování 'je důležité'.",
+          en: "Read this text from a government office / insurer / bank and explain it to me simply:\n[paste document text]\n\nI need to know:\n1) What do they want from me?\n2) Do I need to do anything? What and by when?\n3) What happens if I do nothing?\n4) What should I watch out for?\n\nExplain it like a knowledgeable friend, not a lawyer.",
+        }},
+      ]},
+
+    // ── SOCIAL MEDIA ─────────────────────────────────────────────────────────
+    { task: { cs: "Sociální sítě", en: "Social media" }, icon: "📱", mods: ["ChatGPT", "Gemini"],
+      promptTip: {
+        cs: "Proč to funguje: každá platforma má jiný rytmus a délku. Říkej platformu, tón a co má příspěvek ZPŮSOBIT (sdílení, komentář, klik) — ne jen o čem má být.",
+        en: "Why it works: every platform has different rhythm and length. Specify the platform, tone, and what the post should CAUSE (share, comment, click) — not just what it should be about.",
+      },
+      ps: [
+        { label: { cs: "Instagram příspěvek", en: "Instagram post" }, p: {
+          cs: "Vytvoř Instagram příspěvek pro [typ účtu, např. 'kavárna v Praze' nebo 'fitness trenér'].\nTéma: [téma].\nCíl: [co má příspěvek způsobit — sdílení / komentáře / proklik na web]\nPopisek: max 150 slov, začni silnou první větou (ta se zobrazuje bez rozbalení).\nHashtagy: 10 relevantních (mix velké + niche).\nNávrh vizuálu: popiš co by měl obrázek nebo video zobrazovat.",
+          en: "Create an Instagram post for [account type, e.g. 'Prague café' or 'fitness coach'].\nTopic: [topic].\nGoal: [what the post should cause — shares / comments / website clicks]\nCaption: max 150 words, start with a strong first sentence (visible without expanding).\nHashtags: 10 relevant ones (mix popular + niche).\nVisual suggestion: describe what the image or video should show.",
+        }},
+        { label: { cs: "LinkedIn — odborný post", en: "LinkedIn — thought leadership" }, p: {
+          cs: "Napiš LinkedIn příspěvek o [téma] pro profesionální publikum v oboru [obor].\nZačni konkrétním příkladem nebo překvapivým číslem.\nTři krátké odstavce: problém → moje zkušenost/poznatek → co z toho plyne pro ostatní.\nZakončení: otázka která vyzývá ke komentáři.\nMax 200 slov. Žádné emoji v prvních 2 větách.",
+          en: "Write a LinkedIn post about [topic] for a professional audience in [industry].\nStart with a concrete example or surprising stat.\nThree short paragraphs: problem → my experience/insight → what this means for others.\nEnd with a question inviting comments.\nMax 200 words. No emoji in the first 2 sentences.",
+        }},
+      ]},
+
+    // ── PLANNING ─────────────────────────────────────────────────────────────
+    { task: { cs: "Plánování", en: "Planning" }, icon: "🗓️", mods: ["ChatGPT", "Gemini"],
+      promptTip: {
+        cs: "Proč to funguje: plánování bez omezení je k ničemu. Vždy zadej budget, časové omezení a konkrétní preference — AI pak filtruje za tebe místo aby ti dal seznam všeho možného.",
+        en: "Why it works: planning without constraints is useless. Always specify budget, time limits, and specific preferences — AI then filters for you instead of listing everything possible.",
+      },
+      ps: [
+        { label: { cs: "Výlet po ČR / Evropě", en: "Trip in CZ / Europe" }, p: {
+          cs: "Naplánuj [X]-denní výlet do [město/region].\nBudget: [částka] Kč na osobu (včetně dopravy z [odkud]).\nCestujeme: [sami / pár / rodina s dětmi věk X]\nZájmy: [co nás baví, např. 'příroda a pěší turistika, ne muzea']\nVyhýbáme se: [co nechceme, např. 'turistické pasti a fronty']\n\nChci: itinerář po dnech s konkrétními časy, odhadem cen, tipem na oběd a večeři každý den.",
+          en: "Plan a [X]-day trip to [city/region].\nBudget: [amount] per person (including transport from [where]).\nTraveling: [solo / couple / family with kids age X]\nInterests: [what we enjoy, e.g. 'nature and hiking, not museums']\nAvoiding: [what we don't want, e.g. 'tourist traps and queues']\n\nI want: day-by-day itinerary with specific times, estimated costs, and a lunch + dinner tip each day.",
+        }},
+        { label: { cs: "Týdenní jídelníček", en: "Weekly meal plan" }, p: {
+          cs: "Vytvoř jídelníček na 5 pracovních dní pro [počet osob].\nOmezení stravy: [bez lepku / vegetariánský / bez laktózy / žádné — vyber]\nBudget: max [částka] Kč týdně za suroviny.\nČas na vaření: max 30 minut na jídlo.\nPreference: [co máme rádi a co nesnášíme]\n\nVýstup:\n• Jídla na každý den (snídaně volná)\n• Nákupní seznam seřazený podle oddělení (zelenina, mléčné, maso...)\n• Které ingredience se opakují a šetří peníze",
+          en: "Create a meal plan for 5 working days for [number of people].\nDietary restrictions: [gluten-free / vegetarian / dairy-free / none — choose]\nBudget: max [amount] per week for ingredients.\nCooking time: max 30 minutes per meal.\nPreferences: [what we like and what we hate]\n\nOutput:\n• Meals for each day (breakfast flexible)\n• Shopping list organized by store section (veg, dairy, meat...)\n• Which ingredients repeat across meals to save money",
+        }},
+      ]},
+
+    // ── LEARNING ─────────────────────────────────────────────────────────────
+    { task: { cs: "Učení a vysvětlení", en: "Learning & explanation" }, icon: "🎓", mods: ["ChatGPT", "Claude"],
+      promptTip: {
+        cs: "Proč to funguje: říkej AI jakou úroveň znalostí máš a požaduj příklady z tvého světa — ne z učebnic. Aktivní učení (otázky po každém kroku) je efektivnější než pasivní čtení výkladu.",
+        en: "Why it works: tell AI your knowledge level and ask for examples from your world — not textbooks. Active learning (questions after each step) is more effective than passively reading explanations.",
+      },
+      ps: [
+        { label: { cs: "Vysvětli jednoduše", en: "Explain simply" }, p: {
+          cs: "Vysvětli mi [téma] jednoduše.\nMoje aktuální znalost: [nic nevím / základy / trochu rozumím — vyber].\nPříklady: použij příklady z [moje profese/situace, např. 'řízení malé firmy' nebo 'každodenního života'].\nFormát: nejdřív 1 věta co to je, pak 3 klíčové body, pak 1 konkrétní příklad, pak shrnutí.\nPokud jsou tam termíny které neznám, vysvětli je automaticky.",
+          en: "Explain [topic] to me simply.\nMy current knowledge: [nothing / basics / some understanding — choose].\nExamples: use examples from [my profession/situation, e.g. 'running a small business' or 'everyday life'].\nFormat: first 1 sentence what it is, then 3 key points, then 1 concrete example, then summary.\nIf there are terms I might not know, explain them automatically.",
+        }},
+        { label: { cs: "Interaktivní výuka", en: "Interactive learning" }, p: {
+          cs: "Chci se naučit [téma]. Buď můj učitel.\nPostupuj po malých krocích — jeden koncept najednou.\nPo každém kroku mi polož jednu konkrétní otázku, abych si ověřil/a porozumění.\nPokud odpovím špatně, nevysvětluj znovu stejně — zkus jiný příklad nebo analogii.\nZačni tím, proč je toto téma užitečné v praxi.",
+          en: "I want to learn [topic]. Be my teacher.\nProceed in small steps — one concept at a time.\nAfter each step, ask me one specific question to verify my understanding.\nIf I answer wrong, don't re-explain the same way — try a different example or analogy.\nStart with why this topic is practically useful.",
+        }},
+      ]},
+
+    // ── CZECH LIFE SITUATIONS (NEW) ──────────────────────────────────────────
+    { task: { cs: "České životní situace", en: "Real-life situations" }, icon: "🇨🇿", mods: ["ChatGPT", "Claude"],
+      promptTip: {
+        cs: "Tyto prompty řeší situace které Češi řeší každý den — úřady, práce, finance. AI je v tomto velmi užitečný a většina lidí neví, že se na to dá použít.",
+        en: "These prompts address situations Czechs face every day — bureaucracy, work, finances. AI is very useful here and most people don't know it can be used for this.",
+      },
+      ps: [
+        { label: { cs: "Motivační dopis na práci", en: "Job application cover letter" }, p: {
+          cs: "Napiš mi motivační dopis na tuto pracovní pozici.\nPozice: [název pozice]\nFirma: [název firmy — pokud víš, doplň co o nich víš]\nMoje zkušenosti: [2-3 věty — co umíš a co jsi dělal/a]\nPožadavky z inzerátu: [vlož text nebo hlavní body]\n\nPravidla:\n• Max 200 slov\n• Začni konkrétní větou proč tě tato firma nebo role zajímá — ne 'Dovolte mi představit se'\n• Žádná klišé: komunikativní, týmový hráč, orientace na výsledky\n• Ukaž co přineseš jim, ne jen co hledáš ty",
+          en: "Write a cover letter for this job position.\nPosition: [job title]\nCompany: [company name — if you know it, add what you know about them]\nMy experience: [2-3 sentences — what you can do and what you've done]\nJob requirements: [paste listing text or key points]\n\nRules:\n• Max 200 words\n• Start with a specific sentence on why this company or role interests you — not 'I would like to apply'\n• No clichés: communicative, team player, results-oriented\n• Show what you'll bring them, not just what you're looking for",
+        }},
+        { label: { cs: "Stížnost / odvolání", en: "Complaint / appeal" }, p: {
+          cs: "Pomoz mi napsat formální stížnost nebo odvolání.\nKomu píšu: [firma / úřad / pojišťovna]\nCo se stalo: [přesný popis situace s daty a čísly pokud máš]\nCo jsem už zkusil/a: [předchozí kroky]\nCo chci dosáhnout: [konkrétní výsledek — vrácení peněz, oprava, omluva]\n\nTón: věcný, bez emocí, s odkazem na zákon pokud relevantní.\nFormát: datum, věc, tělo dopisu, žádost s termínem odpovědi.",
+          en: "Help me write a formal complaint or appeal.\nWho I'm writing to: [company / office / insurer]\nWhat happened: [exact description with dates and numbers if available]\nWhat I've already tried: [previous steps]\nWhat I want to achieve: [specific outcome — refund, repair, apology]\n\nTone: factual, unemotional, with reference to law if relevant.\nFormat: date, subject, body, request with response deadline.",
+        }},
+        { label: { cs: "Finanční rozhodnutí", en: "Financial decision" }, p: {
+          cs: "Pomoz mi promyslet toto finanční rozhodnutí — nechci konkrétní doporučení (to je na finančním poradci), ale chci lépe pochopit situaci.\nRozhodnutí: [popis — např. 'refinancování hypotéky' nebo 'auto na leasing vs hotově']\nMoje čísla: [relevantní částky, příjmy, výdaje — sdílej jen co ti je příjemné]\n\nChci vědět:\n1) Jaké klíčové otázky bych si měl/a položit?\n2) Co lidé v této situaci nejčastěji přehlíží?\n3) Jak udělat rychlý výpočet pro orientaci?",
+          en: "Help me think through this financial decision — I don't want specific advice (that's for a financial advisor), but I want to understand the situation better.\nDecision: [description — e.g. 'mortgage refinancing' or 'car on lease vs cash']\nMy numbers: [relevant amounts, income, expenses — share only what you're comfortable with]\n\nI want to know:\n1) What key questions should I ask myself?\n2) What do people in this situation most often overlook?\n3) How to do a quick back-of-envelope calculation?",
+        }},
+      ]},
   ],
-  intermediate:[
-    {task:{cs:"Copywriting a prodejní texty",en:"Copywriting and sales texts"},icon:"▸",mods:["Claude","ChatGPT"],
-     ptip:{cs:"Tip: Vždy napište co zákazník NAMÍTÁ — proč by nekoupil. Tato jedna informace navíc je rozdíl mezi textem který prodává a textem který jen informuje.",en:"Tip: Always write what the customer OBJECTS to — why they wouldn't buy. This one extra piece of information is the difference between copy that sells and copy that just informs."},
-     ps:[
-       {label:{cs:"Prodejní text (AIDA metoda)",en:"Sales copy (AIDA method)"},p:{
-         cs:"Napiš prodejní text pro: [produkt nebo služba]\n\nPro koho to je: [věk, profese, hlavní problém který řeší]\nHlavní výhoda (proč zrovna ty): [buď konkrétní — ne 'kvalita a spolehlivost']\nProč by zákazník nekoupil: [co ho od koupě odrazuje — cena, nedůvěra, alternativa]\n\nChci text ve 4 částech:\n1. ZAUJMI: Nadpis který zasáhne jejich největší bolest nebo problém — ne 'Představujeme náš produkt'\n2. ZAUJMI VÍC: Vysvětli proč je jejich problém závažnější než si myslí\n3. TOUHA: Popiš konkrétní výsledek — ne vlastnosti produktu. Místo 'náš produkt umí X' napiš 'za 3 týdny budete mít Y'\n4. AKCE: Jedna věta co mají udělat teď a proč zrovna teď\n\nMax 300 slov.\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nProdukt: online kurz focení na mobil\nPro koho: maminky 30-45 let, chtějí hezké fotky dětí ale nemají čas učit se fotit\nHlavní výhoda: výsledky viditelné po 1. lekci, lekce trvají 15 minut\nProč by nekoupila: myslí si že na hezké fotky potřebuje drahý foťák",
-         en:"Write sales copy for: [product or service]\n\nWho it's for: [age, profession, main problem they solve]\nMain advantage (why you): [be specific — not 'quality and reliability']\nWhy customer wouldn't buy: [what puts them off — price, distrust, alternatives]\n\nI want text in 4 parts:\n1. GRAB ATTENTION: Headline hitting their biggest pain — not 'Introducing our product'\n2. BUILD INTEREST: Explain why their problem is more serious than they think\n3. CREATE DESIRE: Describe specific outcome — not product features. Instead of 'our product does X' write 'in 3 weeks you'll have Y'\n4. CALL TO ACTION: One sentence what to do now and why right now\n\nMax 300 words.",
-       }},
-       {label:{cs:"Cold email — oslovení neznámého klienta",en:"Cold email — reaching unknown client"},p:{
-         cs:"Cold email = email člověku který vás nezná a nečekal váš kontakt. Cílem NENÍ prodat hned — cílem je dostat 20minutový hovor.\n\nNapiš cold email pro:\nKomu píšu: [typ firmy nebo člověka]\nCo nabízím: [stručně]\nProč mu píšu teď: [konkrétní důvod proč právě teď — např. viděl jsem že hledáte nového zaměstnance, blíží se vám sezóna, váš konkurent právě udělal X]\nCo chci: 20minutový hovor\n\nPravidla:\n• Max 5 vět v těle emailu\n• První věta mluví o nich — ne o mně\n• Zmiň jeden konkrétní problém který pravděpodobně mají\n• Nepodepisuji se 'Dobrý den, jmenuji se...'\n• Předmět: max 6 slov\n\nNapiš 2 varianty — A) kratší a přímější, B) s konkrétním příkladem nebo výsledkem\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nKomu: majitelé e-shopů s módou\nCo nabízím: správu Instagram reklam\nProč teď: blíží se Vánoce — nejdůležitější sezóna pro prodeje\nCo chci: 20minutový hovor",
-         en:"Cold email = email to someone who doesn't know you and wasn't expecting your contact. Goal is NOT to sell immediately — goal is to get a 20-minute call.\n\nWrite cold email for:\nWho I'm writing to: [type of company or person]\nWhat I offer: [briefly]\nWhy I'm writing now: [specific reason why right now]\nWhat I want: 20-minute call\n\nRules:\n• Max 5 sentences in body\n• First sentence about them — not me\n• Mention one specific problem they likely have\n• Don't start with 'My name is...'\n• Subject: max 6 words\n\nWrite 2 variants — A) shorter and more direct, B) with specific example or result",
-       }},
-       {label:{cs:"LinkedIn příspěvek",en:"LinkedIn post"},p:{
-         cs:"Napiš LinkedIn příspěvek na téma: [téma nebo příběh]\n\nKdo to bude číst: [popis lidí na vašem LinkedIn]\nCo si mají odnést: [jedna hlavní myšlenka]\nJak chci působit: [odborně / osobně / inspirativně]\n\nStruktura příspěvku:\n• První věta (tzv. hook = háček): musí být tak zajímavá že lidé kliknou na 'Zobrazit více'. Příklad: šokující číslo, kontroverze, nebo neočekávaný výrok. NIKDY nezačínej 'Dnes bych chtěl/a sdílet...'\n• Prázdný řádek (LinkedIn ukrývá text za 'Zobrazit více' — prázdný řádek hned za hookem nutí lidi kliknout)\n• 2–4 věty vysvětlení proč je to důležité\n• Krátký seznam (odrážky = krátké body jedna pod druhou): 3–5 konkrétních tipů nebo poznatků\n• Závěr: otázka pro čtenáře nebo výzva k reakci\n• Max 3 hashtagy (slova s # na konci)\n\nDélka: 150–300 slov. Krátké odstavce — jeden nápad = jeden odstavec.\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nTéma: Jak jsem přestala trávit 2 hodiny denně psaním emailů díky AI\nKdo to čte: freelanceři a OSVČ\nCo si odnesou: AI může ušetřit hodiny administrativy\nJak chci působit: osobně a prakticky",
-         en:"Write a LinkedIn post on: [topic or story]\n\nWho will read it: [description of people in your LinkedIn network]\nWhat they should take away: [one main idea]\nHow I want to come across: [professional / personal / inspirational]\n\nPost structure:\n• First sentence (hook): must be interesting enough that people click 'See more'. Example: shocking number, controversy, or unexpected claim. NEVER start with 'Today I'd like to share...'\n• Empty line (LinkedIn hides text behind 'See more' — empty line right after hook forces people to click)\n• 2–4 sentences explaining why it matters\n• Short list (bullet points): 3–5 specific tips or insights\n• Closing: question for readers or call to engage\n• Max 3 hashtags\n\nLength: 150–300 words. Short paragraphs — one idea = one paragraph.",
-       }},
-     ],
-    },
-    {task:{cs:"Analýza dat a reporty",en:"Data analysis and reports"},icon:"▸",mods:["Claude","ChatGPT"],
-     ptip:{cs:"Bez předepsané struktury AI vyprodukuje zeď textu. Klíč: řekněte přesně jaký výstup chcete a co s ním budete dělat.",en:"Without prescribed structure AI produces a wall of text. Key: say exactly what output you want and what you'll do with it."},
-     ps:[
-       {label:{cs:"Analýza dat (tabulka, CSV, Excel)",en:"Data analysis (spreadsheet, CSV, Excel)"},p:{
-         cs:"Dataset = jakákoliv tabulka s daty — Excel, CSV soubor, nebo zkopírovaná tabulka.\n\nAnalyzuj přiložená data a dej mi výstup v této struktuře:\n\n1) PŘEHLED\nKolik řádků a sloupců? Jaká data tam jsou? Chybí něco?\n\n2) TOP 3 ZJIŠTĚNÍ\nCo jsou nejdůležitější věci které data říkají? Každé zjištění = 1 věta + konkrétní číslo.\n\n3) CO VYPADÁ DIVNĚ\n(Anomálie = hodnota nebo vzor který se výrazně liší od ostatních — např. jeden měsíc s extrémně nízkými prodeji, nebo zákazník s neobvykle vysokou objednávkou.) Pokud něco takového vidíš, řekni mi to a proč by to mohlo být důležité.\n\n4) DOPORUČENÍ\nCo bych měl/a udělat jako první a proč?\n\nPozn. k grafům: AI ti nevykreslí graf přímo, ale navrhne co zobrazit — ty pak graf uděláš v Excelu nebo Google Sheets.\n\nMax 3–5 vět na každý bod. Chci stručný report, ne akademickou práci.\n\n[nahrajte soubor nebo zkopírujte a vložte data]",
-         en:"Dataset = any table with data — Excel, CSV file, or copied table.\n\nAnalyze the attached data and give me output in this structure:\n\n1) OVERVIEW\nHow many rows and columns? What data is there? Is anything missing?\n\n2) TOP 3 FINDINGS\nWhat are the most important things the data says? Each finding = 1 sentence + specific number.\n\n3) WHAT LOOKS UNUSUAL\n(Anomaly = a value or pattern that differs significantly from others — e.g. one month with extremely low sales, or a customer with unusually high order.) If you see anything like this, tell me and why it might matter.\n\n4) RECOMMENDATIONS\nWhat should I do first and why?\n\nNote on charts: AI won't draw a chart directly, but will suggest what to show — you then make the chart in Excel or Google Sheets.\n\nMax 3–5 sentences per point. I want a brief report, not an academic paper.\n\n[upload file or copy and paste data]",
-       }},
-       {label:{cs:"Analýza zákaznických recenzí",en:"Customer review analysis"},p:{
-         cs:"Analyzuj tato zákaznická hodnocení a řekni mi co z nich vyplývá.\n\n[vložte text recenzí — zkopírujte je přímo sem]\n\nChci vědět:\n1) TOP 3 věci zákazníci CHVÁLÍ — u každé dej příklad přesné citace z recenze\n2) TOP 3 věci zákazníci KRITIZUJÍ — u každé dej příklad přesné citace\n3) CO ZÁKAZNÍCI CHTĚJÍ ALE PŘÍMO NEŘÍKAJÍ — co opakovaně naznačují nebo z čeho je cítit frustrace?\n4) CO UDĚLAT JAKO PRVNÍ — jedna konkrétní věc a proč právě ta\n5) CELKOVÉ VYZNĚNÍ (sentiment = zda jsou recenze spíš pozitivní, negativní nebo smíšené): odhadni přibližně kolik procent je pozitivních vs negativních\n\nIgnoruj obecné fráze jako 'doporučuji' nebo 'dobrá kvalita'. Hledej konkrétní vzory.",
-         en:"Analyze these customer reviews and tell me what they reveal.\n\n[paste review text — copy them directly here]\n\nI want to know:\n1) TOP 3 things customers PRAISE — include an example exact quote from a review for each\n2) TOP 3 things customers CRITICIZE — include an example exact quote for each\n3) WHAT CUSTOMERS WANT BUT DON'T SAY DIRECTLY — what do they repeatedly hint at or what frustration comes through?\n4) WHAT TO DO FIRST — one concrete thing and why that one\n5) OVERALL TONE (sentiment = whether reviews are mostly positive, negative or mixed): estimate roughly what % are positive vs negative\n\nIgnore generic phrases like 'would recommend' or 'good quality'. Look for specific patterns.",
-       }},
-     ],
-    },
-    {task:{cs:"Kódování — pomoc s kódem",en:"Coding — help with code"},icon:"▸",mods:["Claude Sonnet","ChatGPT"],
-     ptip:{cs:"Nemusíte umět programovat — stačí popsat co chcete a Claude kód napíše za vás. Čím přesněji popíšete co dovnitř vstupuje a co má vyjít ven, tím lepší kód dostanete.",en:"You don't need to know programming — just describe what you want and Claude writes the code. The more precisely you describe what goes in and what should come out, the better code you'll get."},
-     ps:[
-       {label:{cs:"Napsat jednoduchý skript (pro začátečníky v kódu)",en:"Write a simple script (for coding beginners)"},p:{
-         cs:"Chci napsat jednoduchý skript (= krátký program) v [jazyk — napiš Python pokud nevíte jiný].\n\nCo má skript dělat:\n[popište česky co chcete — co se stane na začátku, co se zpracuje, co dostanu na konci]\n\nVstup (co do skriptu dám):\n[příklad: 'soubor CSV s názvy produktů a cenami' nebo 'jméno zákazníka' nebo 'číslo']\n\nVýstup (co chci dostat zpět):\n[příklad: 'nový soubor kde jsou ceny zvýšené o 10%' nebo 'vypočítaná suma' nebo 'zpráva v textu']\n\nPravidla:\n• Piš kód jednoduše — jsem začátečník, chci aby byl čitelný\n• Přidej krátký komentář u každého kroku co dělá\n• Na konci mi řekni jak skript spustit\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nJazyk: Python\nCo má dělat: Přečíst soubor s emaily zákazníků a vyfiltrovat jen ty kteří mají gmail.com adresu\nVstup: soubor zakaznici.csv kde první sloupec je jméno, druhý email\nVýstup: nový soubor gmail_zakaznici.csv jen s gmail uživateli",
-         en:"I want to write a simple script (= short program) in [language — write Python if you don't know another].\n\nWhat the script should do:\n[describe in plain language — what happens at the start, what gets processed, what I get at the end]\n\nInput (what I put into the script):\n[example: 'CSV file with product names and prices' or 'customer name' or 'a number']\n\nOutput (what I want to get back):\n[example: 'new file with prices increased by 10%' or 'calculated sum' or 'a message in text']\n\nRules:\n• Write code simply — I'm a beginner, I want it to be readable\n• Add a short comment at each step explaining what it does\n• At the end tell me how to run the script",
-       }},
-       {label:{cs:"Opravit nefungující kód",en:"Fix broken code"},p:{
-         cs:"Tenhle kód nefunguje a nevím proč. Pomoz mi to opravit.\n\nJazyk: [Python / JavaScript / jiný]\n\nKód který nefunguje:\n```\n[vložte kód sem — zkopírujte ho]\n```\n\nCo se děje (chyba nebo špatné chování):\n[napište přesně co vidíte — buď chybovou hlášku nebo popište co se děje špatně]\nPříklad: 'Zobrazuje se červená hláška: NameError: name x is not defined'\nNebo: 'Skript se spustí ale vrátí prázdný výsledek místo dat'\n\nCo by se místo toho mělo dít:\n[popište co jste čekali]\n\nProsím:\n1) Najdi a vysvětli mi co je špatně a PROČ k tomu dochází — chci rozumět, ne jen zkopírovat opravu\n2) Oprav to\n3) Řekni mi jak příště podobné chybě předejít\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nJazyk: Python\nChyba: TypeError: can only concatenate str (not 'int') to str — na řádku 5\nOčekávání: skript měl sečíst dvě čísla a vypsat výsledek, místo toho se zastavil s chybou",
-         en:"This code doesn't work and I don't know why. Help me fix it.\n\nLanguage: [Python / JavaScript / other]\n\nCode that doesn't work:\n```\n[paste code here — copy it]\n```\n\nWhat's happening (error or wrong behavior):\n[write exactly what you see — either the error message or describe what's going wrong]\nExample: 'Red message appears: NameError: name x is not defined'\nOr: 'Script runs but returns empty result instead of data'\n\nWhat should happen instead:\n[describe what you expected]\n\nPlease:\n1) Find and explain what's wrong and WHY it happens — I want to understand, not just copy a fix\n2) Fix it\n3) Tell me how to prevent similar errors in the future",
-       }},
-     ],
-    },
-    {task:{cs:"Research a průzkum trhu",en:"Research and market analysis"},icon:"▸",mods:["Perplexity","Claude","Gemini"],
-     ptip:{cs:"Na faktuální research (aktuální data, čísla, zdroje) použijte Perplexity — vždy ukáže odkud info vzal. Na analýzu a závěry z dat použijte Claude.",en:"For factual research (current data, numbers, sources) use Perplexity — always shows where info came from. For analysis and conclusions from data use Claude."},
-     ps:[
-       {label:{cs:"Průzkum trhu nebo tématu",en:"Market or topic research"},p:{
-         cs:"KDY TO POUŽÍT: Chystáte se začít podnikat, přidáváte nový produkt, nebo jen chcete vědět co se děje ve vašem oboru. Místo hodin googlení dostanete přehled za minuty.\n\nProveď průzkum na téma: [vaše téma]\n\nProč to zjišťuji: [napište co s tím budete dělat — pomůže AI vybrat správné informace]\nPříklad: 'rozhoduji se jestli začít s e-shopem s ekologickými produkty' nebo 'připravuji prezentaci pro klienta'\n\nChci vědět:\n1) Jak to dnes vypadá — 3 až 5 klíčových faktů o tomto trhu nebo tématu\n2) Kdo jsou největší hráči — největší firmy nebo lidé v tomto oboru a co dělají\n3) Co se mění — jaké trendy nebo změny nastaly za poslední 2 roky (konkrétně, ne obecně)\n4) Kde jsou příležitosti — co zatím nikdo nedělá dobře nebo co zákazníci postrádají\n5) Co čekat — co se pravděpodobně stane v tomto oboru za 2–3 roky\n\nU každé informace uveď odkud to víš (odkaz nebo název zdroje).\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nTéma: trh s online kurzy v ČR\nProč zjišťuji: zvažuji spustit vlastní online kurz o fotografii\nKlíčová otázka: Je tam místo pro nové kurzy nebo je trh přeplněný?",
-         en:"WHEN TO USE: You're about to start a business, adding a new product, or just want to know what's happening in your field. Instead of hours of googling you get an overview in minutes.\n\nConduct research on: [your topic]\n\nWhy I'm finding this out: [write what you'll do with it — helps AI pick the right info]\nExample: 'deciding whether to start an e-shop with eco products' or 'preparing a client presentation'\n\nI want to know:\n1) What it looks like today — 3 to 5 key facts about this market or topic\n2) Who are the biggest players — largest companies or people in this field and what they do\n3) What's changing — what trends or changes happened in the last 2 years (specific, not general)\n4) Where the opportunities are — what nobody does well yet or what customers are missing\n5) What to expect — what will probably happen in this field in 2–3 years\n\nFor each piece of information state where you know it from (link or source name).",
-       }},
-       {label:{cs:"Porovnání nástrojů nebo produktů",en:"Tool or product comparison"},p:{
-         cs:"KDY TO POUŽÍT: Nevíte jaký nástroj, software nebo produkt vybrat. Místo čtení desítek recenzí dostanete přehledné srovnání.\n\nPorovnej tyto možnosti: [A] vs [B] vs [C]\n\nPro jaký účel to hledám: [popište konkrétně k čemu to budete používat — to je nejdůležitější část]\nKdo to bude používat: [vy sami / váš tým / zákazníci]\n\nZajímá mě:\n• Cena — kolik to stojí a jak se platí (měsíčně / jednorázově / podle počtu uživatelů)\n• Co to umí — hlavní funkce které jsou důležité pro můj účel\n• Co to neumí nebo v čem je to slabé\n• S čím to funguje dohromady — například: 'propojí se to s mým Gmailem nebo Excelem?'\n• Pro koho se každá možnost hodí nejlépe\n\nNa konci: dej mi konkrétní doporučení pro moji situaci — ne 'záleží na situaci' bez vysvětlení.\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nMožnosti: Notion vs Google Docs vs Confluence\nÚčel: sdílení dokumentů a poznámek v týmu 5 lidí, hlavně zapisujeme schůzky a projekty\nKdo to používá: já + 4 kolegové, různá technická zdatnost\nNejdůležitější: jednoduchost, cena, propojení s Google kalendářem",
-         en:"WHEN TO USE: You don't know which tool, software or product to choose. Instead of reading dozens of reviews you get a clear comparison.\n\nCompare these options: [A] vs [B] vs [C]\n\nWhat I'm looking for it for: [describe specifically what you'll use it for — this is the most important part]\nWho will use it: [yourself / your team / customers]\n\nI care about:\n• Price — how much it costs and how you pay (monthly / one-time / per user)\n• What it can do — main features important for my purpose\n• What it can't do or where it's weak\n• What it works with — for example: 'will it connect with my Gmail or Excel?'\n• Who each option is best suited for\n\nAt the end: give me a specific recommendation for my situation — not 'it depends' without explanation.",
-       }},
-     ],
-    },
-    {task:{cs:"Tvorba videí — jak napsat dobrý prompt",en:"Video creation — how to write a good prompt"},icon:"▸",mods:["Runway","Higgsfield","Kling"],
-     ptip:{cs:"AI videa nevycházejí špatně kvůli nástroji — ale kvůli nepřesnému popisu. Čím konkrétněji popíšete pohyb a scénu, tím lepší výsledek dostanete.",en:"AI videos don't fail due to the tool — but due to imprecise description. The more specifically you describe the motion and scene, the better the result."},
-     ps:[
-       {label:{cs:"Kompletní video prompt s vysvětlením",en:"Complete video prompt with explanation"},p:{
-         cs:"Napiš popis pro AI video generátor (Runway / Kling / Higgsfield) takto:\n\nKDO nebo CO je ve videu:\n[přesný popis — ne jen 'žena', ale 'mladá žena v červeném kabátu, tmavé vlasy']\n\nCO SE DĚJE (pohyb):\n[konkrétní pohyb — ne jen 'jde', ale 'pomalu kráčí ulicí, dívá se do vitríny']\n\nKDE a KDY:\n[místo + atmosféra — 'centrum Prahy, večer, mokrá dlažba odráží světla reklam']\n\nVIZUÁLNÍ STYL:\n[jak má video vypadat — vyberte jedno:\n• jako film — 'filmový styl, cinematická kvalita'\n• jako dokument — 'dokumentární styl, přirozené světlo'\n• zpomaleně — 'slow motion, každý detail viditelný'\n• z ruky — 'kamera z ruky, pohyblivý obraz jako reportáž']\n\nPOHYB KAMERY:\n[jak se kamery pohybuje — vyberte jedno:\n• 'kamera se pomalu přibližuje' (zoom in)\n• 'kamera sleduje postavu' (sledovací záběr)\n• 'kamera se pomalu posouvá doprava' (panorama)\n• 'kamera stojí na místě' (statický záběr)]\n\nOSVĚTLENÍ:\n['zlaté světlo západu slunce' / 'studené modré světlo noci' / 'teplé studijní osvětlení' / 'přirozené denní světlo']\n\nCO NECHCI (negativní prompt = seznam věcí které AI má vyloučit):\n['rozmazaný obraz, nerealistické ruce, zkreslené proporce, špatná kvalita']\n\n--- VYPLNĚNÝ PŘÍKLAD ---\nKdo: mladá žena v červeném kabátu, tmavé vlasy\nCo se děje: pomalu kráčí ulicí, zastaví se, otočí hlavu a usměje se na kameru\nKde: centrum Prahy, večer po dešti, lesklá dlažba odráží světla\nStyl: filmový, cinematická kvalita\nPohyb kamery: kamera se pomalu přibližuje k obličeji\nOsvětlení: teplé zlaté světlo z výlohy obchodu\nNechci: rozmazaný obraz, nerealistický pohyb, špatné ruce\n\nTip: Nevíte jak začít? Dejte tento seznam Claude a řekněte: 'Napiš mi hotový video prompt podle těchto bodů. Moje vize je: [popište česky co chcete]'",
-         en:"Write description for AI video generator (Runway / Kling / Higgsfield) like this:\n\nWHO or WHAT is in the video:\n[exact description — not just 'woman' but 'young woman in red coat, dark hair']\n\nWHAT HAPPENS (motion):\n[specific movement — not just 'walks' but 'slowly walks down a street, looks into a shop window']\n\nWHERE and WHEN:\n[location + atmosphere — 'Prague city center, evening, wet cobblestones reflecting billboard lights']\n\nVISUAL STYLE:\n[how the video should look — choose one:\n• like a film — 'cinematic style, film quality'\n• like a documentary — 'documentary style, natural light'\n• slow motion — 'slow motion, every detail visible'\n• handheld — 'handheld camera, moving image like a news report']\n\nCAMERA MOVEMENT:\n[how camera moves — choose one:\n• 'camera slowly zooms in'\n• 'camera follows the subject'\n• 'camera slowly pans right'\n• 'camera stays still (static shot)']\n\nLIGHTING:\n['golden sunset light' / 'cold blue night light' / 'warm studio lighting' / 'natural daylight']\n\nWHAT I DON'T WANT (negative prompt = list of things AI should exclude):\n['blurry image, unrealistic hands, distorted proportions, low quality']\n\nTip: Not sure how to start? Give this list to Claude and say: 'Write me a finished video prompt based on these points. My vision is: [describe in plain language what you want]'",
-       }},
-     ],
-    },
+
+  intermediate: [
+
+    // ── COPYWRITING ──────────────────────────────────────────────────────────
+    { task: { cs: "Copywriting", en: "Copywriting" }, icon: "✏️", mods: ["ChatGPT", "Claude"],
+      promptTip: {
+        cs: "Proč to funguje: dobrý copy musí adresovat hlavní NÁMITKU zákazníka, ne jen chválit produkt. Přidání 'hlavní námitky' do promptu je rozdíl mezi textem který prodává a textem který informuje.",
+        en: "Why it works: good copy must address the customer's main OBJECTION, not just praise the product. Adding the 'main objection' to the prompt is the difference between copy that sells and copy that informs.",
+      },
+      ps: [
+        { label: { cs: "AIDA prodejní text", en: "AIDA sales copy" }, p: {
+          cs: "Napiš prodejní text pro [produkt/služba] metodou AIDA.\n\nCílová skupina: [popis — věk, profese, hlavní problém který řeší]\nUSP (proč právě vy): [hlavní výhoda, buď konkrétní]\nHlavní námitka zákazníka: [proč by nekoupil — cena, nedůvěra, alternativa]\n\nStruktura:\n• ATTENTION: Nadpis který zasáhne hlavní bolest cílovky — ne 'Představujeme...'\n• INTEREST: Rozveď proč je tento problém závažnější než si myslí\n• DESIRE: Konkrétní výsledek zákazníka (ne vlastnosti). Příklad: 'Za 3 týdny...' ne 'Náš produkt umí...'\n• ACTION: Jedno CTA s důvodem jednat teď (omezená nabídka / deadline / konkrétní přínos)\n\nMax 300 slov. Nezačínej slovem 'Jsou' nebo 'Každý'.",
+          en: "Write sales copy for [product/service] using the AIDA method.\n\nTarget audience: [description — age, profession, main problem they solve]\nUSP (why you): [main advantage, be specific]\nMain customer objection: [why they wouldn't buy — price, distrust, alternative]\n\nStructure:\n• ATTENTION: Headline that hits the target's main pain — not 'Introducing...'\n• INTEREST: Expand on why this problem is more serious than they think\n• DESIRE: Specific customer result (not features). Example: 'In 3 weeks...' not 'Our product can...'\n• ACTION: One CTA with a reason to act now (limited offer / deadline / specific benefit)\n\nMax 300 words. Don't start with 'Are you' or 'Everyone'.",
+        }},
+        { label: { cs: "Cold email outreach", en: "Cold email outreach" }, p: {
+          cs: "Napiš cold email potenciálnímu klientovi.\nTyp firmy/osoby: [komu píšu]\nCo nabízím: [stručně]\nProč jim píšu teď (trigger): [konkrétní důvod — novinka o jejich firmě, sezóna, problém který řeším]\nCíl emailu: 20minutový hovor — ne prodat hned.\n\nPravidla:\n• Max 5 vět v těle emailu\n• První věta mluví o nich, ne o mně\n• Zmíň jeden konkrétní problém, který pravděpodobně mají\n• Nezačínej 'Dobrý den, jmenuji se...'\n• Předmět: max 6 slov, žádné otazníky\n\nNapiš 2 varianty:\nA) Přímá a stručná\nB) S konkrétním příkladem nebo číslem",
+          en: "Write a cold email to a potential client.\nType of company/person: [who I'm writing to]\nWhat I offer: [briefly]\nWhy I'm writing now (trigger): [specific reason — news about their company, season, problem I solve]\nGoal of email: 20-minute call — not to sell immediately.\n\nRules:\n• Max 5 sentences in the email body\n• First sentence is about them, not me\n• Mention one specific problem they likely have\n• Don't start with 'My name is...'\n• Subject: max 6 words, no question marks\n\nWrite 2 variants:\nA) Direct and concise\nB) With a specific example or number",
+        }},
+        { label: { cs: "PAS prodejní email", en: "PAS sales email" }, p: {
+          cs: "Napiš prodejní email metodou PAS (Problem, Agitate, Solution).\nProdukt/služba: [co prodávám]\nCílová skupina: [kdo jsou moji zákazníci]\nHlavní problém: [co je trápí — buď velmi konkrétní]\n\nStruktura:\n• PROBLEM: Pojmenuj problém jazykem zákazníka — ne jak ho vidíš ty\n• AGITATE: Ukáž co se stane pokud ho neřeší (ztracené peníze, čas, příležitosti)\n• SOLUTION: Představ produkt jako přirozené řešení — ne jako reklamu\n\nPředmět: 3 varianty (jedna s číslem, jedna s otázkou, jedna s 'jak')\nDélka emailu: max 200 slov.",
+          en: "Write a sales email using the PAS method (Problem, Agitate, Solution).\nProduct/service: [what I'm selling]\nTarget audience: [who my customers are]\nMain problem: [what troubles them — be very specific]\n\nStructure:\n• PROBLEM: Name the problem in the customer's language — not how you see it\n• AGITATE: Show what happens if they don't solve it (lost money, time, opportunities)\n• SOLUTION: Introduce the product as the natural solution — not as an ad\n\nSubject: 3 variants (one with a number, one with a question, one with 'how to')\nEmail length: max 200 words.",
+        }},
+      ]},
+
+    // ── DATA ANALYSIS ─────────────────────────────────────────────────────────
+    { task: { cs: "Analýza dat", en: "Data analysis" }, icon: "📊", mods: ["ChatGPT", "Claude"],
+      promptTip: {
+        cs: "Proč to funguje: bez předepsaného formátu AI vyprodukuje akademickou zeď textu. Klíč je říct přesně JAKÝ VÝSTUP chceš a co s ním budeš dělat — pak dostaneš akceschopný report, ne přednášku.",
+        en: "Why it works: without a prescribed format AI produces an academic wall of text. The key is saying exactly WHAT OUTPUT you want and what you'll do with it — then you get an actionable report, not a lecture.",
+      },
+      ps: [
+        { label: { cs: "Kompletní analýza datasetu", en: "Full dataset analysis" }, p: {
+          cs: "Analyzuj přiložený dataset. Výstup musí mít přesně tuto strukturu:\n\n1) PŘEHLED DAT: Kolik řádků/sloupců, jaký typ dat, chybějící hodnoty?\n2) TOP 3 ZJIŠTĚNÍ: Co je nejdůležitější co data říkají? Každé = 1 věta + konkrétní číslo.\n3) ANOMÁLIE: Co vypadá divně nebo neočekávaně? Proč to může být důležité?\n4) VIZUALIZACE: Navrhni 2 konkrétní grafy — popiš typ, osy a co přesně zobrazit.\n5) DOPORUČENÉ KROKY: Co analyticky zkoumat dál?\n\nKaždá sekce max 3-5 vět. Chci report, ne akademickou práci.\n\n[nahraj soubor nebo vlož data]",
+          en: "Analyze the attached dataset. Output must follow this exact structure:\n\n1) DATA OVERVIEW: How many rows/columns, what type of data, missing values?\n2) TOP 3 FINDINGS: What is the most important thing the data says? Each = 1 sentence + specific number.\n3) ANOMALIES: What looks strange or unexpected? Why might this be important?\n4) VISUALIZATIONS: Suggest 2 specific charts — describe type, axes, and exactly what to show.\n5) RECOMMENDED NEXT STEPS: What to analyze further?\n\nMax 3-5 sentences per section. I want a report, not an academic paper.\n\n[upload file or paste data]",
+        }},
+        { label: { cs: "Analýza zpětné vazby zákazníků", en: "Customer feedback analysis" }, p: {
+          cs: "Mám [X] hodnocení/recenzí/zpětné vazby od zákazníků. Analyzuj je.\n\n[vlož text recenzí nebo nahraj soubor]\n\nVýstup:\n1) Top 3 věci které zákazníci CHVÁLÍ (s citací 1 příkladu každého)\n2) Top 3 věci které zákazníci KRITIZUJÍ (s citací 1 příkladu každého)\n3) SKRYTÉ POTŘEBY: Co zákazníci chtějí ale přímo neříkají?\n4) PRIORITA: Jedno doporučení — co udělat jako první a proč\n\nIgnoruj obecné fráze jako 'dobrá kvalita' nebo 'doporučuji'. Hledej konkrétní vzory.",
+          en: "I have [X] reviews / ratings / feedback from customers. Analyze them.\n\n[paste review text or upload file]\n\nOutput:\n1) Top 3 things customers PRAISE (with 1 example quote each)\n2) Top 3 things customers CRITICIZE (with 1 example quote each)\n3) HIDDEN NEEDS: What do customers want but don't say directly?\n4) PRIORITY: One recommendation — what to do first and why\n\nIgnore generic phrases like 'good quality' or 'would recommend'. Look for specific patterns.",
+        }},
+      ]},
+
+    // ── CODING ────────────────────────────────────────────────────────────────
+    { task: { cs: "Psaní kódu", en: "Coding" }, icon: "💻", mods: ["Claude Sonnet", "ChatGPT", "DeepSeek R1"],
+      promptTip: {
+        cs: "Proč to funguje: AI píše lepší kód když ví kontext (jazyk, verze, existující kód). Příklad vstupu/výstupu je kritický — bez něj dostaneš obecné řešení místo toho co potřebuješ.",
+        en: "Why it works: AI writes better code when it knows context (language, version, existing code). Example input/output is critical — without it you get a generic solution instead of what you need.",
+      },
+      ps: [
+        { label: { cs: "Nová funkce", en: "New function" }, p: {
+          cs: "Napiš [jazyk + verze, např. 'Python 3.11'] funkci pro: [přesný popis co má dělat].\n\nPožadavky:\n• Ošetření chyb pro edge cases: [vyjmenuj možné problémy]\n• Typové anotace\n• Docstring s popisem parametrů\n• 3 unit testy (normální případ, edge case, chybový stav)\n\nPříklad vstupu: [konkrétní data]\nOčekávaný výstup: [konkrétní výsledek]\n\nExistující kód pro kontext:\n```\n[vlož relevantní části kódu pokud máš]\n```",
+          en: "Write a [language + version, e.g. 'Python 3.11'] function for: [exact description of what it should do].\n\nRequirements:\n• Error handling for edge cases: [list possible issues]\n• Type annotations\n• Docstring with parameter descriptions\n• 3 unit tests (normal case, edge case, error state)\n\nExample input: [specific data]\nExpected output: [specific result]\n\nExisting code for context:\n```\n[paste relevant parts of your code if available]\n```",
+        }},
+        { label: { cs: "Debug a oprava", en: "Debug and fix" }, p: {
+          cs: "Tento kód nefunguje správně:\n\n```[jazyk]\n[vlož kód]\n```\n\nChyba / nesprávné chování: [přesný popis co se děje]\nOčekávané chování: [co by se mělo dít]\nProstředí: [OS, verze jazyka, relevantní knihovny]\n\nPotřebuji:\n1) Identifikaci bugu s vysvětlením PROČ k tomu dochází\n2) Opravu s komentářem co se změnilo\n3) Jedno doporučení jak kódu do budoucna předejít podobnému problému",
+          en: "This code isn't working correctly:\n\n```[language]\n[paste code]\n```\n\nError / wrong behavior: [exact description of what's happening]\nExpected behavior: [what should happen]\nEnvironment: [OS, language version, relevant libraries]\n\nI need:\n1) Identification of the bug with explanation of WHY it happens\n2) Fix with a comment on what changed\n3) One recommendation for how to prevent similar issues in the future",
+        }},
+      ]},
+
+    // ── BRAINSTORMING ────────────────────────────────────────────────────────
+    { task: { cs: "Brainstorming", en: "Brainstorming" }, icon: "💡", mods: ["ChatGPT", "Claude"],
+      promptTip: {
+        cs: "Proč to funguje: AI brainstorming funguje nejlépe ve dvou fázích — nejdřív co nejvíc nápadů (bez hodnocení), pak kritický výběr. Spojení obou do jednoho promptu zabrání tomu, aby AI rovnou filtroval a ztratil neobvyklé nápady.",
+        en: "Why it works: AI brainstorming works best in two phases — first as many ideas as possible (without evaluation), then critical selection. Combining both in one prompt prevents AI from filtering too early and losing unusual ideas.",
+      },
+      ps: [
+        { label: { cs: "20 nápadů → top 5 s plánem", en: "20 ideas → top 5 with plan" }, p: {
+          cs: "Fáze 1 — generování:\nVygeneruj 20 nápadů na [téma/problém]. Zahrň i neobvyklé nebo zdánlivě absurdní nápady — nekritizuj je.\n\nFáze 2 — výběr a plán:\nVyber 5 nejlepších. Pro každý:\n• Proč je silný (konkrétní argument)\n• Jak ho realizovat (první 3 kroky)\n• Hlavní překážka a jak ji překonat\n• Odhad nákladů nebo potřebného času\n\nKontext: [doplň relevantní info — obor, cílová skupina, dostupné zdroje]",
+          en: "Phase 1 — generation:\nGenerate 20 ideas for [topic/problem]. Include unusual or seemingly absurd ideas — don't criticize them.\n\nPhase 2 — selection and plan:\nSelect the 5 best. For each:\n• Why it's strong (specific argument)\n• How to implement it (first 3 steps)\n• Main obstacle and how to overcome it\n• Estimated cost or time required\n\nContext: [add relevant info — industry, target audience, available resources]",
+        }},
+        { label: { cs: "Analýza z více perspektiv", en: "Multi-perspective analysis" }, p: {
+          cs: "Analyzuj [problém/rozhodnutí/nápad] z těchto 5 perspektiv:\n1) Zákazník / uživatel: co si myslí a co potřebuje?\n2) Konkurence: jak by na to reagovala?\n3) Technologie: co je technicky možné nebo omezující?\n4) Finance: jaký je finanční dopad a riziko?\n5) Lidský faktor: jak to ovlivní tým nebo vztahy?\n\nPro každou perspektivu: 2-3 konkrétní postřehy + 1 doporučení.\nNa závěr: jedno souhrnné doporučení s odůvodněním.",
+          en: "Analyze [problem/decision/idea] from these 5 perspectives:\n1) Customer / user: what do they think and need?\n2) Competition: how would they react?\n3) Technology: what's technically possible or limiting?\n4) Finance: what's the financial impact and risk?\n5) Human factor: how does it affect the team or relationships?\n\nFor each perspective: 2-3 specific insights + 1 recommendation.\nAt the end: one overall recommendation with reasoning.",
+        }},
+      ]},
+
+    // ── RESEARCH ─────────────────────────────────────────────────────────────
+    { task: { cs: "Research", en: "Research" }, icon: "🔎", mods: ["Perplexity", "Claude", "Gemini"],
+      promptTip: {
+        cs: "Proč to funguje: research bez struktury = halda informací. Definuj předem CO budete dělat s výsledky — to změní jak AI vybírá a prezentuje informace. Na faktuální research použij Perplexity (cituje zdroje), na analýzu Claude.",
+        en: "Why it works: research without structure = pile of information. Define upfront WHAT you'll do with the results — that changes how AI selects and presents information. Use Perplexity for factual research (cites sources), Claude for analysis.",
+      },
+      ps: [
+        { label: { cs: "Oborová rešerše", en: "Industry research" }, p: {
+          cs: "Proveď rešerši na téma: [téma]\nÚčel: [co s tím budu dělat — např. 'rozhodnutí zda vstoupit na trh' nebo 'příprava prezentace pro klienta']\n\nStruktura výstupu:\n1) SOUČASNÝ STAV: Kde se obor/téma nachází dnes? (3-5 klíčových faktů)\n2) HLAVNÍ HRÁČI: Kdo jsou dominantní aktéři a jaké jsou jejich pozice?\n3) TRENDY: Co se mění v posledních 2 letech? (ne obecnosti — konkrétní posuny)\n4) VÝZVY A RIZIKA: Co brání růstu nebo způsobuje problémy?\n5) PŘÍLEŽITOSTI: Kde jsou mezery nebo neobsloužené potřeby?\n6) PREDIKCE: Co lze očekávat za 2-3 roky?\n\nU každého tvrzení uveď zdroj nebo alespoň odkaz.",
+          en: "Conduct research on: [topic]\nPurpose: [what I'll do with it — e.g. 'decision whether to enter the market' or 'preparing a client presentation']\n\nOutput structure:\n1) CURRENT STATE: Where is the industry/topic today? (3-5 key facts)\n2) KEY PLAYERS: Who are the dominant actors and what are their positions?\n3) TRENDS: What has changed in the last 2 years? (not generalities — specific shifts)\n4) CHALLENGES & RISKS: What's preventing growth or causing problems?\n5) OPPORTUNITIES: Where are the gaps or underserved needs?\n6) PREDICTIONS: What can be expected in 2-3 years?\n\nCite a source or at least a reference for each claim.",
+        }},
+        { label: { cs: "Srovnání produktů / řešení", en: "Product / solution comparison" }, p: {
+          cs: "Porovnej [A] vs [B] vs [C] pro použití: [konkrétní use case — pro koho a k čemu].\n\nKritéria pro porovnání:\n• Cena a cenový model (freemium, předplatné, jednorázová platba)\n• Klíčové funkce relevantní pro [use case]\n• Nevýhody a omezení\n• Pro koho je každá možnost nejlepší\n• Integrace s dalšími nástroji\n\nVýstup: srovnávací tabulka + 1 odstavec doporučení pro [moji situaci: popis].\nBuď konkrétní — vyhni se formulaci 'záleží na situaci' bez vysvětlení.",
+          en: "Compare [A] vs [B] vs [C] for use case: [specific use case — for whom and what for].\n\nComparison criteria:\n• Price and pricing model (freemium, subscription, one-time)\n• Key features relevant to [use case]\n• Disadvantages and limitations\n• Who each option is best for\n• Integration with other tools\n\nOutput: comparison table + 1 paragraph recommendation for [my situation: description].\nBe specific — avoid 'it depends' without explanation.",
+        }},
+      ]},
   ],
-  advanced:[
-    {task:{cs:"Marketing: Obsahová strategie",en:"Marketing: Content strategy"},icon:"▸",mods:["Claude Opus","Claude Sonnet"],section:"marketing",
-     ptip:{cs:"Strategie nejdřív, obsah potom. Bez jasného zaměření budete produkovat příspěvky do prázdna. Claude Opus je na strategii nejlepší — přemýšlí víc do hloubky než Sonnet.",en:"Strategy first, content second. Without clear focus you'll produce posts into a void. Claude Opus is best for strategy — thinks more deeply than Sonnet."},
-     ps:[
-       {label:{cs:"90denní obsahová strategie",en:"90-day content strategy"},p:{
-         cs:"Pojmy které potřebujete znát:\n• Ideální zákazník = přesný popis člověka pro koho tvoříte obsah — věk, profese, co ho trápí, kde tráví čas online\n• Obsahové pilíře = 3–4 hlavní témata o kterých budete pravidelně psát nebo točit videa\n• Cíl obsahu: brand awareness = chci aby mě lidé znali / leads = chci poptávky / retence = chci aby zákazníci zůstali\n• KPI (klíčový ukazatel úspěchu) = konkrétní číslo kterým měříte jestli to funguje — počet sledujících, počet poptávek, otevíratelnost emailů\n\nSestav mi 90denní obsahovou strategii:\n\nFirma nebo projekt: [popište co děláte a co prodáváte]\nMůj ideální zákazník: [věk, profese, největší problém který řeší]\nPlatformy kde chci být aktivní: [Instagram / LinkedIn / email / YouTube / TikTok]\nCo chci obsahem dosáhnout: [znají mě víc lidí / dostávám víc poptávek / zákazníci zůstávají]\nKolik času mám na tvorbu obsahu: [hodin týdně]\nKdo jsou moji největší konkurenti v obsahu: [jméno nebo popis]\n\nChci:\n1) Popis mého ideálního zákazníka — kdo je, co ho trápí, kde ho najdu online\n2) 3–4 hlavní témata o kterých budu pravidelně komunikovat + proč zrovna tato\n3) Týdenní plán: co zveřejnit každý den, v jakém formátu a na které platformě\n4) Jak každý kus obsahu použít víckrát — příspěvek z LinkedIn přepracovat na email, video na carousel\n5) 3 čísla která budu sledovat každý týden abych věděl/a jestli to funguje\n6) 3 věci které udělám tento týden jako první\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nFirma: fotografka zaměřená na portréty a rodinné focení v Praze\nIdeální zákazník: maminky 30–45 let, chtějí profesionální fotky rodiny, ale bojí se že výsledek bude stiff a neautentický\nPlatformy: Instagram, email\nCo chci: dostávat víc poptávek, být první volba pro rodinné focení v Praze\nČas: 3 hodiny týdně\nKonkurenti: ostatní rodinní fotografové v Praze na Instagramu",
-         en:"Terms you need to know:\n• Ideal customer = exact description of the person you create content for — age, profession, what troubles them, where they spend time online\n• Content pillars = 3–4 main topics you'll regularly write about or make videos on\n• Content goal: awareness = I want people to know me / leads = I want inquiries / retention = I want customers to stay\n• KPI (key performance indicator) = specific number measuring if it's working — followers count, inquiry count, email open rate\n\nBuild me a 90-day content strategy:\n\nCompany or project: [describe what you do and what you sell]\nMy ideal customer: [age, profession, biggest problem they solve]\nPlatforms I want to be active on: [Instagram / LinkedIn / email / YouTube / TikTok]\nWhat I want to achieve with content: [more people know me / more inquiries / customers stay longer]\nHow much time I have for content creation: [hours per week]\nWho are my biggest content competitors: [name or description]\n\nI want:\n1) Description of my ideal customer — who they are, what troubles them, where I find them online\n2) 3–4 main topics I'll regularly communicate about + why these specifically\n3) Weekly plan: what to publish each day, in what format and on which platform\n4) How to reuse each piece of content — LinkedIn post turned into email, video into carousel\n5) 3 numbers I'll track each week to know if it's working\n6) 3 things to do this week first",
-       }},
-       {label:{cs:"Email sekvence pro nové zákazníky (5 emailů)",en:"Email sequence for new customers (5 emails)"},p:{
-         cs:"KDY TO POUŽÍT: Máte produkt nebo kurz a chcete aby noví zákazníci nebo odběratelé ho opravdu začali používat — ne jen si zaplatili a zapomněli.\n\nPojmy:\n• Onboarding sekvence = série emailů která provede nového zákazníka od registrace k prvnímu úspěchu\n• Hlavní překážka = největší důvod proč zákazníci produkt přestanou používat (nechápou ho, zdá se jim složitý, nemají čas)\n• Náhled emailu = krátký text viditelný v emailovém klientu před otevřením, hned za předmětem — láká k otevření\n\nNapiš mi sérii 5 emailů pro nové zákazníky:\n\nProdukt nebo služba: [co jste prodali nebo k čemu se přihlásili]\nKdo jsou noví zákazníci: [popište kdo to je]\nNejvětší důvod proč přestanou používat: [co je obvykle odradí]\n\nStruktura:\nEmail 1 (ihned po registraci nebo koupi): Uvítání + jeden konkrétní výsledek který mohou mít do 5 minut\nEmail 2 (2. den): Nejčastější chyba kterou lidé dělají a jak ji vyhnout\nEmail 3 (4. den): Příběh zákazníka který to zvládl — co přesně udělal\nEmail 4 (7. den): Pokročilý tip pro ty kteří chtějí víc\nEmail 5 (14. den): Jak se daří? + jedna otázka pro zpětnou vazbu\n\nKaždý email musí mít:\n• Předmět: 3 varianty (osobní / vzbuzuje zvědavost / říká přínos)\n• Náhled emailu: max 90 znaků — doplňuje předmět, neopakuje ho\n• Tělo emailu: max 200 slov\n• Jedno jasné tlačítko nebo odkaz na konci\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nProdukt: online kurz fotografování pro maminky\nKdo jsou zákazníci: maminky 28–40 let, koupily kurz ale nemají čas ho procházet\nNejvětší překážka: cítí že nemají čas, neví odkud začít, kurz jim přijde složitý\nOčekávaný výsledek po absolvování: hezké přirozené fotky dětí telefonem za 15 minut denně",
-         en:"WHEN TO USE: You have a product or course and want new customers or subscribers to actually start using it — not just pay and forget.\n\nTerms:\n• Onboarding sequence = series of emails guiding a new customer from registration to first success\n• Main barrier = biggest reason customers stop using the product (don't understand it, seems complex, no time)\n• Email preview = short text visible in email client before opening, right after the subject — entices to open\n\nWrite me a series of 5 emails for new customers:\n\nProduct or service: [what they bought or signed up for]\nWho are new customers: [describe who they are]\nBiggest reason they stop using it: [what usually puts them off]\n\nStructure:\nEmail 1 (immediately after registration or purchase): Welcome + one concrete result they can have in 5 minutes\nEmail 2 (day 2): Most common mistake people make and how to avoid it\nEmail 3 (day 4): Story of a customer who succeeded — exactly what they did\nEmail 4 (day 7): Advanced tip for those who want more\nEmail 5 (day 14): How's it going? + one feedback question\n\nEach email must have:\n• Subject: 3 variants (personal / creates curiosity / states benefit)\n• Email preview: max 90 characters — complements subject, doesn't repeat it\n• Email body: max 200 words\n• One clear button or link at the end",
-       }},
-       {label:{cs:"Instagram Carousel (série slidů)",en:"Instagram Carousel (slide series)"},p:{
-         cs:"KDY TO POUŽÍT: Chcete vytvořit sérii obrázků na Instagramu kde se swipuje zleva doprava — každý slide = jeden tip, krok nebo myšlenka.\n\nJděte na claude.ai a zadejte tento prompt:\n\nVytvoř vizuální sérii slidů pro Instagram jako HTML stránku.\n\nTéma: [vaše téma]\nPro koho: [popis vaší cílovky]\nStyl a barvy: [tmavý / světlý, hlavní barva, tón — přátelský / odborný]\n\nStruktura (7–10 slidů):\nSlide 1: Zaujmutí — překvapivé tvrzení nebo číslo které nutí swipnout dál\nSlide 2–3: Problém — proč na tomto tématu záleží\nSlide 4–7: Řešení — 1 konkrétní bod na každý slide\nSlide 8–9: Jak začít hned — co udělat jako první krok\nSlide 10: Výzva k akci — uložte si to / sledujte / napište do komentářů\n\nKaždý slide: nadpis max 5 slov, text max 3 věty.\nDesign: čistý, velká písma, vysoký kontrast, připravený pro mobilní telefon.\n\nClaude vygeneruje celou sérii jako vizuální HTML stránku přímo v chatu. Na mobilu udělejte screenshot každého slidu a přidejte na Instagram.\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nTéma: 5 chyb které dělají začínající fotografové\nPro koho: začátečníci v fotografii, hlavně mileniálové\nStyl: tmavé pozadí, zlatá písma, profesionální ale přátelský",
-         en:"WHEN TO USE: You want to create a series of images on Instagram that users swipe through — each slide = one tip, step or idea.\n\nGo to claude.ai and enter this prompt:\n\nCreate a visual slide series for Instagram as an HTML page.\n\nTopic: [your topic]\nFor whom: [description of your audience]\nStyle and colors: [dark / light, main color, tone — friendly / professional]\n\nStructure (7–10 slides):\nSlide 1: Hook — surprising claim or number that makes people swipe further\nSlide 2–3: Problem — why this topic matters\nSlide 4–7: Solution — 1 concrete point per slide\nSlide 8–9: How to start now — what to do as first step\nSlide 10: Call to action — save this / follow / write in comments\n\nEach slide: heading max 5 words, text max 3 sentences.\nDesign: clean, large text, high contrast, ready for mobile.\n\nClaude generates the entire series as a visual HTML page directly in chat. On mobile screenshot each slide and add to Instagram.",
-       }},
-     ],
-    },
-    {task:{cs:"SEO: Obsah a audit",en:"SEO: Content and audit"},icon:"▸",mods:["Claude Sonnet","Claude Code","Perplexity"],section:"seo",
-     ptip:{cs:"Moderní SEO nevyhraje ten kdo má nejvíc klíčových slov — vyhraje ten kdo má nejdůvěryhodnější a nejužitečnější obsah. AI vám pomůže napsat takový článek i prověřit celý web za zlomek času.",en:"Modern SEO isn't won by who has the most keywords — it's won by who has the most trustworthy and useful content. AI helps you write such articles and audit your whole website in a fraction of the time."},
-     ps:[
-       {label:{cs:"SEO článek (1800–2200 slov)",en:"SEO article (1800–2200 words)"},p:{
-         cs:"Pojmy:\n• Klíčové slovo = fráze kterou lidé zadávají do Googlu, pro kterou chcete být nalezeni\n• Záměr hledání = proč to lidé hledají — chtějí se jen dozvědět (informační), porovnat možnosti (srovnávací), nebo rovnou koupit (transakční)? Google zobrazuje různý obsah podle záměru\n• EEAT = čtyři věci které Google hodnotí: zkušenost (píšete z přímé zkušenosti?), odbornost (jste expert?), důvěryhodnost webu (odkazují na vás jiné weby?), důvěra (je web bezpečný a transparentní?)\n• Titulek stránky (H1) = hlavní nadpis článku — Google ho čte jako první\n• Popis ve výsledcích (meta description) = krátký text pod odkazem ve Googlu který láká ke kliknutí — píšete ho vy\n\nCo tím dosáhnete: Google váš článek zobrazí výš ve výsledcích → více lidí klikne → více návštěvníků na vašem webu → více zákazníků.\n\nNapiš SEO článek pro klíčové slovo: '[vaše klíčové slovo]'\n\nZáměr hledání: [informační — chce se dozvědět / srovnávací — porovnává možnosti / transakční — chce koupit]\nKdo to bude číst: [popište čtenáře a co potřebuje vyřešit]\n\nStruktura:\n• Hlavní nadpis (H1): klíčové slovo + přínos pro čtenáře, max 60 znaků\n• Úvod (150 slov): problém čtenáře → proč je tento článek odpovědí → co se dozví\n• Podnadpisy (H2): [vyjmenujte hlavní sekce článku]\n• Časté otázky: 5 otázek které lidé skutečně googlejí k tomuto tématu\n• Závěr: shrnutí + co má čtenář udělat jako další krok (kontaktovat vás, stáhnout, koupit)\n\nSignály důvěryhodnosti — přidejte přirozeně do textu:\n• Konkrétní číslo nebo statistika s odkazem na zdroj\n• Reálný příklad nebo krátký příběh z praxe\n• Proč právě vy máte právo o tomto tématu psát\n\nTitulek pro Google: klíčové slovo + přínos, max 60 znaků\nPopis pro Google: problém čtenáře → co článek řeší → výzva k kliknutí, max 155 znaků\nDélka: 1800–2200 slov\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nKlíčové slovo: rodinné focení Praha\nZáměr: informační + transakční — hledají fotografa a chtějí vědět co čekat\nKdo to čte: rodiče 28–40 let kteří chtějí profesionální fotky rodiny ale nevědí co focení obnáší\nHlavní sekce: Jak probíhá rodinné focení / Jak se připravit / Co ovlivňuje cenu / Jak vybrat fotografa\nZdůvodnění autority: 8 let fotím rodiny v Praze, přes 200 spokojených rodin",
-         en:"Terms:\n• Keyword = phrase people type into Google that you want to be found for\n• Search intent = why people search it — do they just want to learn (informational), compare options (comparative), or buy right away (transactional)? Google shows different content based on intent\n• EEAT = four things Google evaluates: experience (writing from direct experience?), expertise (are you an expert?), authoritativeness (do other sites link to you?), trust (is the site safe and transparent?)\n• Page title (H1) = main article heading — Google reads it first\n• Search result description (meta description) = short text under the link in Google that entices clicking — you write it\n\nWhat you achieve: Google shows your article higher in results → more people click → more website visitors → more customers.\n\nWrite SEO article for keyword: '[your keyword]'\n\nSearch intent: [informational — wants to learn / comparative — comparing options / transactional — wants to buy]\nWho will read it: [describe the reader and what they need to solve]\n\nStructure:\n• Main heading (H1): keyword + reader benefit, max 60 characters\n• Intro (150 words): reader's problem → why this article answers it → what they'll learn\n• Subheadings (H2): [list main article sections]\n• Frequently asked questions: 5 questions people actually google about this topic\n• Conclusion: summary + what reader should do as next step (contact you, download, buy)\n\nTrust signals — add naturally into text:\n• Specific number or statistic with source reference\n• Real example or short story from practice\n• Why you specifically have the right to write about this topic\n\nGoogle title: keyword + benefit, max 60 characters\nGoogle description: reader's problem → what article solves → click prompt, max 155 characters\nLength: 1800–2200 words",
-       }},
-       {label:{cs:"SEO audit + průzkum klíčových slov",en:"SEO audit + keyword research"},p:{
-         cs:"Pojmy:\n• SEO audit = systematická kontrola vašeho webu — co Google vidí, co mu vadí a co zlepšit\n• Interní prolinkování = kdy odkazujete z jednoho článku na jiný na vašem webu — pomáhá Googlu pochopit strukturu a distribuuje sílu stránek\n• Kotevní text = slova na kterých je odkaz — místo 'klikněte zde' napište 'rodinné focení Praha' — Google to čte jako signál o čem je cílová stránka\n• Strukturovaná data (schema markup) = skrytý kód který říká Googlu přesně o co jde — může způsobit hvězdičkové hodnocení nebo FAQ přímo ve výsledcích Googlu\n• Průzkum klíčových slov = systematické hledání frází pro které se vyplatí optimalizovat\n• Základní klíčová slova (seed keywords) = obecné fráze o vašem oboru od kterých odvozujete konkrétnější varianty\n• Dlouhé fráze (long-tail) = delší specifické dotazy (3–5 slov) — méně lidí hledá ale snáze se na ně dostat vysoko\n• Zvýraznění ve výsledcích (featured snippets) = rámeček s přímou odpovědí který Google zobrazí nad ostatními výsledky — získáte ho odpovídáním na konkrétní otázky\n• Tematický cluster = skupina článků kolem jednoho hlavního tématu — pilíř + podpůrné články\n• Mezera oproti konkurenci = témata nebo klíčová slova která konkurenti mají a vy ne\n\nCo tím dosáhnete: přehled o stavu vašeho webu + mapa klíčových slov která přivede správné návštěvníky.\n\nProveď SEO audit a průzkum klíčových slov pro: [URL webu nebo popis]\n\n[AUDIT]\n• Zkontroluj titulky stránek, popisy pro Google, strukturu nadpisů H1–H3\n• Zkontroluj interní prolinkování — odkazují stránky na sebe navzájem?\n• Ověř jestli má web strukturovaná data pro FAQ, články nebo recenze\n• Navrhni 5 konkrétních věcí ke zlepšení do 30 dní s odhadovaným dopadem\n\n[PRŮZKUM KLÍČOVÝCH SLOV]\nHlavní téma: [vaše hlavní klíčové slovo]\nGeografie: [ČR / SR / celá Evropa]\n\n1) 10 základních klíčových slov s odhadovanou měsíční hledaností\n2) 20 dlouhých frází s nízkou konkurencí — snazší dostat se na první stranu\n3) 10 otázkových frází vhodných pro zvýraznění ve výsledcích Googlu\n4) 3 tematické clustery: hlavní článek + 4–5 podpůrných článků ke každému\n5) Co má konkurence a vy ne: témata nebo fráze kde mají obsah a vy chybíte\n\nKonkurenti: [URL 1], [URL 2]\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\nWeb: fotografka-jana-novak.cz — rodinná a portrétnová fotografie Praha\nHlavní téma: rodinné focení Praha\nGeografie: Praha a okolí\nKonkurenti: fotoatelier-viktorova.cz, rodinky-photos.cz",
-         en:"Terms:\n• SEO audit = systematic check of your website — what Google sees, what bothers it and what to improve\n• Internal linking = linking from one article to another on your website — helps Google understand structure and distributes page strength\n• Anchor text = words that carry a link — instead of 'click here' write 'family photography Prague' — Google reads it as a signal about what the target page is about\n• Structured data (schema markup) = hidden code telling Google exactly what something is — can trigger star ratings or FAQ directly in Google results\n• Keyword research = systematically finding phrases worth optimizing for\n• Seed keywords = general industry phrases from which you derive more specific variants\n• Long-tail = longer specific queries (3–5 words) — fewer people search but easier to rank high\n• Featured snippets = answer box Google shows above other results — you earn it by directly answering specific questions\n• Content cluster = group of articles around one main topic — pillar + supporting articles\n• Competitor gap = topics or keywords competitors have that you don't\n\nWhat you achieve: overview of your website's state + keyword map that brings the right visitors.\n\nConduct SEO audit and keyword research for: [website URL or description]\n\n[AUDIT]\n• Check page titles, Google descriptions, H1–H3 heading structure\n• Check internal linking — do pages link to each other?\n• Verify if site has structured data for FAQ, articles or reviews\n• Suggest 5 specific improvements within 30 days with estimated impact\n\n[KEYWORD RESEARCH]\nMain topic: [your main keyword]\nGeography: [country/region]\n\n1) 10 seed keywords with estimated monthly search volume\n2) 20 long-tail phrases with low competition — easier to reach first page\n3) 10 question phrases suitable for featured snippets\n4) 3 content clusters: main article + 4–5 supporting articles each\n5) What competitors have that you don't: topics or phrases where they have content and you're missing\n\nCompetitors: [URL 1], [URL 2]",
-       }},
-     ],
-    },
-    {task:{cs:"Byznys: Strategie a plánování",en:"Business: Strategy and planning"},icon:"▸",mods:["Claude Opus"],section:"business",
-     ptip:{cs:"Pro byznys analýzy vždy použijte Claude — přemýšlí do hloubky a vidí věci z více úhlů. Čím více kontextu mu dáte, tím konkrétnější a použitelnější výstup dostanete.",en:"For business analyses always use Claude — thinks in depth and sees things from multiple angles. The more context you give, the more specific and usable the output."},
-     ps:[
-       {label:{cs:"Najdi svůj ideální byznys (Claude vás vyzvívá otázkami)",en:"Find your ideal business (Claude asks you questions)"},p:{
-         cs:"KDY TO POUŽÍT: Nevíte co podnikat, máte více nápadů a chcete si ujasnit co je pro vás nejlepší. Claude s vámi udělá hloubkový pohovor — jako kariérní poradce který vás prozkoumá a najde byznys příležitosti sedící přesně vám.\n\nNapište do Claude.ai:\n\nChci přijít na ideální byznys nebo projekt pro sebe. Udělej se mnou hloubkový pohovor a prozkoumej mě — jako kariérní poradce. Neptej se na vše najednou. Vždy jen jedna otázka, počkej na moji odpověď a pak pokračuj.\n\nZeptej se mě postupně na tyto oblasti:\n\n1) PRACOVNÍ ZKUŠENOSTI:\n• Kde jsem pracoval/a a co přesně jsem tam dělal/a\n• Co mi v práci šlo nejlépe — co mi kolegové nebo šéf chválili\n• Na co se mě lidé opakovaně ptají — v čem jsem pro ně expertem\n• Co jsem se naučil/a co jiní lidé obvykle nevědí\n• Jaké projekty nebo výsledky jsem nejvíc hrdý/á\n\n2) OSOBNOST A PREFERENCE:\n• Co mě baví (i ve volném čase)\n• Co mě vyčerpává a nechci dělat\n• S kým chci pracovat\n• Sám/a nebo s týmem — fyzický produkt nebo digitální nebo služba\n\n3) FINANČNÍ CÍLE:\n• Kolik chci vydělávat a za jak dlouho\n• Pravidelný příjem z klientů nebo pasivní příjem z produktu\n\nAž budeš mít dostatek, udělej:\n1) Shrnutí — co jsi o mně zjistil/a, jaké jsou moje silné stránky\n2) 3 konkrétní byznys nápady šité přesně na mě — ne obecné\n3) Ke každému: co přesně prodám, komu, za kolik a jak začnu za 30 dní\n4) Řekni který z nich mi sedí nejvíc a proč\n\nZačni první otázkou o mých pracovních zkušenostech.",
-         en:"WHEN TO USE: You don't know what business to start and want clarity on what fits you best. Claude conducts a deep interview with you — like a career advisor who researches you and finds business opportunities that fit exactly you.\n\nType into Claude.ai:\n\nI want to find the ideal business or project for myself. Conduct a deep interview and research with me — like a career advisor. Don't ask everything at once. Always just one question, wait for my answer, then continue.\n\nAsk me about these areas:\n\n1) WORK EXPERIENCE:\n• Where I've worked and exactly what I did\n• What went best — what colleagues or bosses praised me for\n• What people repeatedly ask me about — where I'm their expert\n• What I've learned that others usually don't know\n• Which projects or results I'm most proud of\n\n2) PERSONALITY AND PREFERENCES:\n• What I enjoy (even in free time)\n• What drains me and I don't want to do\n• Who I want to work with\n• Alone or with team — physical, digital or service\n\n3) FINANCIAL GOALS:\n• How much I want to earn and by when\n• Regular income from clients or passive income from a product\n\nOnce you have enough:\n1) Summary — what you learned about me, my strengths\n2) 3 specific business ideas tailored exactly to me — not generic\n3) For each: what I'll sell, to whom, for how much and how to start in 30 days\n4) Tell me which one fits me best and why\n\nStart with the first question about my work experience.",
-       }},
-       {label:{cs:"Kompletní byznys plán",en:"Complete business plan"},p:{
-         cs:"Pojmy:\n• Shrnutí pro investora (executive summary) = stručný přehled celého plánu na max 200 slov — to první co investor čte\n• Analýza trhu = kdo jsou vaši zákazníci, jak velký je trh a co se na něm děje\n• TAM/SAM/SOM = tři kruhy trhu: celkový trh (TAM) → část kterou reálně oslovíte (SAM) → část kterou získáte (SOM)\n• Plátno byznys modelu (Business Model Canvas) = přehled 9 klíčových prvků vašeho byznysu na jedné stránce\n• Plán vstupu na trh (GTM strategie) = jak konkrétně oslovíte první zákazníky\n• Klíčové ukazatele úspěchu (KPIs) = měřitelná čísla podle kterých poznáte jestli to funguje\n• Finanční projekce = odhad příjmů, výdajů a zisku na 3 roky\n\nXML závorky (jako <firma>...</firma>) jsou speciální formát — Claude je čte lépe než volný text. Ohraničují jednotlivé části vašeho zadání.\n\nNyní vyplňte a odešlete:\n\n<firma>\nCo děláme: [popis produktu nebo služby]\nJak to vydělává peníze: [poplatky / předplatné / provize / jednorázový prodej]\n</firma>\n<trh>\nKdo jsou zákazníci: [věk, profese, největší problém který řeší]\nGeografie: [ČR / Evropa / online]\nOdhad velikosti trhu: [kolik lidí nebo firem by to mohlo chtít]\n</trh>\n<cíle>\nCíl za 6 měsíců: [konkrétní číslo — zákazníci / tržby]\nCíl za 1 rok: [konkrétní číslo]\n</cíle>\n<omezení>\nTým: [kolik lidí, jaké role]\nRozpočet: [malý do 50 tis / střední do 500 tis / velký]\nHlavní rizika: [co by mohlo nevyjít]\n</omezení>\n\nVytvoř kompletní byznys plán s:\n1) Shrnutí pro investora (max 200 slov)\n2) Kdo jsou zákazníci a jak velký je trh (s čísly)\n3) Minimálně 3 přímí konkurenti — co dělají a kde jsou slabí\n4) Přehled 9 klíčových prvků byznysu (Business Model Canvas)\n5) Plán prvních 3 měsíců — konkrétní kroky jak oslovit zákazníky\n6) Finanční odhad na 3 roky (optimistická / realistická / pesimistická varianta)\n7) Největší rizika a jak jim předejít\n8) 3 čísla která budu sledovat každý týden\n\nBuď kritický — pojmenuj slabiny plánu přímo.\n\n--- PŘÍKLAD VYPLNĚNÉHO PROMPTU ---\n<firma>\nCo děláme: online kurzy fotografování pro maminky na mateřské\nJak to vydělává peníze: jednorázový poplatek 1 990 Kč za kurz\n</firma>\n<trh>\nKdo jsou zákazníci: maminky 28–40 let, fotí děti telefonem, chtějí lepší výsledky\nGeografie: ČR a SK, online\nOdhad velikosti trhu: odhaduji 150 000 maminek které aktivně fotí\n</trh>\n<cíle>\nCíl za 6 měsíců: 100 prodaných kurzů = 199 000 Kč tržby\nCíl za 1 rok: 400 kurzů, přidat druhý kurz o editaci\n</cíle>\n<omezení>\nTým: jen já\nRozpočet: malý, max 5 000 Kč/měs na reklamu\nHlavní rizika: lidé nekoupí od neznámé lektorky, YouTube má zdarma podobný obsah\n</omezení>",
-         en:"Terms:\n• Executive summary = brief overview of the whole plan in max 200 words — first thing an investor reads\n• Market analysis = who your customers are, how big the market is and what's happening in it\n• TAM/SAM/SOM = three market circles: total market (TAM) → part you can realistically reach (SAM) → part you'll win (SOM)\n• Business Model Canvas = overview of 9 key elements of your business on one page\n• Go-to-market strategy = exactly how you'll reach first customers\n• KPIs (Key Performance Indicators) = measurable numbers that tell you if it's working\n• Financial projections = estimate of revenue, costs and profit over 3 years\n\nXML tags (like <company>...</company>) are a special format — Claude reads them better than plain text. They separate different parts of your input.\n\nFill in and send:\n\n<company>\nWhat we do: [product or service description]\nHow it makes money: [fees / subscription / commission / one-time sale]\n</company>\n\u003cmarket\u003e\nWho are customers: [age, profession, biggest problem they solve]\nGeography: [local / Europe / online]\nEstimated market size: [how many people or companies might want this]\n\u003c/market\u003e\n\u003cgoals\u003e\nGoal in 6 months: [specific number — customers / revenue]\nGoal in 1 year: [specific number]\n\u003c/goals\u003e\n\u003cconstraints\u003e\nTeam: [how many people, what roles]\nBudget: [small / medium / large]\nMain risks: [what could go wrong]\n\u003c/constraints\u003e\n\nCreate complete business plan with:\n1) Investor summary (max 200 words)\n2) Who the customers are and market size (with numbers)\n3) At least 3 direct competitors — what they do and where they're weak\n4) Overview of 9 key business elements (Business Model Canvas)\n5) First 3 months plan — specific steps to reach customers\n6) 3-year financial estimate (optimistic / realistic / pessimistic)\n7) Biggest risks and how to prevent them\n8) 3 numbers I'll track each week\n\nBe critical — name the plan's weaknesses directly.",
-       }},
-       {label:{cs:"Dražší nabídka vašich služeb — Claude vás provede",en:"Premium service offer — Claude guides you"},p:{
-         cs:"KDY TO POUŽÍT: Jste specialista, konzultant, kouč nebo freelancer a chcete strukturovat dražší nabídku (od 15 000 Kč výše) zaměřenou na konkrétní výsledek pro klienta — ne jen svůj čas.\n\nProč to dělat: hodinová sazba stropuje váš příjem. Nabídka postavená na výsledku (ne hodinách) umožňuje účtovat 5–10× více a zákazníci jsou spokojenější — platí za výsledek který chtějí.\n\nNapište do Claude.ai:\n\nPomoz mi sestavit dražší nabídku mých služeb. Jsem [váš obor] a chci strukturovat nabídku za [odhadovaná cena] Kč.\n\nZeptej se mě postupně na:\n1) Moje největší odborné zkušenosti a výsledky které jsem klientům přinesl/a\n2) Jaký konkrétní problém řeším a kdo ho má\n3) Co dělám jinak než ostatní v mém oboru\n4) Proč by klient vybral mě a ne konkurenci\n5) Co klientovi zaručím na konci spolupráce\n\nPo každé odpovědi se zeptej na další. Až budeš mít dostatek, navrhni:\n• Jak nabídku pojmenovat (název který zákazník okamžitě pochopí)\n• Co přesně zahrnuje\n• Jak ji nacenit — ne podle mého času ale podle hodnoty pro klienta\n• Jak ji představit za 60 sekund\n• Tři nejčastější námitky klientů a jak na ně odpovědět\n\nZačni první otázkou.",
-         en:"WHEN TO USE: You're a specialist, consultant, coach or freelancer and want to structure a premium offer (from $1,000+) focused on a specific result for the client — not just your time.\n\nWhy do this: hourly rates cap your income. An offer built on results (not hours) allows charging 5–10× more and clients are happier — they pay for the result they want.\n\nType into Claude.ai:\n\nHelp me build a premium offer for my services. I am [your field] and want to structure an offer for [estimated price].\n\nAsk me step by step about:\n1) My biggest professional experiences and results I've delivered to clients\n2) What specific problem I solve and who has it\n3) What I do differently than others in my field\n4) Why a client would choose me over competition\n5) What I guarantee the client at the end of the collaboration\n\nAfter each answer ask the next. Once you have enough, suggest:\n• How to name the offer (name the customer immediately understands)\n• What exactly it includes\n• How to price it — not by my time but by value to the client\n• How to present it in 60 seconds\n• Three most common client objections and how to answer them\n\nStart with the first question.",
-       }},
-     ],
-    },
-    {task:{cs:"Vývoj aplikací: Vibe Coding",en:"App development: Vibe Coding"},icon:"▸",mods:["Claude Code","Cursor","Bolt","Lovable"],section:"development",
-     ptip:{cs:"Vibe coding = popisujete co chcete přirozenou řečí, AI napíše kód. Nevývojář → Bolt nebo Lovable (výsledek za minuty, žádný kód). Vývojář → Claude Code nebo Cursor (plná kontrola). Obě cesty fungují.\n\nJak přejít z nevývojáře na vývojáře pomocí AI: Nejrychlejší cesta je učení přes vlastní projekt — ne kurzy. Postup: 1) Začněte s Bolt.new — sledujte co AI generuje a čtěte kód. 2) Začněte měnit malé věci ručně — barvy, texty, pak celé sekce. 3) Když něčemu nerozumíte, zeptejte se Claudea — rozumí každé úrovni a vysvětlí vám cokoliv jako úplnému začátečníkovi. Napište: 'Vysvětli mi tento kód. Jsem úplný začátečník, nikdy jsem neprogramoval/a. Projdi mě tím krok za krokem.' Claude vás celým procesem vždy provede. 4) Přejděte na Cursor — editor s AI přímo uvnitř. Vidíte kód, AI ho píše vedle vás. 5) Nakonec Claude Code v terminálu — plná kontrola nad celým projektem. Celý přechod zvládnete za 2–3 měsíce práce na vlastním projektu. Žádný kurz vás nenaučí víc než projekt který chcete doopravdy dokončit.",en:"Vibe coding = describe what you want in plain language, AI writes the code. Non-developer → Bolt or Lovable (results in minutes, no code). Developer → Claude Code or Cursor (full control). Both paths work.\n\nHow to transition from non-developer to developer using AI: The fastest path is learning through your own project — not courses. Steps: 1) Start with Bolt.new — watch what AI generates and read the code. 2) Start changing small things manually — colors, texts, then whole sections. 3) When you don't understand something, ask Claude: 'Explain this code as if I've only been coding for a year.' 4) Move to Cursor — editor with AI built in. You see the code, AI writes alongside you. 5) Finally Claude Code in terminal — full control over the entire project. The whole transition takes 2–3 months working on your own project. No course will teach you more than a project you genuinely want to finish."},
-     ps:[
-       {label:{cs:"Landing page (jedna stránka, jeden cíl)",en:"Landing page (one page, one goal)"},p:{
-         cs:"Landing page = jedna webová stránka s jediným cílem — přesvědčit návštěvníka k jedné akci (zaregistrovat se, koupit, kontaktovat, stáhnout). Na rozdíl od webu s více stránkami nemá menu ani navigaci — vede vás jedním směrem.\n\n── NEVÝVOJÁŘ → Bolt.new nebo v0.dev ──\nJděte na bolt.new a napište:\n\nVytvoř landing page pro: [co prodáváte nebo nabízíte]\nPro koho: [popis cílové skupiny]\nHlavní akce: [co má návštěvník udělat — tlačítko 'Objednat' / 'Kontaktujte nás' / 'Stáhnout zdarma']\nStyl: [tmavý nebo světlý, hlavní barva, nálada — 'elegantní' / 'hravý' / 'důvěryhodný']\n\nSekce které chci:\n• Hlavní banner s nadpisem a tlačítkem\n• Proč si mě vybrat (3 výhody)\n• Jak to funguje (3 kroky)\n• Co říkají zákazníci (2–3 citace)\n• Ceny nebo nabídka\n• Kontakt nebo formulář\n\n── VÝVOJÁŘ → Claude Code nebo Cursor ──\nVytvoř landing page. Framework: [React + Tailwind / Next.js / plain HTML]\n\nProdukt: [popis]\nHlavní tlačítko: [text a kam vede]\nVizuální styl: [tmavý/světlý, barvy, reference — web který se vám líbí]\n\nSekce v pořadí: Hlavní banner → Důkaz důvěryhodnosti (loga nebo čísla) → Výhody (3–4 karty) → Jak to funguje (3 kroky) → Citace zákazníků → Ceny (3 varianty, prostřední zvýrazněná) → Časté otázky → Patička\n\nPožadavky: mobilní verze, plynulé scrollování, čistý kód s komentáři připravený k nasazení.",
-         en:"Landing page = one web page with one goal — convince the visitor to take one action. Unlike a multi-page website it has no menu or navigation — it leads you one direction.\n\n── NON-DEVELOPER → Bolt.new or v0.dev ──\nGo to bolt.new and type:\n\nCreate a landing page for: [what you sell or offer]\nFor whom: [target audience]\nMain action: [what visitor should do]\nStyle: [dark or light, main color, mood]\n\nSections I want: main banner with headline and button / why choose me (3 benefits) / how it works (3 steps) / customer quotes (2–3) / pricing / contact form\n\n── DEVELOPER → Claude Code or Cursor ──\nCreate a landing page. Framework: [React + Tailwind / Next.js / plain HTML]\n\nProduct: [description]\nMain button: [text and destination]\nVisual style: [dark/light, colors, reference site]\n\nSections in order: Hero → Social proof → Benefits (3–4 cards) → How it works → Customer quotes → Pricing (3 plans, middle highlighted) → FAQ → Footer\n\nRequirements: mobile version, smooth scrolling, clean code with comments ready to deploy.",
-       }},
-       {label:{cs:"Vícestránkový web (portfolio, firemní web)",en:"Multi-page website (portfolio, company site)"},p:{
-         cs:"Vícestránkový web = klasický web s navigací a více stránkami (domů, o mně, služby, blog, kontakt). Hodí se pro freelancery, firmy, fotografy, restaurace — kohokoliv kdo potřebuje představit více věcí najednou.\n\n── NEVÝVOJÁŘ → Bolt.new nebo Lovable ──\nJděte na bolt.new a napište:\n\nVytvoř vícestránkový web pro: [vaše jméno / název firmy / typ podnikání]\nStránky které chci: [Domů / O mně nebo O nás / Služby nebo Portfolio / Blog / Kontakt]\nPro koho web je: [popis návštěvníků]\nStyl a nálada: [barvy, tón — 'profesionální' / 'kreativní' / 'minimalistický']\n\nNa hlavní stránce chci: [hlavní sdělení, výhody, ukázky práce nebo produktů, kontaktní formulář]\n\n── VÝVOJÁŘ → Claude Code nebo Cursor ──\nVytvoř vícestránkový web. Framework: [Next.js / Astro / plain HTML + CSS]\n\nStruktura stránek: [seznam stránek a co na každé má být]\nNavigace: [položky v menu a jejich pořadí]\nGlobální prvky: [záhlaví, zápatí, barvy, písma]\n\nPožadavky: [SEO základy / blog s redakčním systémem / vícejazyčná verze / kontaktní formulář]",
-         en:"Multi-page website = classic website with navigation and multiple pages. Great for freelancers, companies, photographers, restaurants.\n\n── NON-DEVELOPER → Bolt.new or Lovable ──\nGo to bolt.new and type:\n\nCreate a multi-page website for: [your name / company name / business type]\nPages I want: [Home / About / Services or Portfolio / Blog / Contact]\nWho the site is for: [visitor description]\nStyle and mood: [colors, tone — 'professional' / 'creative' / 'minimalist']\n\nOn the home page I want: [main message, benefits, work samples, contact form]\n\n── DEVELOPER → Claude Code or Cursor ──\nCreate a multi-page website. Framework: [Next.js / Astro / plain HTML + CSS]\n\nPage structure: [list of pages and what each should contain]\nNavigation: [menu items and order]\nGlobal elements: [header, footer, colors, fonts]\n\nRequirements: [SEO basics / blog with CMS / multilingual / contact form]",
-       }},
-       {label:{cs:"Webová aplikace (přihlašování, data, platby)",en:"Web application (login, data, payments)"},p:{
-         cs:"Webová aplikace = web kde se uživatelé registrují, přihlašují a ukládají svá data. Na rozdíl od webu je personalizovaná — každý uživatel vidí svůj účet. Příklady: správce úkolů, rezervační systém, e-learning platforma, předplacený nástroj.\n\n── NEVÝVOJÁŘ → Lovable nebo Bolt.new ──\nJděte na lovable.dev a napište:\n\nVytvoř webovou aplikaci: [co aplikace dělá]\nKdo ji bude používat: [popis uživatelů]\n\nFunkce které potřebuji:\n• Registrace a přihlašování: [ano/ne — přes email nebo Google]\n• Co uživatel může dělat po přihlášení: [vytvářet záznamy / sledovat pokrok / rezervovat termíny / jiné]\n• Platby: [ano/ne — pokud ano, co se platí a kolik]\n• Emailová oznámení: [ano/ne]\n\nStyl: [tmavý/světlý, barvy, nálada]\n\nLovable propojí databázi a přihlašování automaticky — nemusíte nic nastavovat ručně.\n\n── VÝVOJÁŘ → Claude Code ──\nVytvoř webovou aplikaci. Stack: [Next.js + Supabase / jiný]\n\nFunkce:\n• Přihlašování: [email + heslo / Google / GitHub]\n• Databázové schéma (= jak jsou data uložena a provázána): [popište tabulky]\n• Platby: [Stripe — jednorázové / předplatné]\n• Role uživatelů: [admin / běžný uživatel]\n\nBezpečnost: ověřování přístupu na serveru i v databázi.",
-         en:"Web application = a website where users register, log in and save their data. Unlike a website it's personalized. Examples: task manager, booking system, e-learning platform, SaaS tool.\n\n── NON-DEVELOPER → Lovable or Bolt.new ──\nGo to lovable.dev and type:\n\nCreate a web application: [what the app does]\nWho will use it: [user description]\n\nFeatures I need: login (yes/no) / what user does after logging in / payments (yes/no) / email notifications (yes/no)\n\nStyle: [dark/light, colors, mood]\n\nLovable connects database and login automatically.\n\n── DEVELOPER → Claude Code ──\nCreate a web application. Stack: [Next.js + Supabase / other]\n\nFeatures: authentication type / database schema / payments (Stripe) / user roles\n\nSecurity: server-side validation and database access control.",
-       }},
-       {label:{cs:"Aplikace ke stažení (desktop nebo mobil)",en:"Downloadable app (desktop or mobile)"},p:{
-         cs:"Aplikace ke stažení = program který si uživatel nainstaluje do počítače nebo telefonu. Na rozdíl od webové aplikace funguje i offline a má přímý přístup k souborům a systému zařízení.\n\nTypy:\n• Desktop (Windows/Mac/Linux): Electron nebo Tauri (obojí používá webové technologie + balí se jako .exe nebo .app)\n• Mobilní (Android/iOS): React Native nebo Flutter\n• Nástroj příkazové řádky: Python nebo Node.js\n\n── NEVÝVOJÁŘ — popište záměr a Claude navrhne cestu ──\nNapište do Claude.ai:\n\nChci vytvořit aplikaci ke stažení. Poraď mi jak na to.\n\nTyp: [pro počítač Windows a Mac / pro mobil Android a iOS / obojí]\nCo aplikace dělá: [přesný popis co uživatel otevře, co udělá, co dostane]\nHlavní obrazovky: [seznam s popisem každého okna nebo obrazovky]\nData: [ukládají se jen lokálně v zařízení / synchronizují se přes cloud / žádná data]\nPotřebuje internet: [vždy / jen pro synchronizaci / vůbec ne]\n\nNavrhni technologii, strukturu a jak začít.\n\n── VÝVOJÁŘ → Claude Code ──\nVytvoř [desktop / mobilní / CLI] aplikaci.\n\nFramework: [Electron + React / Tauri + React / React Native / Flutter / Python]\nPlatforma: [Windows / Mac / Linux / Android / iOS / více najednou]\n\nFunkce: [seznam co aplikace umí]\nArchitektura: [jak jsou data uložena / jak komunikují části]\nDistribuce: [App Store / Google Play / přímé stažení / npm balíček]",
-         en:"Downloadable app = a program the user installs on their computer or phone. Works offline and has direct access to files and system.\n\nTypes: Desktop (Electron/Tauri) / Mobile (React Native/Flutter) / CLI tool (Python/Node.js)\n\n── NON-DEVELOPER — describe intent, Claude suggests path ──\nType into Claude.ai:\n\nI want to create a downloadable app. Advise me how to proceed.\n\nType: [desktop Windows and Mac / mobile Android and iOS / both]\nWhat app does: [exact description]\nMain screens: [list with description]\nData: [stored locally / cloud sync / no data]\nNeeds internet: [always / only for sync / no]\n\nSuggest technology, structure and how to start.\n\n── DEVELOPER → Claude Code ──\nCreate a [desktop / mobile / CLI] app.\n\nFramework: [Electron + React / Tauri / React Native / Flutter / Python]\nPlatform: [Windows / Mac / Linux / Android / iOS / cross-platform]\n\nFeatures: [list] / Architecture: [data storage / communication] / Distribution: [App Store / direct download / npm]",
-       }},
-       {label:{cs:"Claude Code: inicializace projektu",en:"Claude Code: project initialization"},p:{
-         cs:"KDY POUŽÍT: Na začátku každého nového projektu v terminálu nebo když přistoupíte k cizímu kódu.\n\nTerminál = okno kde píšete textové příkazy počítači (Mac: aplikace Terminal, Windows: PowerShell).\n\n/init\n\nPo prozkoumání projektu vytvoř dva soubory:\n\n1) ARCHITECTURE.md — přehled projektu:\n• Struktura složek (= jak jsou soubory uspořádány) a k čemu každá slouží\n• Klíčové části kódu a jak spolu komunikují\n• Databázové schéma (= jak jsou data uložena a provázána)\n• Jak projekt spustit lokálně\n\n2) CLAUDE.md — pravidla pro AI:\n• Tech stack a verze (= jaké technologie a jejich verze používáme)\n• Styl kódu a pojmenování proměnných (= jak pojmenovat věci aby byl kód čitelný)\n• Co nikdy neměnit bez konzultace\n• Pravidlo: 'Vždy přečti tento soubor před každou změnou'\n\nProjekt:\n• Typ: [webová aplikace / API / nástroj / jiné]\n• Co dělá: [popis v 1–2 větách]\n• Tech stack: [Next.js + Supabase / Python + FastAPI / jiný]\n\nPo vytvoření souborů každý nový požadavek začínej:\n'Přečti ARCHITECTURE.md a CLAUDE.md. Pak implementuj: [co chcete přidat]'",
-         en:"WHEN TO USE: At the start of every new project in the terminal or when accessing someone else's code.\n\nTerminal = window where you type text commands to the computer (Mac: Terminal app, Windows: PowerShell).\n\n/init\n\nAfter exploring the project create two files:\n\n1) ARCHITECTURE.md — project overview: folder structure / key code parts and how they communicate / database schema / how to run locally\n\n2) CLAUDE.md — rules for AI: tech stack and versions / code style and variable naming / what never to change / rule: 'Always read this file before any change'\n\nProject: type / what it does / tech stack\n\nAfter creating files start every new request:\n'Read ARCHITECTURE.md and CLAUDE.md. Then implement: [what you want to add]'",
-       }},
-       {label:{cs:"Startup stack — co použít a jak to propojit",en:"Startup stack — what to use and how to connect it"},p:{
-         cs:"KDY POUŽÍT: Chcete spustit webovou aplikaci nebo online nástroj na předplatné s minimálními náklady.\n\nTento stack pokrývá vše co potřebujete za přibližně 700 Kč/měs:\n• Claude Pro (700 Kč/měs) — AI asistent pro vývoj\n• Next.js (zdarma) — základ aplikace, stránky co uživatel vidí\n• Supabase (zdarma do 50 000 uživatelů) — databáze (kde se ukládají data) + přihlašování + ukládání souborů\n• Vercel (zdarma) — hosting (server kde aplikace běží online)\n• Stripe — platební brána (0% poplatek do prvních transakcí)\n• GitHub Actions (zdarma) — automatické nasazení po každém uložení kódu\n\nAplikace:\n[co dělá a pro koho]\n\nFunkce které potřebuji:\n[registrace uživatelů ano/ne / platby ano/ne / nahrávání souborů ano/ne / odesílání emailů ano/ne]\n\nSestav mi postup krok za krokem:\n1) Jak nainstalovat a poprvé spustit Next.js projekt\n2) Jak propojit Supabase — přihlašování a databáze\n3) Jak přidat Stripe platby\n4) Jak nastavit automatické nasazení na Vercel po každém uložení kódu\n5) Co zkontrolovat před spuštěním pro veřejnost\n\nPro každý krok: přesné příkazy a kód.",
-         en:"WHEN TO USE: You want to launch a web application or subscription online tool with minimal costs.\n\nThis stack covers everything for approximately $20/month: Claude Pro / Next.js (free) / Supabase (free up to 50k users — database + login + files) / Vercel (free hosting) / Stripe (payment gateway) / GitHub Actions (free auto-deployment)\n\nApplication: [what it does and for whom]\n\nFeatures I need: [user registration / payments / file uploads / emails — yes/no for each]\n\nBuild me step by step: 1) Install and first run Next.js / 2) Connect Supabase login and database / 3) Add Stripe payments / 4) Set up auto-deployment to Vercel / 5) Pre-launch checklist\n\nFor each step: exact commands and code.",
-       }},
-     ],
-    },
-    {task:{cs:"Workflow a automatizace",en:"Workflow and automation"},icon:"▸",mods:["Make","n8n","Claude"],section:"agents",
-     ptip:{cs:"Nejdřív popište workflow slovy — co přijde dovnitř, co se má stát, co vyjde ven. Pak teprve Claude nebo Make navrhne technické řešení. Bez tohoto popisu dostanete obecný výsledek.",en:"First describe the workflow in words — what comes in, what should happen, what comes out. Then Claude or Make suggests the technical solution. Without this description you get a generic result."},
-     ps:[
-       {label:{cs:"Návrh automatizace — popis workflow",en:"Automation design — workflow description"},p:{
-         cs:"Chci zautomatizovat tento proces:\n\nCo se stane na začátku (trigger = spouštěč):\n[co spustí celý proces — příklady: 'přijde nový email', 'zákazník vyplní formulář', 'každé pondělí v 9:00', 'přidám nový řádek do tabulky']\n\nCo se má stát uprostřed (kroky):\n[popište co se má stát — příklady: 'AI přečte email a zjistí o co jde', 'vytvoří se záznam v tabulce', 'odešle se notifikace']\n\nCo je na konci (výstup):\n[co dostanu — příklady: 'email v Gmailu jako koncept', 'nový řádek v Google Sheets', 'zpráva ve Slacku']\n\nNástroje které používám:\n[Gmail / Google Sheets / Slack / HubSpot / Notion / jiné]\n\nÚroveň technické zdatnosti: [začátečník / středně pokročilý / vývojář]\n\nNavrhni:\n1) Nejjednodušší způsob jak toto realizovat\n2) Které nástroje použít a proč\n3) Postup krok za krokem\n4) Co nesmím zapomenout (bezpečnost, lidská kontrola)\n\n--- PŘÍKLAD ---\nTrigger: zákazník vyplní kontaktní formulář na webu\nKroky: AI přečte dotaz → zjistí kategorii (zájem o produkt / reklamace / obecný dotaz) → připraví návrh odpovědi\nVýstup: email připravený ke schválení v Gmailu (neodesílá se automaticky)\nNástroje: Gmail, Google Forms, Make.com",
-         en:"I want to automate this process:\n\nWhat happens at the start (trigger):\n[what starts the whole process — examples: 'new email arrives', 'customer fills out form', 'every Monday at 9:00', 'I add a new row to a spreadsheet']\n\nWhat should happen in the middle (steps):\n[describe what should happen — examples: 'AI reads email and finds out what it's about', 'a record is created in a spreadsheet', 'a notification is sent']\n\nWhat's at the end (output):\n[what I get — examples: 'email in Gmail as a draft', 'new row in Google Sheets', 'message in Slack']\n\nTools I use:\n[Gmail / Google Sheets / Slack / HubSpot / Notion / other]\n\nTechnical level: [beginner / intermediate / developer]\n\nSuggest:\n1) Simplest way to achieve this\n2) Which tools to use and why\n3) Step-by-step process\n4) What I must not forget (security, human review)",
-       }},
-       {label:{cs:"Systémový prompt pro AI agenta — šablona",en:"System prompt for AI agent — template"},p:{
-         cs:"Napiš systémový prompt pro AI agenta s těmito informacemi:\n\nJméno a role agenta:\n[příklad: 'Jana, asistentka zákaznické podpory firmy XY']\n\nCo agent dělá:\n[příklad: 'Odpovídá na dotazy zákazníků o doručení, vrácení a reklamacích přes chat na webu']\n\nJak se chová:\n[tón, délka odpovědí, co vždy dělá — příklad: 'přátelský, stručný, vždy osloví zákazníka jménem']\n\nCo agent NESMÍ dělat:\n[příklad: 'Nesděluje informace o cenách bez ověření. Neslibuje termíny které nezná.']\n\nKdy předat člověku:\n[příklad: 'Pokud zákazník vyjadřuje frustraci nebo problém přesahuje znalostní bázi']\n\nZnalostní báze (co agent ví):\n[příklad: 'Otevírací doba, podmínky vrácení, nejčastější dotazy — viz přiložené PDF']\n\nVytvoř systémový prompt který:\n• Je jasný a jednoznačný — agent nepotřebuje hádat\n• Má přirozený tón odpovídající značce\n• Obsahuje příklady správných odpovědí pro typické situace\n• Jasně ohraničuje co agent smí a nesmí\n\n--- PŘÍKLAD VYPLNĚNÉHO ---\nJméno: Jana\nRole: zákaznická podpora e-shopu s kosmetikou\nDělá: odpovídá na dotazy o objednávkách, doručení a vrácení zboží\nChování: přátelská, empatická, max 3 věty na odpověď\nNesmí: přislíbit vrácení peněz bez schválení nadřízeného\nPředání: zákazník je naštvaný nebo chce mluvit s vedoucím",
-         en:"Write a system prompt for an AI agent with this information:\n\nAgent name and role:\n[example: 'Jana, customer support assistant for company XY']\n\nWhat the agent does:\n[example: 'Answers customer questions about delivery, returns and complaints via website chat']\n\nHow it behaves:\n[tone, response length, what it always does — example: 'friendly, concise, always addresses customer by name']\n\nWhat agent MUST NOT do:\n[example: 'Does not share pricing without verification. Does not promise deadlines it doesn't know.']\n\nWhen to hand off to a human:\n[example: 'If customer expresses frustration or problem exceeds knowledge base']\n\nKnowledge base (what agent knows):\n[example: 'Opening hours, return policy, FAQ — see attached PDF']\n\nCreate a system prompt that:\n• Is clear and unambiguous — agent doesn't need to guess\n• Has natural tone matching the brand\n• Contains examples of correct responses for typical situations\n• Clearly defines what agent can and cannot do",
-       }},
-       {label:{cs:"Make.com: návrh scénáře krok za krokem",en:"Make.com: scenario design step by step"},p:{
-         cs:"Pomoz mi navrhnout Make.com scénář (= automatizaci) pro tento úkol:\n\nÚkol: [popište co chcete automatizovat]\n\nAplikace které používám: [Gmail / Sheets / Slack / Notion / HubSpot / jiné]\n\nPotřebuji:\n1) Seznam modulů (bloků) v Make.com v pořadí jak mají být zapojeny\n2) Co každý modul dělá a jaká nastavení potřebuje\n3) Kde přidat AI (Claude nebo ChatGPT) a co přesně mu napsat\n4) Jak otestovat jestli to funguje správně\n5) Na co si dát pozor — typické chyby a jak jim předejít\n\nDůležité: výstup nikdy neodesílej automaticky bez mého schválení.\n\n--- PŘÍKLAD ---\nÚkol: Každý nový řádek přidaný do Google Sheets → Claude napíše personalizovaný uvítací email → email jde do Gmailu jako koncept → já schválím a odešlu\nAplikace: Google Sheets, Gmail, Claude API",
-         en:"Help me design a Make.com scenario (= automation) for this task:\n\nTask: [describe what you want to automate]\n\nApps I use: [Gmail / Sheets / Slack / Notion / HubSpot / other]\n\nI need:\n1) List of modules (blocks) in Make.com in order they should be connected\n2) What each module does and what settings it needs\n3) Where to add AI (Claude or ChatGPT) and exactly what to write to it\n4) How to test that it works correctly\n5) What to watch out for — common mistakes and how to avoid them\n\nImportant: never auto-send any output without my approval.",
-       }},
-     ],
-    },
-    {task:{cs:"AI Agenti: Hlasový agent, n8n, Claude Skills",en:"AI Agents: Voice agent, n8n, Claude Skills"},icon:"▸",mods:["Retell AI","n8n","Claude Code","Perplexity","agentskill.sh"],section:"agents",
-     ptip:{cs:"AI agenti pracují samostatně — vy je nastavíte jednou, pak fungují sami. Nejjednodušší start: Claude.ai Projects — napíšete instrukce jednou a Claude si je pamatuje v celém projektu. Perplexity Computer (perplexity.ai) je pak výkonnější varianta — agent který sám autonomně prochází web a sbírá informace.",en:"AI agents work independently — you set them up once, then they run on their own. Easiest start: Claude.ai Projects — write instructions once and Claude remembers them across the whole project. Perplexity Computer (perplexity.ai) is then a more powerful option — an agent that autonomously browses the web and collects information."},
-     ps:[
-       {label:{cs:"Hlasový recepční agent (Retell AI)",en:"Voice receptionist agent (Retell AI)"},p:{
-         cs:"Pojmy:\n• Znalostní báze = soubor (PDF nebo text) s informacemi které agent zná — otevírací doba, ceny, FAQ\n• LLM = mozek agenta — jazykový model který zpracovává řeč (doporučujeme Gemini 2.5 Flash — nejrychlejší odezva pro hovory)\n• Latence = prodleva mezi tím co volající řekne a kdy agent odpoví — čím nižší, tím přirozenější hovor\n• Alternativa bez telefonu: Perplexity Computer (perplexity.ai) zvládne webový výzkum a sbírání dat autonomně — bez nutnosti stavět vlastního agenta\n\nJsi [Jméno], recepční [Název firmy].\n\nCíl: Pomoci volajícím získat informace a zamluvit termín.\n\nJak se chováš:\n• Mluv přirozeně a přátelsky — jsi recepční, ne robot\n• Nikdy nenechávej ticho — řekni 'Nechte mě to zkontrolovat...'\n• Vždy zopakuj co jsi pochopil/a před každou akcí\n• Pokud nevíš: 'To musím zjistit — mohu zavolat zpět?'\n\nCo umíš udělat (použij v tomto pořadí):\n• Zkontrolovat volný čas v kalendáři\n• Zarezervovat termín\n• Přepojit hovor na [telefonní číslo] pokud je zákazník naštvaný nebo chce mluvit s člověkem\n\nInformace které znáš: [nahrajte PDF s cenami, otevírací dobou a nejčastějšími otázkami]\n\nHlas: [ženský / mužský], přirozený (nastavte přes ElevenLabs)\nZvuk na pozadí: šum kanceláře\n\nZačínáš každý hovor: '[Jméno] z [Firma], dobrý den, jak vám mohu pomoci?'\n\n--- PŘÍKLAD JAK VYPADÁ HOVOR ---\nVolající: 'Dobrý den, chtěl bych se objednat na středu.'\nAgent: 'Dobrý den, ráda vám pomůžu. Na středu mám volné 10:00 nebo 14:30 — co by vám vyhovovalo lépe?'",
-         en:"Terms:\n• Knowledge base = file (PDF or text) with information the agent knows — opening hours, prices, FAQ\n• LLM = agent's brain — language model processing speech (recommend Gemini 2.5 Flash — fastest response for calls)\n• Latency = delay between what caller says and when agent responds — the lower, the more natural the conversation\n• Alternative without phone: Perplexity Computer (perplexity.ai) handles web research and data collection autonomously — no need to build your own agent\n\nYou are [Name], receptionist at [Company Name].\n\nGoal: Help callers get information and book appointments.\n\nHow you behave:\n• Speak naturally and friendly — you're a receptionist, not a robot\n• Never leave silence — say 'Let me check that for you...'\n• Always repeat what you understood before each action\n• If you don't know: 'I'll need to find that out — can I call back?'\n\nWhat you can do (use in this order):\n• Check availability in the calendar\n• Book an appointment\n• Transfer call to [phone number] if customer is angry or wants to speak with a human\n\nInformation you know: [upload PDF with prices, opening hours and FAQ]\n\nVoice: [female / male], natural (set up via ElevenLabs)\nBackground sound: office noise\n\nStart every call: 'Hello, [Name] from [Company], how can I help you today?'",
-       }},
-       {label:{cs:"Emailový AI agent (n8n nebo Make)",en:"Email AI agent (n8n or Make)"},p:{
-         cs:"N8n vs Make: obě jsou nástroje pro automatizaci. Make (make.com) je jednodušší — pro začátečníky. N8n (n8n.io) je výkonnější a zdarma ke stažení — pro pokročilejší uživatele.\n\nAlternativa: Perplexity Computer umí sám prohledávat příchozí emaily pokud mu dáte přístup — bez nutnosti stavět celý workflow.\n\nVytvoř automatizaci pro zpracování příchozích emailů:\n\n1) SPOUŠTĚČ: Nový email dorazí do Gmailu\n\n2) FILTR: Je to newsletter nebo spam? → pokud ano, přeskoč a nedělej nic\n\n3) AI TŘÍDĚNÍ (Claude Haiku — nejrychlejší a nejlevnější):\nPrompt: 'Zařaď tento email do jedné kategorie: срочно / nový zákazník / podpora / interní / ostatní. Odpověz POUZE názvem kategorie.'\n\n4) ROZDĚLENÍ podle kategorie:\n• Срочно → pošli zprávu na Slack nebo SMS + připrav návrh odpovědi\n• Nový zákazník → přidej do tabulky kontaktů nebo CRM systému\n• Podpora → přidej do systému pro správu požadavků\n• Ostatní → archivuj\n\n5) AI NÁVRH ODPOVĚDI (Claude Sonnet):\n'Napiš profesionální odpověď na tento email. Tón: [formální/přátelský]. Kontext o zákazníkovi: [data z tabulky]'\n\n6) LIDSKÁ KONTROLA: Návrh jde do Gmailu jako rozepsaný email — člověk přečte, případně upraví a teprve pak odešle\n\nDůležité: Nikdy neodesílej email automaticky bez schválení člověkem.",
-         en:"N8n vs Make: both are automation tools. Make (make.com) is simpler — for beginners. N8n (n8n.io) is more powerful and free to download — for advanced users.\n\nAlternative: Perplexity Computer can search incoming emails if given access — without building a whole workflow.\n\nCreate automation for processing incoming emails:\n\n1) TRIGGER: New email arrives in Gmail\n\n2) FILTER: Is it a newsletter or spam? → if yes, skip and do nothing\n\n3) AI CLASSIFICATION (Claude Haiku — fastest and cheapest):\nPrompt: 'Classify this email into one category: urgent / new customer / support / internal / other. Reply ONLY with category name.'\n\n4) ROUTING by category:\n• Urgent → send message to Slack or SMS + prepare draft reply\n• New customer → add to contacts spreadsheet or CRM system\n• Support → add to request management system\n• Other → archive\n\n5) AI DRAFT REPLY (Claude Sonnet):\n'Write a professional reply to this email. Tone: [formal/friendly]. Customer context: [data from spreadsheet]'\n\n6) HUMAN REVIEW: Draft goes to Gmail as a composed email — person reads, optionally edits and only then sends\n\nImportant: Never auto-send any email without human approval.",
-       }},
-       {label:{cs:"Claude Skills — naučte Claudea váš styl",en:"Claude Skills — teach Claude your style"},p:{
-         cs:"Co jsou Claude Skills: složky s instrukcemi které Claude Code přečte před každým úkolem. Funguje jako trvalá paměť — Claude vždy ví jak psát vaším hlasem nebo jakým stylem kódovat.\n\nKde najít hotové Skills: agentskill.sh — největší katalog hotových Skills (přes 100 000, většina zdarma z GitHubu). Hledejte podle kategorie nebo klíčového slova. Instalace jedním příkazem přímo z Claude Code: '/plugin marketplace add [jméno]'. Není potřeba nic stahovat ručně.\n\nAlternativa bez terminálu: Claude Projects (claude.ai → Projects → Project Instructions) — napište instrukce přímo do nastavení projektu, bez jakýchkoliv souborů.\n\nPro Claude Code (vývojáři — spustíte v terminálu):\n\nJednoduché vytvoření prvního Skill přes Claude Code:\n\n'Vytvoř složku ~/.claude/skills/ a v ní soubor brand-voice.md s těmito pravidly pro psaní:\n- Tón: přátelský ale profesionální\n- Délka emailů: max 5 vět v těle\n- Vždy začni jménem příjemce\n- Předmět: max 6 slov\n- Zakončení: S pozdravem, [vaše jméno]\nAž bude soubor vytvořen, potvrď mi to.'\n\nAktivace: napište do Claude Code 'Přečti skill brand-voice a napiš email pro: [komu / o čem]'\n\nDoporučené Skills:\n• brand-voice.md — jak psát vaším hlasem a stylem\n• meeting-notes.md — šablona pro zápisky ze schůzek (Rozhodnutí / Úkoly / Otevřené otázky)\n• seo-checklist.md — co zkontrolovat u každého článku před publikací\n\nPřidat nový Skill: 'Vytvoř skill [název] pro: [co má Claude dělat — napiš přesné instrukce]'",
-         en:"What are Claude Skills: folders with instructions that Claude Code reads before each task. Works like permanent memory — Claude always knows how to write in your voice or what coding style to use.\n\nAlternative without terminal: Perplexity Computer and Claude Projects (claude.ai → Projects → Project Instructions) can do similar things — write instructions directly into project settings, without any files or terminal.\n\nFor Claude Code (developers — run in terminal):\n\nSimple creation of first Skill via Claude Code:\n\n'Create folder ~/.claude/skills/ and in it a file brand-voice.md with these writing rules:\n- Tone: friendly but professional\n- Email length: max 5 sentences in body\n- Always start with recipient's name\n- Subject: max 6 words\n- Closing: Best regards, [your name]\nOnce file is created, confirm to me.'\n\nActivation: type into Claude Code 'Read skill brand-voice and write email for: [to whom / about what]'\n\nRecommended Skills:\n• brand-voice.md — how to write in your voice and style\n• meeting-notes.md — meeting notes template (Decisions / Tasks / Open questions)\n• seo-checklist.md — what to check for every article before publishing\n\nAdd new Skill: 'Create skill [name] for: [what Claude should do — write exact instructions]'",
-       }},
-     ],
-    },
+
+  advanced: [
+
+    // ── SEO ───────────────────────────────────────────────────────────────────
+    { task: { cs: "SEO obsah", en: "SEO content" }, icon: "🔍", mods: ["Claude Opus", "ChatGPT"],
+      promptTip: {
+        cs: "Proč to funguje: moderní SEO není jen o keywordech — Google hodnotí EEAT (Experience, Expertise, Authoritativeness, Trust). Přidání konkrétních čísel, reálných příkladů a jasné autority do článku je důležitější než hustota klíčových slov.",
+        en: "Why it works: modern SEO isn't just about keywords — Google evaluates EEAT (Experience, Expertise, Authoritativeness, Trust). Adding specific numbers, real examples, and clear authority to the article matters more than keyword density.",
+      },
+      ps: [
+        { label: { cs: "SEO článek s EEAT", en: "SEO article with EEAT" }, p: {
+          cs: "Napiš SEO článek na klíčové slovo: '[keyword]'\n\nSearch intent: [informační / transakční / navigační / porovnávací — vyber]\nCílový čtenář: [kdo to bude číst a co potřebuje vyřešit]\n\nStruktura:\n• H1: Obsahuje keyword, max 60 znaků, slibuje konkrétní hodnotu\n• Úvod (150 slov): problém čtenáře → proč je tento článek odpovědí → co se dozví\n• H2 sekce: [seznam sekcí]\n• FAQ sekce: 5 otázek z 'Lidé se také ptají' pro tento keyword\n• Závěr: shrnutí + jasný next step\n\nEEAT signály (zabuduj přirozeně):\n• Konkrétní čísla nebo statistiky s uvedením zdroje\n• Příklad z reálné praxe nebo case study\n• Jasné vymezení kdo a proč je kvalifikovaný psát o tomto tématu\n\nMeta title: keyword + benefit, max 60 znaků\nMeta description: problém → řešení → CTA, max 155 znaků\nDélka: 1800-2200 slov",
+          en: "Write an SEO article for keyword: '[keyword]'\n\nSearch intent: [informational / transactional / navigational / comparison — choose]\nTarget reader: [who will read it and what they need to solve]\n\nStructure:\n• H1: Contains keyword, max 60 chars, promises specific value\n• Intro (150 words): reader's problem → why this article answers it → what they'll learn\n• H2 sections: [list of sections]\n• FAQ section: 5 questions from 'People Also Ask' for this keyword\n• Conclusion: summary + clear next step\n\nEEAT signals (embed naturally):\n• Specific numbers or statistics with source\n• Real-world example or case study\n• Clear statement of who is qualified to write about this topic and why\n\nMeta title: keyword + benefit, max 60 chars\nMeta description: problem → solution → CTA, max 155 chars\nLength: 1800-2200 words",
+        }},
+        { label: { cs: "SEO brief pro copywritera", en: "SEO brief for copywriter" }, p: {
+          cs: "Vytvoř kompletní SEO brief pro copywritera. Keyword: '[keyword]'\n\n1) SEARCH INTENT: Co přesně uživatel hledá? (nechce obecný článek — chce...)\n2) STRUKTURA H1-H3: Navrhni konkrétní nadpisy (ne zástupné texty)\n3) DÉLKA A ČITELNOST: Doporučená délka, úroveň čtení (Flesch score cíl)\n4) LSI A SÉMANTICKÁ KLÍČOVÁ SLOVA: 15 výrazů které musí článek přirozeně obsahovat\n5) INTERNAL LINKING: 3 existující stránky na webu na které může odkazovat\n6) FEATURED SNIPPET: Jak strukturovat odpověď pro snippet (tabulka / seznam / odstavec)\n7) SCHEMA MARKUP: Doporučený typ (Article / FAQ / HowTo)\n8) COMPETITOR GAP: Co top 3 výsledky mají a co jim chybí?\n\nWeb: [URL webu pokud máš]",
+          en: "Create a complete SEO brief for a copywriter. Keyword: '[keyword]'\n\n1) SEARCH INTENT: What exactly is the user looking for? (they don't want a generic article — they want...)\n2) H1-H3 STRUCTURE: Suggest specific headings (not placeholder text)\n3) LENGTH & READABILITY: Recommended length, reading level (Flesch score target)\n4) LSI & SEMANTIC KEYWORDS: 15 expressions the article must naturally contain\n5) INTERNAL LINKING: 3 existing pages on the site it can link to\n6) FEATURED SNIPPET: How to structure the answer for a snippet (table / list / paragraph)\n7) SCHEMA MARKUP: Recommended type (Article / FAQ / HowTo)\n8) COMPETITOR GAP: What do top 3 results have and what are they missing?\n\nWebsite: [URL if available]",
+        }},
+      ]},
+
+    // ── BUSINESS PLAN ────────────────────────────────────────────────────────
+    { task: { cs: "Byznys plán", en: "Business plan" }, icon: "💼", mods: ["Claude Opus"],
+      promptTip: {
+        cs: "Proč Claude Opus: byznys plán je komplexní vícekroková analýza která vyžaduje hluboký reasoning. Na Sonnet nebo GPT-4o výstup bude povrchní. XML struktura promptu výrazně zlepšuje kvalitu — Claude byl trénován s ní.",
+        en: "Why Claude Opus: a business plan is a complex multi-step analysis requiring deep reasoning. On Sonnet or GPT-4o the output will be superficial. XML structure in the prompt significantly improves quality — Claude was trained with it.",
+      },
+      ps: [
+        { label: { cs: "Kompletní byznys plán", en: "Full business plan" }, p: {
+          cs: "\u003cbusiness\u003e\n[Popis firmy/produktu/služby — co děláte, jak, pro koho]\n\u003c/business\u003e\n\u003cmarket\u003e\n[Popis trhu — geografický rozsah, velikost, zralost]\n\u003c/market\u003e\n\u003cgoals\u003e\n[Cíle — konkrétní čísla a časový horizont]\n\u003c/goals\u003e\n\u003cconstraints\u003e\n[Omezení — budget, tým, čas, regulace]\n\u003c/constraints\u003e\n\nVytvoř byznys plán:\n1) Executive summary (max 200 slov — pro investora)\n2) Analýza trhu (TAM/SAM/SOM s čísly)\n3) Konkurenční analýza (min 3 přímí konkurenti — silné stránky, slabé stránky, jak se odlišujeme)\n4) Business Model Canvas (všech 9 polí)\n5) GTM strategie (první 3 měsíce — konkrétní kroky)\n6) Finanční projekce na 3 roky (optimistická / realistická / pesimistická varianta)\n7) Klíčová rizika + mitigace\n8) KPIs pro měření úspěchu\n\nBuď kritický — pokud náš plán má slabiny, pojmenuj je.",
+          en: "\u003cbusiness\u003e\n[Company/product/service description — what you do, how, for whom]\n\u003c/business\u003e\n\u003cmarket\u003e\n[Market description — geographic scope, size, maturity]\n\u003c/market\u003e\n\u003cgoals\u003e\n[Goals — specific numbers and time horizon]\n\u003c/goals\u003e\n\u003cconstraints\u003e\n[Constraints — budget, team, time, regulations]\n\u003c/constraints\u003e\n\nCreate a business plan:\n1) Executive summary (max 200 words — for an investor)\n2) Market analysis (TAM/SAM/SOM with numbers)\n3) Competitive analysis (min 3 direct competitors — strengths, weaknesses, how we differ)\n4) Business Model Canvas (all 9 fields)\n5) GTM strategy (first 3 months — specific steps)\n6) 3-year financial projections (optimistic / realistic / pessimistic scenarios)\n7) Key risks + mitigation\n8) KPIs for measuring success\n\nBe critical — if our plan has weaknesses, name them.",
+        }},
+        { label: { cs: "Analýza konkurence", en: "Competitor analysis" }, p: {
+          cs: "\u003ccontext\u003e\nNaše firma: [popis, cílová skupina, cenová úroveň, hlavní USP]\nNáš problém: [proč zákazníci odcházejí ke konkurenci nebo k nám nepřicházejí]\n\u003c/context\u003e\n\n\u003ctask\u003e\nAnalyzuj konkurenci pro naši firmu vs [konkurent 1], [konkurent 2], [konkurent 3].\n\n1) Positioning matrix: umísti všechny hráče na 2 osy — [osa 1, např. cena] vs [osa 2, např. jednoduchost]\n2) Kde jsou konkurenti slabí a kde bychom mohli vyhrát?\n3) Které segmenty zákazníků obsluhují oni a ne my (a naopak)?\n4) Navrhni 1 positioning statement který nás jasně odliší\n5) 3 konkrétní kroky které můžeme udělat v příštích 30 dnech\n\u003c/task\u003e\n\nBuď kritický. Pokud naše USP není přesvědčivé, řekni to přímo.",
+          en: "\u003ccontext\u003e\nOur company: [description, target audience, price level, main USP]\nOur problem: [why customers go to competitors or don't come to us]\n\u003c/context\u003e\n\n\u003ctask\u003e\nAnalyze the competitive landscape for our company vs [competitor 1], [competitor 2], [competitor 3].\n\n1) Positioning matrix: place all players on 2 axes — [axis 1, e.g. price] vs [axis 2, e.g. simplicity]\n2) Where are competitors weak and where could we win?\n3) Which customer segments do they serve that we don't (and vice versa)?\n4) Propose 1 positioning statement that clearly differentiates us\n5) 3 concrete steps we can take in the next 30 days\n\u003c/task\u003e\n\nBe critical. If our USP isn't compelling, say so directly.",
+        }},
+      ]},
+
+    // ── WEB DEVELOPMENT ──────────────────────────────────────────────────────
+    { task: { cs: "Web development", en: "Web development" }, icon: "🌐", mods: ["Claude Sonnet", "v0", "Bolt"],
+      promptTip: {
+        cs: "Proč to funguje: AI generuje lepší kód když dostane tech stack, design reference a seznam VŠECH sekcí předem. Vague brief = generický výsledek. Pro prototyp použij v0 nebo Bolt, pro produkci Claude Sonnet v Cursoru.",
+        en: "Why it works: AI generates better code when given the tech stack, design references, and list of ALL sections upfront. Vague brief = generic result. For prototyping use v0 or Bolt, for production use Claude Sonnet in Cursor.",
+      },
+      ps: [
+        { label: { cs: "Landing page", en: "Landing page" }, p: {
+          cs: "Vytvoř landing page pro [produkt/služba]. Tech stack: React + Tailwind CSS.\n\nDesign reference: [odkaz nebo popis stylu — např. 'minimalistický, tmavé pozadí, amber akcenty']\nCílová skupina: [kdo jsou návštěvníci]\nHlavní CTA: [co má visitor udělat]\n\nSekce (v tomto pořadí):\n1) Hero: headline + subheadline + CTA tlačítko + hero vizuál nebo mockup\n2) Social proof: loga klientů nebo [X] spokojených zákazníků\n3) Benefity: 3-4 karty s ikonou, nadpisem a 2 větami\n4) Jak to funguje: 3 kroky s čísly\n5) Testimonials: 2-3 citace se jménem a rolí\n6) Pricing: 3 plány (Basic / Pro / Enterprise) s highlighted středním plánem\n7) FAQ: 5 otázek v accordion\n8) Footer: logo, navigace, kontakt, social\n\nTechnické požadavky: responsive, dark/light mode toggle, smooth scroll, lazy loading obrázků.",
+          en: "Create a landing page for [product/service]. Tech stack: React + Tailwind CSS.\n\nDesign reference: [link or style description — e.g. 'minimalist, dark background, amber accents']\nTarget audience: [who the visitors are]\nMain CTA: [what the visitor should do]\n\nSections (in this order):\n1) Hero: headline + subheadline + CTA button + hero visual or mockup\n2) Social proof: client logos or [X] happy customers\n3) Benefits: 3-4 cards with icon, title, and 2 sentences\n4) How it works: 3 steps with numbers\n5) Testimonials: 2-3 quotes with name and role\n6) Pricing: 3 plans (Basic / Pro / Enterprise) with highlighted middle plan\n7) FAQ: 5 questions in accordion\n8) Footer: logo, navigation, contact, social\n\nTechnical requirements: responsive, dark/light mode toggle, smooth scroll, lazy image loading.",
+        }},
+        { label: { cs: "API integrace", en: "API integration" }, p: {
+          cs: "Napiš kód pro integraci [název API / služby] do existující [jazyk/framework] aplikace.\n\nCo integrace má dělat: [přesný popis funkcionality]\nAutentizace: [API key / OAuth / JWT — co používá tato API]\nEndpoint(s): [konkrétní endpoints nebo odkaz na docs]\n\nExistující kód (relevantní části):\n```\n[vlož]\n```\n\nPožadavky:\n• Error handling pro: rate limiting, timeout, invalid response\n• Logování pro debugging\n• Typové definice (TypeScript pokud projekt používá)\n• Příklad použití v komentáři",
+          en: "Write code for integrating [API name / service] into an existing [language/framework] application.\n\nWhat the integration should do: [exact description of functionality]\nAuthentication: [API key / OAuth / JWT — what this API uses]\nEndpoint(s): [specific endpoints or link to docs]\n\nExisting code (relevant parts):\n```\n[paste]\n```\n\nRequirements:\n• Error handling for: rate limiting, timeout, invalid response\n• Logging for debugging\n• Type definitions (TypeScript if project uses it)\n• Usage example in a comment",
+        }},
+      ]},
+
+    // ── PROMPT ENGINEERING ───────────────────────────────────────────────────
+    { task: { cs: "Prompt engineering", en: "Prompt engineering" }, icon: "🧠", mods: ["Claude Opus"],
+      promptTip: {
+        cs: "Proč to funguje: systémový prompt je základ každého AI produktu. Testuj vždy s adversariálními vstupy (pokusy o obcházení pravidel) — to odhalí slabiny které normální testování nenajde.",
+        en: "Why it works: the system prompt is the foundation of every AI product. Always test with adversarial inputs (attempts to bypass rules) — this reveals weaknesses that normal testing won't find.",
+      },
+      ps: [
+        { label: { cs: "Systémový prompt pro AI asistenta", en: "System prompt for AI assistant" }, p: {
+          cs: "Vytvoř systémový prompt pro AI asistenta s těmito parametry:\n\nRole: [přesný popis role — např. 'zákaznický servis pro SaaS firmu']\nÚčel: [co asistent dělá a co ne]\nUživatelé: [kdo bude asistenta používat]\nTón a osobnost: [formální / přátelský / přímý — s příkladem]\n\nStruktura systémového promptu:\n1) Role a kontext (2-3 věty)\n2) Co asistent VÍ (znalostní báze — odkaz na dokumenty nebo popis)\n3) Co asistent NESMÍ dělat (guardrails — buď konkrétní)\n4) Formát odpovědí (délka, struktura, jazyk)\n5) 3 few-shot příklady (otázka → ideální odpověď)\n6) Edge cases (co říct při mimo-téma otázkách, necitlivých dotazech)\n7) Anti-injection ochrana\n\nPo napsání promptu: navrhni 5 testovacích vstupů včetně 2 adversariálních.",
+          en: "Create a system prompt for an AI assistant with these parameters:\n\nRole: [exact role description — e.g. 'customer service for a SaaS company']\nPurpose: [what the assistant does and doesn't do]\nUsers: [who will use the assistant]\nTone and personality: [formal / friendly / direct — with an example]\n\nSystem prompt structure:\n1) Role and context (2-3 sentences)\n2) What the assistant KNOWS (knowledge base — link to docs or description)\n3) What the assistant MUST NOT do (guardrails — be specific)\n4) Response format (length, structure, language)\n5) 3 few-shot examples (question → ideal response)\n6) Edge cases (what to say for off-topic questions, sensitive queries)\n7) Anti-injection protection\n\nAfter writing the prompt: suggest 5 test inputs including 2 adversarial ones.",
+        }},
+        { label: { cs: "XML prompt pro komplexní úkol", en: "XML prompt for complex task" }, p: {
+          cs: "Přepis tento jednoduchý prompt do strukturovaného XML formátu pro lepší výsledky:\n\nPůvodní prompt: [vlož]\n\nXML struktura:\n\u003crole\u003e[kdo je AI v tomto kontextu]\u003c/role\u003e\n\u003ccontext\u003e[relevantní zázemí a informace]\u003c/context\u003e\n\u003ctask\u003e[přesný úkol — jeden konkrétní]\u003c/task\u003e\n\u003cconstraints\u003e[co AI nesmí nebo musí zachovat]\u003c/constraints\u003e\n\u003cformat\u003e[přesný formát výstupu]\u003c/format\u003e\n\u003cexamples\u003e\n\u003cgood\u003e[příklad dobrého výstupu]\u003c/good\u003e\n\u003cbad\u003e[příklad čemu se vyhnout]\u003c/bad\u003e\n\u003c/examples\u003e\n\nPo přepsání: vysvětli co každý tag přidává a proč je výsledek lepší než původní prompt.",
+          en: "Rewrite this simple prompt into a structured XML format for better results:\n\nOriginal prompt: [paste]\n\nXML structure:\n\u003crole\u003e[who AI is in this context]\u003c/role\u003e\n\u003ccontext\u003e[relevant background and information]\u003c/context\u003e\n\u003ctask\u003e[exact task — one specific thing]\u003c/task\u003e\n\u003cconstraints\u003e[what AI must not do or must preserve]\u003c/constraints\u003e\n\u003cformat\u003e[exact output format]\u003c/format\u003e\n\u003cexamples\u003e\n\u003cgood\u003e[example of good output]\u003c/good\u003e\n\u003cbad\u003e[example of what to avoid]\u003c/bad\u003e\n\u003c/examples\u003e\n\nAfter rewriting: explain what each tag adds and why the result is better than the original prompt.",
+        }},
+      ]},
+
+    // ── SALES FUNNEL ─────────────────────────────────────────────────────────
+    { task: { cs: "Sales funnel", en: "Sales funnel" }, icon: "🎯", mods: ["ChatGPT", "Claude"],
+      promptTip: {
+        cs: "Proč to funguje: sales funnel je systém, ne jeden text. Nejlepší výsledek dostaneš když AI zná celý kontext — produkt, cenu, zákazníka, jeho hlavní námitku. Každá fáze funnelu má jiný cíl a jiný tón.",
+        en: "Why it works: a sales funnel is a system, not one text. You get the best results when AI knows the full context — product, price, customer, their main objection. Each funnel stage has a different goal and different tone.",
+      },
+      ps: [
+        { label: { cs: "Kompletní sales funnel", en: "Full sales funnel" }, p: {
+          cs: "Navrhni kompletní sales funnel pro:\nProdukt: [název a stručný popis]\nCena: [cenový model — např. '990 Kč/měs nebo 9900 Kč/rok']\nCílová skupina: [přesný popis — kdo jsou, co řeší, kde tráví čas]\nHlavní námitka: [proč nekoupí — cena / nedůvěra / načasování]\n\nFáze funnelu:\n1) TOFU — Awareness: 3 nápady na obsah který osloví lidi kteří náš produkt ještě neznají\n2) Lead magnet: 1 konkrétní bezplatný obsah (checklist, template, mini-kurz) s názvem a popisem\n3) Email sekvence (7 emailů): předmět + 2věty obsah pro každý email; den 1, 3, 5, 7, 10, 14, 21\n4) Sales page: struktura (ne copy) — co musí stránka obsahovat v jakém pořadí\n5) Upsell: co nabídnout po koupi a jak načasovat\n6) Retargeting: 2 nápady na retargeting pro ty, kteří nekoupili\n7) KPIs: co měřit v každé fázi (conversion rate, open rate...)",
+          en: "Design a complete sales funnel for:\nProduct: [name and brief description]\nPrice: [pricing model — e.g. '$49/month or $490/year']\nTarget audience: [precise description — who they are, what they solve, where they spend time]\nMain objection: [why they won't buy — price / distrust / timing]\n\nFunnel stages:\n1) TOFU — Awareness: 3 content ideas that reach people who don't know our product yet\n2) Lead magnet: 1 specific free resource (checklist, template, mini-course) with name and description\n3) Email sequence (7 emails): subject + 2-sentence content for each email; day 1, 3, 5, 7, 10, 14, 21\n4) Sales page: structure (not copy) — what the page must contain and in what order\n5) Upsell: what to offer after purchase and when to time it\n6) Retargeting: 2 retargeting ideas for those who didn't buy\n7) KPIs: what to measure at each stage (conversion rate, open rate...)",
+        }},
+      ]},
   ],
 };
 
-// ─── UI COMPONENTS ────────────────────────────────────────────────────────────
-function PriceBadge({ price, lang }) {
-  const map = {
-    free:{cs:"Zdarma",en:"Free",c:T.green},
-    freemium:{cs:"Freemium",en:"Freemium",c:T.accent},
-    paid:{cs:"Placený",en:"Paid",c:T.purple}
-  };
-  const d = map[price]; if(!d) return null;
-  return <span style={{fontSize:10,fontWeight:700,color:d.c,border:`1px solid ${d.c}33`,borderRadius:4,padding:"2px 7px",letterSpacing:"0.06em",textTransform:"uppercase"}}>{d[lang]}</span>;
-}
 
-function SectionChip({ s }) {
-  const map = {
-    marketing:{bg:T.purpleLo,border:T.purpleBorder,text:T.purple,label:"Marketing"},
-    seo:{bg:T.tealLo,border:T.tealBorder,text:T.teal,label:"SEO"},
-    business:{bg:T.accentLo,border:T.accentBorder,text:T.accent,label:"Byznys"},
-    development:{bg:T.blueLo,border:T.blueBorder,text:T.blue,label:"Vývoj"},
-    agents:{bg:"rgba(239,68,68,0.08)",border:"rgba(239,68,68,0.28)",text:T.red,label:"Agenti"},
-  };
-  const d = map[s]; if(!d) return null;
-  return <span style={{fontSize:9,fontWeight:700,letterSpacing:"0.09em",textTransform:"uppercase",background:d.bg,border:`1px solid ${d.border}`,color:d.text,borderRadius:4,padding:"2px 7px",marginLeft:5}}>{d.label}</span>;
-}
+// ─── MODELS ───────────────────────────────────────────────────────────────────
+const MODELS = {
+  beginner: [
+    { name: "ChatGPT", icon: "🟢", url: "https://chat.openai.com", d: { cs: "Nejpopulárnější AI. Univerzální.", en: "Most popular AI. Universal." }, mv: { cs: "GPT-4o = hlavní | GPT-4o mini = rychlejší | o1 = hluboký reasoning", en: "GPT-4o = main | GPT-4o mini = faster | o1 = deep reasoning (paid)" },
+      tips: { cs: ["Buďte konkrétní — '200slovný článek o vaření pro začátečníky'", "Dejte AI roli: 'Jsi zkušený učitel.'", "Říkejte co změnit místo psaní nového dotazu", "'Pokračuj' nebo 'zkrať to' pro úpravu délky"], en: ["Be specific — '200-word cooking article for beginners'", "Give role: 'You are a teacher.'", "Say what to change, don't rewrite the whole prompt", "'Continue' or 'shorten' for length control"] }},
+    { name: "Claude", icon: "🟠", url: "https://claude.ai", d: { cs: "Přesný, pečlivý, zvládá dlouhé texty.", en: "Precise, careful, handles long texts." }, mv: { cs: "Haiku = nejrychlejší | Sonnet = rychlý + chytrý | Opus = nejchytřejší", en: "Haiku = fastest | Sonnet = fast + smart | Opus = smartest (paid)" },
+      tips: { cs: ["Zvládne celé PDF (200+ stran)", "Jasné instrukce: '3 body, max 100 slov'", "Upřímný — neví-li, řekne", "Strukturovaný výstup: 'problém, řešení, příklad'"], en: ["Handles PDFs (200+ pages)", "Clear instructions: '3 points, max 100 words'", "Honest — says when it doesn't know", "Structured output: 'problem, solution, example'"] }},
+    { name: "Gemini", icon: "🔵", url: "https://gemini.google.com", d: { cs: "Google AI. Aktuální informace.", en: "Google AI. Current information." }, mv: { cs: "Flash = rychlý | Pro = hlavní | Ultra = nejsilnější", en: "Flash = fast | Pro = main | Ultra = most powerful" },
+      tips: { cs: ["Hledá aktuální info na internetu", "Funguje s Gmail, Docs, Drive", "'Shrň tuto stránku' + odkaz"], en: ["Searches current info online", "Works with Gmail, Docs, Drive", "'Summarize this page' + link"] }},
+    { name: "DeepSeek", icon: "🟤", url: "https://chat.deepseek.com", d: { cs: "Zdarma! R1 ukazuje myšlenkový postup.", en: "Free! R1 shows thinking process." }, mv: { cs: "V3 = rychlý | R1 = reasoning (jako o1, ale zdarma!)", en: "V3 = fast, universal | R1 = step-by-step reasoning (like o1, free!)" },
+      tips: { cs: ["Úplně zdarma bez limitů", "R1 ukazuje jak přemýšlí — skvělé na učení", "Silný v matematice a logice", "Funguje dobře česky"], en: ["Completely free, no limits", "R1 shows thinking — great for learning", "Strong in math and logic", "Works in many languages"] }},
+    { name: "NotebookLM", icon: "📘", url: "https://notebooklm.google.com", d: { cs: "Pro učení z dokumentů. Zdarma.", en: "For learning from documents. Free." }, mv: { cs: "Zaměřený na analýzu nahraných dokumentů", en: "Focused on analyzing uploaded documents" },
+      tips: { cs: ["Až 50 zdrojů najednou", "Odpovídá s citacemi z dokumentů", "Umí vytvořit podcast!", "Ideální na studium a výzkum"], en: ["Up to 50 sources at once", "Answers with citations from docs", "Can create podcasts!", "Ideal for studying and research"] }},
+  ],
+  intermediate: [
+    { name: "ChatGPT (GPT-4o)", icon: "🟢", url: "https://chat.openai.com", d: { cs: "Multimodální. Text, obrázky, kód, data.", en: "Multimodal. Text, images, code, data." }, mv: { cs: "GPT-4o = hlavní | o1 = hluboký reasoning | GPT-4o mini = lehký", en: "GPT-4o = main | o1 = deep reasoning | GPT-4o mini = light" },
+      tips: { cs: ["Custom Instructions pro váš kontext", "CSV/Excel → Python analýza + grafy", "Vlastní GPTs pro opakující se úkoly", "DALL-E 3 pro obrázky v chatu"], en: ["Custom Instructions for your context", "CSV/Excel → Python analysis + charts", "Custom GPTs for recurring tasks", "DALL-E 3 for images in chat"] }},
+    { name: "Claude (Sonnet/Opus)", icon: "🟠", url: "https://claude.ai", d: { cs: "Silný v analýze, kódu. 200K tokenů.", en: "Strong in analysis, code. 200K tokens." }, mv: { cs: "Haiku = rychlé | Sonnet = nejlepší poměr | Opus = nejchytřejší", en: "Haiku = quick | Sonnet = best ratio | Opus = smartest" },
+      tips: { cs: ["Artifacts → interaktivní komponenty", "Projekty sdílejí kontext", "XML tagy: \u003ccontext\u003e, \u003ctask\u003e", "200K tokenů = celé knihy"], en: ["Artifacts → interactive components", "Projects share context across conversations", "XML tags: \u003ccontext\u003e, \u003ctask\u003e", "200K tokens = entire books in one call"] }},
+    { name: "DeepSeek R1", icon: "🟤", url: "https://chat.deepseek.com", d: { cs: "Zdarma reasoning model.", en: "Free reasoning model." }, mv: { cs: "V3 = rychlý | R1 = reasoning (o1 konkurent, zdarma!)", en: "V3 = fast | R1 = reasoning (o1 competitor, free!)" },
+      tips: { cs: ["Zdarma alternativa k o1", "Vidíte myšlenkový postup", "Silný v matematice a kódu", "Open-source — lokálně přes Ollama"], en: ["Free o1 alternative", "See full thinking process", "Strong in math and code", "Open-source — run locally via Ollama"] }},
+    { name: "Perplexity", icon: "🟣", url: "https://perplexity.ai", d: { cs: "AI search s citacemi.", en: "AI search with citations." }, mv: { cs: "Default = rychlý | Pro = volba modelu", en: "Default = fast | Pro = model choice" },
+      tips: { cs: ["Citace u každé odpovědi", "Focus: Academic, Writing, Math", "Ideální na research"], en: ["Citations with every answer", "Focus: Academic, Writing, Math", "Ideal for research"] }},
+    { name: "Midjourney", icon: "🎨", url: "https://midjourney.com", d: { cs: "Nejlepší generátor obrázků.", en: "Best image generator." }, mv: { cs: "v6.1 = nejnovější | Niji = anime styl", en: "v6.1 = latest | Niji = anime style" },
+      tips: { cs: ["--ar 16:9, --style raw, --chaos 30", "Vždy promptujte anglicky", "--no pro vyloučení prvků z výsledku"], en: ["--ar 16:9, --style raw, --chaos 30", "Always prompt in English", "--no to exclude elements from result"] }},
+  ],
+  advanced: [
+    { name: "Claude (Opus/Sonnet)", icon: "🟠", url: "https://claude.ai", d: { cs: "Top pro analýzu, strategii, kód.", en: "Top for analysis, strategy, code." }, mv: { cs: "Opus = nejhlubší | Sonnet = denní driver | Haiku = ultra rychlý", en: "Opus = deepest | Sonnet = daily driver | Haiku = ultra fast" },
+      tips: { cs: ["XML: \u003crole\u003e, \u003ccontext\u003e, \u003cconstraints\u003e", "Claude Code CLI pro agentické kódování", "Extended thinking pro složité úkoly", "Batched API — 50% sleva na velkých objemech"], en: ["XML: \u003crole\u003e, \u003ccontext\u003e, \u003cconstraints\u003e", "Claude Code CLI for agentic coding", "Extended thinking for complex tasks", "Batched API — 50% discount at scale"] }},
+    { name: "ChatGPT (GPT-4o / o1)", icon: "🟢", url: "https://platform.openai.com", d: { cs: "Multimodální ekosystém s API.", en: "Multimodal ecosystem with API." }, mv: { cs: "GPT-4o = nejuniverzálnější | o1 = nejhlubší reasoning | o1-mini = levnější", en: "GPT-4o = most universal | o1 = deepest reasoning | o1-mini = cheaper" },
+      tips: { cs: ["Function calling pro strukturované výstupy", "Custom GPTs + Actions pro workflow", "Fine-tuning pro specifické use-case", "JSON mode pro API integrace"], en: ["Function calling for structured outputs", "Custom GPTs + Actions for workflows", "Fine-tuning for specific use cases", "JSON mode for API integrations"] }},
+    { name: "DeepSeek R1", icon: "🟤", url: "https://chat.deepseek.com", d: { cs: "Zdarma reasoning. Open-source.", en: "Free reasoning. Open-source." }, mv: { cs: "R1 = plný model | R1-Lite = odlehčený", en: "R1 = full model | R1-Lite = lighter version" },
+      tips: { cs: ["Ollama, vLLM pro lokální nasazení", "Zdarma konkurent o1", "OpenAI-kompatibilní API"], en: ["Ollama, vLLM for local deployment", "Free o1 competitor at production scale", "OpenAI-compatible API"] }},
+    { name: "Cursor", icon: "⌨️", url: "https://cursor.sh", d: { cs: "AI-first code editor.", en: "AI-first code editor." }, mv: { cs: "Volba modelu: Claude Sonnet, GPT-4o", en: "Model choice: Claude Sonnet, GPT-4o" },
+      tips: { cs: ["Composer edituje napříč soubory", ".cursorrules pro trvalý kontext projektu", "@ reference pro dokumentaci a soubory"], en: ["Composer edits across multiple files", ".cursorrules for persistent project context", "@ references for docs and specific files"] }},
+    { name: "Perplexity Pro", icon: "🟣", url: "https://perplexity.ai", d: { cs: "Pro-tier search s volbou modelu.", en: "Pro-tier search with model choice." }, mv: { cs: "GPT-4o, Claude, Llama, Mistral — dle výběru", en: "GPT-4o, Claude, Llama, Mistral — your choice" },
+      tips: { cs: ["Pro Mode vícekrokový hluboký research", "Spaces pro týmovou spolupráci", "API pro integrace do workflow"], en: ["Pro Mode multi-step deep research", "Spaces for team collaboration", "API for workflow integrations"] }},
+  ],
+};
 
-function Acc({ expanded, onToggle, icon, title, sub, children, badge, section, acc=T.accent }) {
+
+// ─── CLAUDE INTERACTIVE GUIDE DATA ───────────────────────────────────────────
+const CLAUDE_GUIDE = [
+  {
+    id: "website",
+    icon: "🌐",
+    title: { cs: "Vytvořit web", en: "Create a website" },
+    time: { cs: "2–4 hodiny", en: "2–4 hours" },
+    difficulty: { cs: "Středně pokročilý", en: "Intermediate" },
+    desc: { cs: "Od nápadu k živému webu na Vercelu. Přesně jak vznikl tento průvodce.", en: "From idea to live website on Vercel. Exactly how this guide was built." },
+    steps: [
+      { title: { cs: "Popiš projekt Claudovi", en: "Describe your project to Claude" },
+        desc: { cs: "Začni co nejkonkrétnějším popisem. Čím víc detailů dáš, tím lepší první verze dostaneš. Řekni co web dělá, kdo ho bude používat a jak má vypadat.", en: "Start with the most specific description you can. The more details you give, the better the first version will be. Say what the site does, who uses it, and how it should look." },
+        prompt: { cs: "Vytvoř mi React single-page aplikaci. Jde o [popis projektu].\nCíloví uživatelé: [kdo to bude používat]\nDesign: tmavé pozadí (#06060A), amber akcenty (#F59E0B), font Sora\nFunkce: [seznam funkcí]\nVýstup: kompletní App.jsx připravený k nasazení přes Vite.", en: "Create a React single-page app for me. It is [project description].\nTarget users: [who will use it]\nDesign: dark background (#06060A), amber accents (#F59E0B), Sora font\nFeatures: [list of features]\nOutput: complete App.jsx ready to deploy via Vite." },
+        tip: { cs: "Přidej odkaz na podobný web jako designovou referenci. 'Chci styl jako pendle.finance' je silnější instrukce než 20 vět o designu.", en: "Add a link to a similar website as a design reference. 'I want a style like pendle.finance' is a stronger instruction than 20 sentences about design." }
+      },
+      { title: { cs: "Nastav Vite projekt", en: "Set up the Vite project" },
+        desc: { cs: "Vytvoř čistý React/Vite projekt lokálně. Tento krok je potřeba udělat jen jednou na začátku — poté už jen kopíruješ App.jsx od Claudea.", en: "Create a clean React/Vite project locally. This step only needs to be done once at the start — after that you just copy App.jsx from Claude." },
+        prompt: { cs: "cd ~/Desktop\nnpm create vite@latest nazev-projektu -- --template react\ncd nazev-projektu\nnpm install", en: "cd ~/Desktop\nnpm create vite@latest project-name -- --template react\ncd project-name\nnpm install" },
+        tip: { cs: "Spusť npm create vite PŘED tím než jdeš do složky — příkaz složku teprve vytvoří. Pak zkopíruj App.jsx od Claudea do src/App.jsx.", en: "Run npm create vite BEFORE going into the folder — the command creates the folder. Then copy App.jsx from Claude into src/App.jsx." }
+      },
+      { title: { cs: "Oprav build chyby", en: "Fix build errors" },
+        desc: { cs: "Než pushneš na GitHub, požádej Claudea o automatickou opravu dvou nejčastějších problémů: víceřádkové stringy a XML tagy uvnitř JSX. Vite je odmítne buildovat.", en: "Before pushing to GitHub, ask Claude to automatically fix the two most common problems: multiline strings and XML tags inside JSX. Vite will refuse to build these." },
+        prompt: { cs: "Zkontroluj tento App.jsx a oprav:\n1) Víceřádkové stringy uvnitř dvojitých uvozovek — nahraď je \n\n2) Raw XML tagy jako <context>, <role>, <task> uvnitř stringů — escapuj je na \u003c...\u003e\nVypiš kolik oprav jsi udělal a vrať opravený soubor.", en: "Check this App.jsx and fix:\n1) Multiline strings inside double quotes — replace with \n\n2) Raw XML tags like <context>, <role>, <task> inside strings — escape to \u003c...\u003e\nReport how many fixes you made and return the fixed file." },
+        tip: { cs: "Rychlý test: build selže za ~7 sekund s 42-53 log řádky? Jde o multiline strings nebo XML tagy. Claude to opraví automaticky pokud ho požádáš.", en: "Quick test: build fails in ~7 seconds with 42-53 log lines? It's multiline strings or XML tags. Claude will fix it automatically if you ask." }
+      },
+      { title: { cs: "Pushni na GitHub", en: "Push to GitHub" },
+        desc: { cs: "Vytvoř prázdný repozitář na github.com a nahrej kód. Důležité: nech repozitář prázdný — žádné README — jinak vznikne konflikt hned při prvním pushu.", en: "Create an empty repository on github.com and upload the code. Important: keep the repository empty — no README — otherwise a conflict will arise on the first push." },
+        prompt: { cs: "git init\ngit add .\ngit commit -m "init"\ngit branch -M main\ngit remote add origin https://TVUJ_TOKEN@github.com/UZIVATEL/REPO.git\ngit push -u origin main", en: "git init\ngit add .\ngit commit -m "init"\ngit branch -M main\ngit remote add origin https://YOUR_TOKEN@github.com/USER/REPO.git\ngit push -u origin main" },
+        tip: { cs: "Token najdeš na GitHub → avatar → Settings → Developer settings → Personal access tokens → Tokens (classic). Začíná na ghp_...", en: "Find your token at GitHub → avatar → Settings → Developer settings → Personal access tokens → Tokens (classic). Starts with ghp_..." }
+      },
+      { title: { cs: "Nasaď na Vercel", en: "Deploy on Vercel" },
+        desc: { cs: "Vercel automaticky detekuje Vite projekt a nasadí ho zdarma. Po propojení s GitHubem se každý push automaticky promítne na web — žádná manuální práce.", en: "Vercel automatically detects a Vite project and deploys it for free. Once connected to GitHub, every push automatically updates the website — no manual work." },
+        prompt: { cs: "1. Jdi na vercel.com → Add New → Project\n2. Vyber svůj GitHub repozitář\n3. Klikni Deploy (Vite je auto-detekováno)\n4. Za 60 sekund je web živý na *.vercel.app", en: "1. Go to vercel.com → Add New → Project\n2. Select your GitHub repository\n3. Click Deploy (Vite is auto-detected)\n4. In 60 seconds the site is live at *.vercel.app" },
+        tip: { cs: "Každý další update: git add . && git commit -m 'update' && git push — Vercel nasadí automaticky.", en: "Every future update: git add . && git commit -m 'update' && git push — Vercel deploys automatically." }
+      },
+      { title: { cs: "Připoj vlastní doménu", en: "Connect your domain" },
+        desc: { cs: "Pokud máš vlastní doménu, propoj ji s Vercelem přes DNS záznamy. Wedos a jiní čeští registrátoři používají standardní A a CNAME záznamy.", en: "If you have your own domain, connect it to Vercel via DNS records. Wedos and other Czech registrars use standard A and CNAME records." },
+        prompt: { cs: "Vercel → projekt → Settings → Domains → přidej doménu.\nPotom na Wedosu (client.wedos.com → DNS):\n• Typ A, Název @, Hodnota 76.76.21.21\n• Typ CNAME, Název www, Hodnota cname.vercel-dns.com\nDNS se propaguje za 15 minut až 2 hodiny.", en: "Vercel → project → Settings → Domains → add domain.\nThen at your registrar:\n• Type A, Name @, Value 76.76.21.21\n• Type CNAME, Name www, Value cname.vercel-dns.com\nDNS propagates in 15 minutes to 2 hours." },
+        tip: { cs: "Vercel vydá HTTPS certifikát automaticky hned po propagaci DNS. Nic dalšího nastavovat nemusíš.", en: "Vercel issues the HTTPS certificate automatically right after DNS propagates. No additional setup needed." }
+      },
+    ]
+  },
+  {
+    id: "skill",
+    icon: "🛠️",
+    title: { cs: "Vytvořit Claude skill", en: "Create a Claude skill" },
+    time: { cs: "1–2 hodiny", en: "1–2 hours" },
+    difficulty: { cs: "Pokročilý", en: "Advanced" },
+    desc: { cs: "Nauč Claudea workflow, který bude automaticky používat. Skill se uloží a Claude ho použije vždy když je relevantní.", en: "Teach Claude a workflow it will automatically use. The skill is saved and Claude uses it whenever relevant." },
+    steps: [
+      { title: { cs: "Popiš workflow který chceš zachytit", en: "Describe the workflow you want to capture" },
+        desc: { cs: "Skill je nejlepší pro opakující se komplexní úkoly — deployment, tvorba dokumentů, analýza dat. Popiš co děláš, v jakém pořadí a co se nejčastěji pokazí.", en: "Skills work best for repetitive complex tasks — deployment, document creation, data analysis. Describe what you do, in what order, and what most commonly goes wrong." },
+        prompt: { cs: "Chci vytvořit Claude skill pro tento workflow:\n[popis workflow]\n\nWorkflow se spouští když: [trigger situace]\nVstup: [co dostane Claude na začátku]\nVýstup: [co má Claude dodat]\nNejčastější chyby: [co se kazí]\n\nPolož mi otázky abychom skill navrhli správně.", en: "I want to create a Claude skill for this workflow:\n[workflow description]\n\nThe workflow triggers when: [trigger situation]\nInput: [what Claude receives at the start]\nOutput: [what Claude should deliver]\nMost common failures: [what goes wrong]\n\nAsk me questions so we design the skill correctly." },
+        tip: { cs: "Dobré skilly mají konkrétní trigger — Claude je použije jen když jsou opravdu relevantní. Vague trigger = skill se nikdy nespustí.", en: "Good skills have a specific trigger — Claude uses them only when truly relevant. Vague trigger = skill never fires." }
+      },
+      { title: { cs: "Claude napíše SKILL.md", en: "Claude writes SKILL.md" },
+        desc: { cs: "SKILL.md je srdce každého skillu. Obsahuje trigger description, krok po kroku instrukce, edge cases a reference soubory. Claude ho napíše na základě vaší diskuse.", en: "SKILL.md is the heart of every skill. It contains the trigger description, step-by-step instructions, edge cases, and reference files. Claude writes it based on your discussion." },
+        prompt: { cs: "Na základě naší diskuse napiš kompletní SKILL.md pro tento skill.\nStruktura:\n---\nname: nazev-skillu\ndescription: [trigger popis — co spustí skill]\n---\n\n# Název skillu\n[instrukce krok po kroku]\n[edge cases]\n[reference soubory pokud jsou potřeba]", en: "Based on our discussion, write a complete SKILL.md for this skill.\nStructure:\n---\nname: skill-name\ndescription: [trigger description — what triggers the skill]\n---\n\n# Skill Name\n[step-by-step instructions]\n[edge cases]\n[reference files if needed]" },
+        tip: { cs: "Description field je nejdůležitější — Claude se rozhoduje jestli skill použít právě podle něj. Měl by být 'pushy' a konkrétní, ne vágní.", en: "The description field is most important — Claude decides whether to use the skill based on it. It should be 'pushy' and specific, not vague." }
+      },
+      { title: { cs: "Otestuj skill", en: "Test the skill" },
+        desc: { cs: "Před instalací si projdi skill mentálně s reálným příkladem. Projdi každý krok a ověř že instrukce produkují správný výsledek. Oprav co nefunguje.", en: "Before installing, mentally walk through the skill with a real example. Go through each step and verify the instructions produce the correct output. Fix what doesn't work." },
+        prompt: { cs: "Proveď tento skill na tomto konkrétním příkladu:\n[příklad vstupu]\n\nKrok po kroku popiš co bys udělal/a. Pokud narážíš na nejednoznačnost nebo chybějící instrukce, pojmenuj je.", en: "Run through this skill on this specific example:\n[example input]\n\nStep by step, describe what you would do. If you encounter ambiguity or missing instructions, name them." },
+        tip: { cs: "Nejlepší test je adversariální — zkus skill na vstupu který by ho měl spustit ale je hraniční. Odhalí slabé triggery.", en: "The best test is adversarial — try the skill on an input that should trigger it but is borderline. It reveals weak triggers." }
+      },
+      { title: { cs: "Zabalení a instalace", en: "Package and install" },
+        desc: { cs: "Skill se zabalí do .skill souboru a nainstaluje přes Claude Settings. Od té chvíle Claude skill automaticky použije kdykoli je relevantní kontext.", en: "The skill is packaged into a .skill file and installed via Claude Settings. From that point, Claude automatically uses the skill whenever the context is relevant." },
+        prompt: { cs: "Zabal skill do .skill souboru pomocí:\npython -m scripts.package_skill /cesta/ke/skill-slozce/\n\nPak jdi na claude.ai → Settings → Skills → Install from file → nahraj .skill soubor.", en: "Package the skill into a .skill file using:\npython -m scripts.package_skill /path/to/skill-folder/\n\nThen go to claude.ai → Settings → Skills → Install from file → upload the .skill file." },
+        tip: { cs: "Skill můžeš updatovat kdykoliv — stačí upravit SKILL.md a znovu zabalit a nainstalovat. Starý skill se přepíše.", en: "You can update the skill anytime — just edit SKILL.md and repackage and reinstall. The old skill gets overwritten." }
+      },
+    ]
+  },
+  {
+    id: "financial",
+    icon: "📊",
+    title: { cs: "Finanční model z dokumentu", en: "Financial model from document" },
+    time: { cs: "30–90 minut", en: "30–90 minutes" },
+    difficulty: { cs: "Středně pokročilý", en: "Intermediate" },
+    desc: { cs: "Nahraj dodavatelský dokument nebo fee schedule a Claude z toho udělá interaktivní Excel simulaci.", en: "Upload a supplier document or fee schedule and Claude turns it into an interactive Excel simulation." },
+    steps: [
+      { title: { cs: "Nahraj dokument a popiš co chceš modelovat", en: "Upload the document and describe what to model" },
+        desc: { cs: "Nahraj PDF, Word nebo CSV soubor. Řekni Claudovi co je cílem modelu — co se bude simulovat a které hodnoty jsou vstupní parametry.", en: "Upload a PDF, Word, or CSV file. Tell Claude what the model's goal is — what will be simulated and which values are input parameters." },
+        prompt: { cs: "Nahraný soubor je [popis dokumentu — fee schedule / výroční zpráva / partnerská smlouva].\n\nChci z toho udělat Excel model kde budu moci simulovat:\n• Různé objemy transakcí (měsíčně v CZK)\n• Různé tempo růstu\n• Různé kurzy EUR/CZK\n\nBlue buňky = moje vstupy, které měním. Black buňky = vzorce vypočítané z vstupů.\nVýstup: xlsx s listem Assumptions, listem pro každého partnera a Summary listem.", en: "The uploaded file is [document description — fee schedule / annual report / partner agreement].\n\nI want to create an Excel model where I can simulate:\n• Different transaction volumes (monthly in CZK)\n• Different growth rates\n• Different EUR/CZK exchange rates\n\nBlue cells = my inputs that I change. Black cells = formulas calculated from inputs.\nOutput: xlsx with an Assumptions sheet, a sheet per partner, and a Summary sheet." },
+        tip: { cs: "Čím konkrétnější jsi ohledně struktury outputu, tím lépe. 'Chci Assumptions sheet s modrými buňkami a Summary s celkovými revenues' je lepší než 'udělej Excel'.", en: "The more specific you are about the output structure, the better. 'I want an Assumptions sheet with blue cells and a Summary with total revenues' is better than 'make an Excel'." }
+      },
+      { title: { cs: "Claude detekuje strukturu dokumentu", en: "Claude detects document structure" },
+        desc: { cs: "Claude přečte dokument, identifikuje tabulky, fee typy, objemové tiry a vzorce. Výsledek ti popíše než začne psát kód — tak můžeš opravit nedorozumění.", en: "Claude reads the document, identifies tables, fee types, volume tiers, and relationships. It describes the result to you before writing code — so you can correct misunderstandings." },
+        prompt: { cs: "Před tím než začneš psát kód, popiš mi co jsi v dokumentu našel:\n1) Jaké fee typy existují a jak jsou strukturované\n2) Jsou tam objemové tiry? Jaké thresholdy?\n3) Které hodnoty jsou fixní, které závisí na objemu\n4) Co bude v Assumptions sheetu (modré buňky)\n5) Co bude vzorec vs. hardcoded hodnota", en: "Before writing any code, describe to me what you found in the document:\n1) What fee types exist and how are they structured\n2) Are there volume tiers? What thresholds?\n3) Which values are fixed, which depend on volume\n4) What will be in the Assumptions sheet (blue cells)\n5) What will be a formula vs. a hardcoded value" },
+        tip: { cs: "Tento krok ušetří hodiny. Nechej Claudea popsat strukturu a oprav ho pokud něco špatně pochopil — pak teprve pusť na kódování.", en: "This step saves hours. Let Claude describe the structure and correct it if something was misunderstood — only then let it start coding." }
+      },
+      { title: { cs: "Validace a doručení", en: "Validation and delivery" },
+        desc: { cs: "Claude spustí recalc script který ověří nulový počet formula chyb. Pak dostaneš xlsx soubor s popsanou strukturou a návodem jak měnit vstupy.", en: "Claude runs the recalc script which verifies zero formula errors. You then receive the xlsx file with a described structure and instructions on how to change inputs." },
+        prompt: { cs: "Po vygenerování souboru:\n1) Spusť scripts/recalc.py a ověř že status je 'success'\n2) Zkontroluj že žádná buňka neobsahuje #REF!, #DIV/0! nebo #VALUE!\n3) Popiš mi strukturu sheetu — jaké jsou modré buňky a co se přepočítá když je změním\n4) Doruč soubor", en: "After generating the file:\n1) Run scripts/recalc.py and verify status is 'success'\n2) Check no cell contains #REF!, #DIV/0! or #VALUE!\n3) Describe the sheet structure to me — what are the blue cells and what recalculates when I change them\n4) Deliver the file" },
+        tip: { cs: "Pokud model potřebuješ aktualizovat (nové fee sazby, nový partner), stačí nahrát nový dokument a říct 'aktualizuj existující model' — Claude zachová strukturu.", en: "If you need to update the model (new fee rates, new partner), just upload a new document and say 'update the existing model' — Claude will preserve the structure." }
+      },
+    ]
+  },
+  {
+    id: "mcp",
+    icon: "🔌",
+    title: { cs: "Propojit aplikace s Claudem", en: "Connect apps with Claude" },
+    time: { cs: "15–30 minut", en: "15–30 minutes" },
+    difficulty: { cs: "Začátečník", en: "Beginner" },
+    desc: { cs: "Přes MCP konektory Claude vidí tvůj Google Kalendář, Gmail, Figmu a další aplikace. Můžeš ho pak požádat aby za tebe věci rovnou udělal.", en: "Via MCP connectors, Claude can see your Google Calendar, Gmail, Figma, and other apps. You can then ask it to do things for you directly." },
+    steps: [
+      { title: { cs: "Aktivuj konektory v nastavení", en: "Enable connectors in settings" },
+        desc: { cs: "Claude.ai má v nastavení sekci Connectors kde aktivuješ integraci s různými aplikacemi. Každý konektor vyžaduje jednorázové přihlášení přes OAuth.", en: "Claude.ai has a Connectors section in settings where you activate integration with various apps. Each connector requires a one-time OAuth login." },
+        prompt: { cs: "Jdi na claude.ai → Settings → Connectors\nDostupné konektory:\n• Google Calendar — čtení a tvorba událostí\n• Gmail — čtení a posílání emailů\n• Figma — čtení a editace designů\n• Google Drive — přístup k dokumentům\n• Slack — čtení a posílání zpráv\n\nKlikni na konektor → Authorize → přihlaš se do příslušné služby.", en: "Go to claude.ai → Settings → Connectors\nAvailable connectors:\n• Google Calendar — reading and creating events\n• Gmail — reading and sending emails\n• Figma — reading and editing designs\n• Google Drive — document access\n• Slack — reading and sending messages\n\nClick connector → Authorize → log in to the respective service." },
+        tip: { cs: "Konektory fungují jen v konverzaci kde jsou aktivovány. Aktivuj je kliknutím na ikonu nástrojů v chat okně.", en: "Connectors only work in conversations where they are activated. Enable them by clicking the tools icon in the chat window." }
+      },
+      { title: { cs: "Otestuj konektor reálným úkolem", en: "Test the connector with a real task" },
+        desc: { cs: "Nejlepší test je okamžitě použít konektor na reálný úkol. Přidej konektor do konverzace a zadej konkrétní požadavek.", en: "The best test is to immediately use the connector on a real task. Add the connector to the conversation and give a specific request." },
+        prompt: { cs: "Zkus jeden z těchto promptů podle aktivního konektoru:\n\nGoogle Calendar: 'Co mám v kalendáři příští týden? Jsou tam nějaké konflikty?'\n\nGmail: 'Najdi emaily od [odesílatel] z posledního týdne a shrň co chtějí.'\n\nFigma: 'Otevři tento Figma soubor [URL] a popiš mi komponentu na hlavní stránce.'", en: "Try one of these prompts based on the active connector:\n\nGoogle Calendar: 'What do I have in my calendar next week? Are there any conflicts?'\n\nGmail: 'Find emails from [sender] from the last week and summarize what they want.'\n\nFigma: 'Open this Figma file [URL] and describe the component on the main page.'" },
+        tip: { cs: "Kombinace konektorů je silná — 'Podívej se do Gmailu jestli mám emaily o meetingu v pátek, a pokud ne, vytvoř mi v Kalendáři event' funguje v jednom promptu.", en: "Combining connectors is powerful — 'Check Gmail for emails about Friday's meeting, and if there aren't any, create a Calendar event for me' works in one prompt." }
+      },
+    ]
+  },
+  {
+    id: "email",
+    icon: "📧",
+    title: { cs: "Psát profesionální emaily", en: "Write professional emails" },
+    time: { cs: "5–10 minut", en: "5–10 minutes" },
+    difficulty: { cs: "Začátečník", en: "Beginner" },
+    desc: { cs: "Claude napíše email za zlomek času a obvykle lépe než bys napsal sám. Klíč je dát mu správný kontext a omezení.", en: "Claude writes an email in a fraction of the time and usually better than you would yourself. The key is giving it the right context and constraints." },
+    steps: [
+      { title: { cs: "Popiš situaci a co nechceš", en: "Describe the situation and what you don't want" },
+        desc: { cs: "Řekni kdo píše komu, v jakém vztahu a co je cílem emailu. Stejně důležité je říct co v emailu NECHCEŠ — AI defaultně píše příliš formálně a začíná Dobrý den.", en: "Say who is writing to whom, in what relationship, and what the email's goal is. Equally important is saying what you DON'T want — AI defaults to too formal and starts with Dear Sir." },
+        prompt: { cs: "Napiš email [komu — jméno/role].\nSituace: [co se stalo, kontext]\nCíl emailu: [co chci dosáhnout]\nTón: [profesionální ale přátelský / formální / přímý]\nMax délka: [X slov nebo vět]\n\nNezačínej 'Dobrý den, jmenuji se'.\nNezačínej větou s omluvou pokud to není omluva.\nŽádná klišé jako 'těším se na spolupráci'.", en: "Write an email to [who — name/role].\nSituation: [what happened, context]\nEmail goal: [what I want to achieve]\nTone: [professional but friendly / formal / direct]\nMax length: [X words or sentences]\n\nDon't start with 'Dear Sir/Madam, my name is'.\nDon't start with an apology if it's not an apology.\nNo clichés like 'I look forward to hearing from you'." },
+        tip: { cs: "Nejsilnější instrukce je říct co NECHCEŠ. 'Nezačínej slovem Omlouvám se — nejdřív vysvětli situaci, pak se omluv' změní výsledek dramaticky.", en: "The most powerful instruction is saying what you DON'T want. 'Don't start with I apologize — first explain the situation, then apologize' changes the result dramatically." }
+      },
+      { title: { cs: "Iteruj dokud to nesedí", en: "Iterate until it fits" },
+        desc: { cs: "První verze bude dobrá ale ne perfektní. Použij krátké instrukce pro iteraci — nepřepisuj celý prompt znovu.", en: "The first version will be good but not perfect. Use short instructions for iteration — don't rewrite the entire prompt again." },
+        prompt: { cs: "Rychlé iterační instrukce:\n'Zkrať to o třetinu'\n'Tón víc přátelský, méně formální'\n'Přidej konkrétní příklad z [situace]'\n'Začni silnější první větou'\n'Odstraň poslední odstavec'\n'Přepiš to jako bych psal/a já, ne jako šablona'", en: "Quick iteration instructions:\n'Shorten it by a third'\n'Tone more friendly, less formal'\n'Add a specific example from [situation]'\n'Start with a stronger first sentence'\n'Remove the last paragraph'\n'Rewrite it as if I wrote it, not as a template'" },
+        tip: { cs: "Výsledek nepotřebuješ použít 1:1 — stačí když ti dá dobrý základ který upravíš za 2 minuty místo psaní od nuly za 20.", en: "You don't need to use the result 1:1 — it's enough if it gives you a good base you can adjust in 2 minutes instead of writing from scratch in 20." }
+      },
+    ]
+  },
+  {
+    id: "project",
+    icon: "🗂️",
+    title: { cs: "Vytvořit Project v Claudovi", en: "Build a Project in Claude" },
+    time: { cs: "20–40 minut", en: "20–40 minutes" },
+    difficulty: { cs: "Středně pokročilý", en: "Intermediate" },
+    desc: { cs: "Projects jsou jako soukromé pracovní prostory kde Claude zná kontext tvé práce. Každá konverzace v projektu sdílí stejné instrukce a znalosti.", en: "Projects are like private workspaces where Claude knows the context of your work. Every conversation in the project shares the same instructions and knowledge." },
+    steps: [
+      { title: { cs: "Vytvoř nový projekt", en: "Create a new project" },
+        desc: { cs: "Project vytvoříš v levém panelu na claude.ai. Každý projekt má systémový prompt — instrukce které Claude dostane na začátku každé konverzace v projektu.", en: "Create a project in the left panel on claude.ai. Each project has a system prompt — instructions Claude receives at the start of every conversation in the project." },
+        prompt: { cs: "claude.ai → levý panel → New Project → zadej název\n\nSystémový prompt pro projekt (příklad pro treasury workflow):\n'Jsem Head of Treasury ve fintech firmě. Pracuji s cashflow modely, FX riziky a regulatorním reportingem (MiCA). Odpovídej stručně a konkrétně. Čísla vždy v CZK pokud neřeknu jinak. Pokud potřebuješ víc informací, zeptej se — nehádej.'", en: "claude.ai → left panel → New Project → enter name\n\nSystem prompt for the project (treasury workflow example):\n'I am Head of Treasury at a fintech company. I work with cashflow models, FX risks, and regulatory reporting (MiCA). Answer concisely and specifically. Numbers always in CZK unless I say otherwise. If you need more information, ask — don't guess.'" },
+        tip: { cs: "Systémový prompt by měl říkat KDO jsi, CO děláš a JAK chceš aby Claude odpovídal. Krátký a konkrétní je lepší než dlouhý a obecný.", en: "The system prompt should say WHO you are, WHAT you do, and HOW you want Claude to respond. Short and specific is better than long and general." }
+      },
+      { title: { cs: "Přidej znalostní soubory", en: "Add knowledge files" },
+        desc: { cs: "Do projektu můžeš nahrát dokumenty které Claude bude mít vždy k dispozici — interní předpisy, šablony, fee scheduly, technická dokumentace. Claude je přečte a bude na ně odkazovat.", en: "You can upload documents to the project that Claude always has available — internal regulations, templates, fee schedules, technical documentation. Claude reads them and references them." },
+        prompt: { cs: "Project → Add content → nahraj soubory\n\nCo funguje dobře jako project knowledge:\n• Interní procesy a schvalovací workflow\n• Šablony dokumentů\n• Fee scheduly a cenové tabulky\n• Kontakty a organizační struktura\n• Technická dokumentace API\n• Regulatorní pravidla relevantní pro tvoji práci", en: "Project → Add content → upload files\n\nWhat works well as project knowledge:\n• Internal processes and approval workflows\n• Document templates\n• Fee schedules and pricing tables\n• Contacts and organizational structure\n• API technical documentation\n• Regulatory rules relevant to your work" },
+        tip: { cs: "Project knowledge má limit. Nahrávej jen dokumenty na které se budeš aktivně odkazovat — ne celý firemní intranet.", en: "Project knowledge has a limit. Upload only documents you will actively reference — not the entire company intranet." }
+      },
+      { title: { cs: "Spusť první konverzaci", en: "Start your first conversation" },
+        desc: { cs: "V projektu každá konverzace začíná se systémovým promptem a přístupem ke všem nahraným dokumentům. Nemusíš každý přidávat znovu.", en: "In the project, every conversation starts with the system prompt and access to all uploaded documents. You don't need to add them again each time." },
+        prompt: { cs: "Příklady prvních promptů v projektu:\n\n'Shrň klíčové body z [nahraného dokumentu] relevantní pro [konkrétní situaci].'\n\n'Napiš email partnerovi podle naší standardní šablony. Situace: [popis]'\n\n'Zkontroluj jestli tento postup odpovídá interním pravidlům: [popis postupu]'", en: "Examples of first prompts in a project:\n\n'Summarize the key points from [uploaded document] relevant to [specific situation].'\n\n'Write an email to a partner using our standard template. Situation: [description]'\n\n'Check if this procedure follows our internal rules: [procedure description]'" },
+        tip: { cs: "Projekty jsou nejsilnější pro opakující se typy práce — treasury reporty, partnerská komunikace, regulatorní analýzy. Vytvoř projekt pro každou oblast.", en: "Projects are most powerful for recurring types of work — treasury reports, partner communication, regulatory analysis. Create a project for each domain." }
+      },
+    ]
+  },
+  {
+    id: "prompts",
+    icon: "💡",
+    title: { cs: "Vytvořit knihovnu promptů", en: "Create a prompt library" },
+    time: { cs: "1–2 hodiny", en: "1–2 hours" },
+    difficulty: { cs: "Středně pokročilý", en: "Intermediate" },
+    desc: { cs: "Místo psaní promptu od nuly pokaždé si vytvoř sadu šablon pro nejčastější úkoly. Ušetří 80% času na opakující se práci.", en: "Instead of writing prompts from scratch each time, create a set of templates for your most common tasks. Saves 80% of time on recurring work." },
+    steps: [
+      { title: { cs: "Identifikuj opakující se úkoly", en: "Identify recurring tasks" },
+        desc: { cs: "Projdi posledních 30 dní práce a napiš seznam věcí které děláš opakovaně. Každý z nich je kandidát na prompt šablonu. Zaměř se na věci které trvají 15+ minut.", en: "Review the last 30 days of work and list things you do repeatedly. Each is a candidate for a prompt template. Focus on things that take 15+ minutes." },
+        prompt: { cs: "Pomoz mi identifikovat moje nejčastější pracovní úkoly vhodné pro AI asistenci.\n\nMoje role: [popis role]\nTypické projekty: [seznam]\n\nPro každý úkol řekni:\n1) Jak by vypadal ideální prompt šablona\n2) Jaké proměnné by šablona měla mít (věci v [závorkách])\n3) Jaký výstup by Claude měl dodat", en: "Help me identify my most common work tasks suitable for AI assistance.\n\nMy role: [role description]\nTypical projects: [list]\n\nFor each task say:\n1) What would the ideal prompt template look like\n2) What variables should the template have ([in brackets])\n3) What output should Claude deliver" },
+        tip: { cs: "Nejlepší prompt šablony řeší opakující se situace kde výstup je vždy podobného typu — zprávy, emaily, analýzy, shrnutí.", en: "The best prompt templates solve recurring situations where the output is always of a similar type — reports, emails, analyses, summaries." }
+      },
+      { title: { cs: "Ulož šablony do projektu", en: "Save templates to a project" },
+        desc: { cs: "Vytvoř Claude projekt pro svou prompt knihovnu. Nahraj šablony jako soubor nebo je vlož do systémového promptu. Pak stačí říct 'použij šablonu X' a doplnit proměnné.", en: "Create a Claude project for your prompt library. Upload templates as a file or include them in the system prompt. Then just say 'use template X' and fill in the variables." },
+        prompt: { cs: "Systémový prompt pro prompt knihovnu:\n'Máš přístup k mé knihovně prompt šablon. Když řeknu "použij šablonu [název]", načti příslušnou šablonu, požádej mě o hodnoty proměnných v závorkách, a pak ji vyplň.\n\nMoje šablony:\n[seznam názvů šablon]\n\nKompletní šablony jsou v přiloženém souboru prompts.md'", en: "System prompt for prompt library:\n'You have access to my prompt template library. When I say "use template [name]", load the appropriate template, ask me for values of variables in brackets, then fill it in.\n\nMy templates:\n[list of template names]\n\nComplete templates are in the attached prompts.md file'" },
+        tip: { cs: "Nemusíš mít šablonu pro všechno — 5 kvalitních šablon pro nejčastější úkoly je lepší než 50 mediokrních.", en: "You don't need a template for everything — 5 quality templates for your most common tasks is better than 50 mediocre ones." }
+      },
+    ]
+  },
+  {
+    id: "research",
+    icon: "🔍",
+    title: { cs: "Research s Perplexity + Claude", en: "Research with Perplexity + Claude" },
+    time: { cs: "30–60 minut", en: "30–60 minutes" },
+    difficulty: { cs: "Středně pokročilý", en: "Intermediate" },
+    desc: { cs: "Perplexity hledá aktuální fakta s citacemi, Claude je hluboce analyzuje. Kombinace je silnější než každý nástroj zvlášť.", en: "Perplexity finds current facts with citations, Claude deeply analyzes them. The combination is stronger than either tool alone." },
+    steps: [
+      { title: { cs: "Použij Perplexity pro sběr faktů", en: "Use Perplexity for fact gathering" },
+        desc: { cs: "Perplexity je specializovaný na vyhledávání s aktuálními daty a citacemi zdrojů. Použij ho pro faktické otázky kde záleží na aktuálnosti a ověřitelnosti.", en: "Perplexity specializes in search with current data and source citations. Use it for factual questions where currency and verifiability matter." },
+        prompt: { cs: "Perplexity prompt (na perplexity.ai):\n'Zjisti aktuální informace o [téma].\nPotřebuji:\n• Konkrétní čísla a statistiky z posledních 12 měsíců\n• Hlavní hráče nebo události\n• Trendy a predikce\n\nUveď zdroje pro každé tvrzení.'", en: "Perplexity prompt (at perplexity.ai):\n'Find current information about [topic].\nI need:\n• Specific numbers and statistics from the last 12 months\n• Key players or events\n• Trends and predictions\n\nCite sources for each claim.'" },
+        tip: { cs: "Perplexity Deep Research dává podstatně hlubší výstupy než základní verze. Výsledky jsou delší ale mají více zdrojů a kontextu.", en: "Perplexity Deep Research gives substantially deeper outputs than the basic version. Results are longer but have more sources and context." }
+      },
+      { title: { cs: "Pošli výsledky Claudovi k analýze", en: "Send results to Claude for analysis" },
+        desc: { cs: "Zkopíruj výsledky z Perplexity a vlož je do Claudea s instrukcí co s nimi udělat. Claude je strukturuje, vyvodí závěry a identifikuje mezery.", en: "Copy results from Perplexity and paste them into Claude with instructions on what to do with them. Claude structures them, draws conclusions, and identifies gaps." },
+        prompt: { cs: "Toto jsou výsledky z Perplexity o [téma]:\n[vlož výsledky]\n\nAnalyzuj je a:\n1) Identifikuj 3-5 klíčových zjištění\n2) Jaké jsou implikace pro [moje situace / firma / rozhodnutí]?\n3) Co v datech chybí nebo je nejasné?\n4) Jaký je tvůj závěr?\n\nBuď konkrétní — ne obecné shrnutí ale akční poznatky.", en: "These are Perplexity results about [topic]:\n[paste results]\n\nAnalyze them and:\n1) Identify 3-5 key findings\n2) What are the implications for [my situation / company / decision]?\n3) What is missing or unclear in the data?\n4) What is your conclusion?\n\nBe specific — not a general summary but actionable insights." },
+        tip: { cs: "Tento workflow funguje skvěle pro due diligence, competitive intelligence a regulatorní analýzy — oblasti kde potřebuješ aktuální fakta i hluboké myšlení.", en: "This workflow works great for due diligence, competitive intelligence, and regulatory analysis — areas where you need current facts AND deep thinking." }
+      },
+    ]
+  },
+  {
+    id: "artifact",
+    icon: "🤖",
+    title: { cs: "Vytvořit AI-powered artifact", en: "Build an AI-powered artifact" },
+    time: { cs: "30–60 minut", en: "30–60 minutes" },
+    difficulty: { cs: "Pokročilý", en: "Advanced" },
+    desc: { cs: "Artifact je interaktivní aplikace běžící přímo v Claudovi. Může volat Anthropic API a vytvářet tak AI-powered nástroje bez nutnosti nasazení.", en: "An artifact is an interactive application running directly inside Claude. It can call the Anthropic API, creating AI-powered tools without deployment." },
+    steps: [
+      { title: { cs: "Popiš aplikaci", en: "Describe the application" },
+        desc: { cs: "Artifacts jsou React nebo HTML aplikace renderované přímo v chatu. Mohou volat Anthropic API což znamená že mohou samy generovat AI obsah.", en: "Artifacts are React or HTML applications rendered directly in chat. They can call the Anthropic API which means they can themselves generate AI content." },
+        prompt: { cs: "Vytvoř React artifact — interaktivní aplikaci která:\n[popis co aplikace dělá]\n\nAplikace má:\n• [UI prvky — input pole, tlačítka, výstupní oblast]\n• [Volání Anthropic API s modelem claude-sonnet-4-20250514]\n• [Jak zpracuje výsledek a zobrazí ho uživateli]\n\nPoužij Tailwind pro styling. Zachovej tmavé téma (#06060A pozadí, #F59E0B akcenty).", en: "Create a React artifact — an interactive application that:\n[description of what the app does]\n\nThe application has:\n• [UI elements — input fields, buttons, output area]\n• [Anthropic API call with model claude-sonnet-4-20250514]\n• [How it processes the result and displays it to the user]\n\nUse Tailwind for styling. Maintain dark theme (#06060A background, #F59E0B accents)." },
+        tip: { cs: "Artifacts s API voláním jsou nejsilnější pro nástroje které generují různý obsah pokaždé — prompt vylepšovač, email asistent, analýza textu.", en: "Artifacts with API calls are most powerful for tools that generate different content each time — prompt improver, email assistant, text analysis." }
+      },
+      { title: { cs: "Exportuj jako standalone HTML", en: "Export as standalone HTML" },
+        desc: { cs: "Artifact běžící v Claudovi lze exportovat jako samostatný HTML soubor. Ten pak lze nahrát na jakýkoliv webhosting nebo sdílet přímo.", en: "An artifact running in Claude can be exported as a standalone HTML file. This can then be uploaded to any web host or shared directly." },
+        prompt: { cs: "Vezmi tento React artifact a převeď ho na standalone HTML soubor:\n• React a Babel ze CDN (cdnjs.cloudflare.com)\n• Veškerý kód v jednom souboru\n• API klíč budu vkládat přes input pole v UI (ne hardcoded)\n• Soubor musí fungovat když ho otevřu lokálně v prohlížeči", en: "Take this React artifact and convert it to a standalone HTML file:\n• React and Babel from CDN (cdnjs.cloudflare.com)\n• All code in one file\n• API key entered via input field in the UI (not hardcoded)\n• File must work when I open it locally in a browser" },
+        tip: { cs: "API klíč nikdy hardcode do souboru — vždy ho nech uživatele zadat přes UI. Standalone HTML soubory sdílíš a nechceš v nich viditelné API klíče.", en: "Never hardcode the API key into the file — always let the user enter it via the UI. Standalone HTML files get shared and you don't want visible API keys in them." }
+      },
+    ]
+  },
+  {
+    id: "automation",
+    icon: "📱",
+    title: { cs: "Automatizovat opakující se úkoly", en: "Automate repetitive tasks" },
+    time: { cs: "1–3 hodiny", en: "1–3 hours" },
+    difficulty: { cs: "Pokročilý", en: "Advanced" },
+    desc: { cs: "Claude pomůže identifikovat co automatizovat a jak. Nemusíš umět programovat — Claude napíše kód, ty jen popíšeš co chceš.", en: "Claude helps identify what to automate and how. You don't need to know how to program — Claude writes the code, you just describe what you want." },
+    steps: [
+      { title: { cs: "Identifikuj co automatizovat", en: "Identify what to automate" },
+        desc: { cs: "Ne všechno má smysl automatizovat. Nejlepší kandidáti jsou úkoly které jsou časté, mají jasný vstup a výstup a nevyžadují lidský úsudek v každém kroku.", en: "Not everything is worth automating. The best candidates are tasks that are frequent, have a clear input and output, and don't require human judgment at every step." },
+        prompt: { cs: "Chci automatizovat tento úkol:\n[popis úkolu]\n\nAktuálně to dělám takto: [popis kroků]\nFrekvence: [jak často]\nČas: [kolik to zabere]\n\nNavrhni:\n1) Zda to má smysl automatizovat\n2) Jaký nástroj by byl nejlepší (Python script / Make / n8n / Claude API)\n3) Co bude vstup a výstup automatizace\n4) Jaká jsou rizika nebo edge cases", en: "I want to automate this task:\n[task description]\n\nCurrently I do it like this: [step description]\nFrequency: [how often]\nTime: [how long it takes]\n\nSuggest:\n1) Whether it makes sense to automate\n2) What tool would be best (Python script / Make / n8n / Claude API)\n3) What the input and output of the automation will be\n4) What the risks or edge cases are" },
+        tip: { cs: "Pravidlo: pokud úkol děláš více než 3x týdně a trvá víc než 15 minut, automatizace se pravděpodobně vyplatí.", en: "Rule: if you do a task more than 3 times a week and it takes more than 15 minutes, automation likely pays off." }
+      },
+      { title: { cs: "Claude napíše automatizaci", en: "Claude writes the automation" },
+        desc: { cs: "Poté co víš co automatizovat a čím, nech Claudea napsat konkrétní implementaci. Pro Python skripty ti napíše hotový kód, pro Make nebo n8n popíše workflow.", en: "Once you know what to automate and with what, let Claude write the specific implementation. For Python scripts it writes ready code, for Make or n8n it describes the workflow." },
+        prompt: { cs: "Napiš Python skript pro tuto automatizaci:\nVstup: [popis vstupu — soubor, API volání, email]\nZpracování: [co se má stát]\nVýstup: [kde se výsledek uloží nebo pošle]\n\nPožadavky:\n• Ošetření chyb a edge cases\n• Logování co skript dělá\n• Spustitelný přes command line s parametry\n• Komentáře u složitějších částí", en: "Write a Python script for this automation:\nInput: [input description — file, API call, email]\nProcessing: [what should happen]\nOutput: [where the result is saved or sent]\n\nRequirements:\n• Error handling and edge cases\n• Logging what the script does\n• Runnable from command line with parameters\n• Comments on more complex parts" },
+        tip: { cs: "Začni malou automatizací která řeší jeden konkrétní problém. Je lepší mít jednoduchou automatizaci která spolehlivě funguje než složitou která občas selže.", en: "Start with a small automation that solves one specific problem. A simple automation that reliably works is better than a complex one that occasionally fails." }
+      },
+      { title: { cs: "Otestuj a nasaď", en: "Test and deploy" },
+        desc: { cs: "Před nasazením otestuj automatizaci na malém vzorku dat. Pak ji nasaď — buď lokálně jako cron job, nebo v cloudu přes GitHub Actions nebo Make.", en: "Before deploying, test the automation on a small data sample. Then deploy it — either locally as a cron job, or in the cloud via GitHub Actions or Make." },
+        prompt: { cs: "Jak nastavit spouštění tohoto skriptu automaticky:\n\nLokálně (Mac/Linux):\ncrontab -e\n# Každý den v 9:00:\n0 9 * * * /usr/bin/python3 /cesta/ke/skriptu.py\n\nGitHub Actions (cloud, zdarma):\n[Claude napíše .github/workflows/automation.yml]\n\nMake.com (bez kódu):\n[Claude popíše workflow v Make pro stejný výsledek]", en: "How to set up automatic execution of this script:\n\nLocally (Mac/Linux):\ncrontab -e\n# Every day at 9:00:\n0 9 * * * /usr/bin/python3 /path/to/script.py\n\nGitHub Actions (cloud, free):\n[Claude writes .github/workflows/automation.yml]\n\nMake.com (no-code):\n[Claude describes the Make workflow for the same result]" },
+        tip: { cs: "GitHub Actions je skvělá volba pro automatizace které potřebují běžet v cloudu zdarma. Limit je 2000 minut za měsíc na free tier — na většinu automatizací stačí.", en: "GitHub Actions is a great choice for automations that need to run in the cloud for free. The limit is 2000 minutes per month on the free tier — sufficient for most automations." }
+      },
+    ]
+  },
+];
+
+// ─── HEADER COMPONENT (stable — defined outside AIGuide) ─────────────────────
+function AppHeader({ lang, setLang, t, dark, setDark, headerBg, border, muted, text, setLevel, setShowGuide }) {
+  const goHome = () => { if (setLevel) { setLevel(null); setShowGuide(false); window.scrollTo(0, 0); } };
   return (
-    <div style={{marginBottom:5,borderRadius:10,border:`1px solid ${expanded?T.borderHover:T.border}`,overflow:"hidden",transition:"border-color .2s"}}>
-      <button onClick={onToggle} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"12px 15px",background:"transparent",border:"none",cursor:"pointer",textAlign:"left",fontFamily:"inherit"}}>
-        <span style={{color:acc,fontSize:12,flexShrink:0,opacity:.75}}>{icon}</span>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:5}}>
-            <span style={{fontSize:13,fontWeight:600,color:T.text,lineHeight:1.4}}>{title}</span>
-            {section && <SectionChip s={section} />}
-            {badge && <PriceBadge price={badge} lang="cs" />}
+    <header style={{
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      padding: "0 32px", height: 64,
+      borderBottom: `1px solid ${border}`,
+      position: "sticky", top: 0, zIndex: 100,
+      background: headerBg, backdropFilter: "blur(20px)",
+    }}>
+      {/* Logo */}
+      <div onClick={goHome} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: 8,
+          background: `linear-gradient(135deg, ${T.accent}, #F97316)`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 16, fontWeight: 700, color: "#000",
+          boxShadow: `0 0 20px rgba(245,158,11,0.4)`,
+          flexShrink: 0,
+        }}>✦</div>
+        <span style={{ fontSize: 17, fontWeight: 700, color: text, letterSpacing: "-0.02em" }}>{t.title}</span>
+      </div>
+
+      {/* Controls */}
+      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        {["cs", "en"].map(l => (
+          <button key={l} onClick={() => setLang(l)} style={{
+            padding: "5px 13px", borderRadius: 6,
+            border: `1px solid ${lang === l ? T.accent : border}`,
+            background: lang === l ? T.accentLo : "transparent",
+            color: lang === l ? T.accent : muted,
+            cursor: "pointer", fontSize: 12, fontWeight: 600,
+            fontFamily: "inherit", letterSpacing: "0.04em",
+            transition: "all .2s",
+          }}>{l.toUpperCase()}</button>
+        ))}
+        <span style={{ width: 1, height: 18, background: border, margin: "0 4px" }} />
+        <button onClick={() => setDark(!dark)} title={dark ? "Switch to light mode" : "Switch to dark mode"} style={{
+          padding: "5px 11px", borderRadius: 6,
+          border: `1px solid ${border}`,
+          background: "transparent",
+          color: muted,
+          cursor: "pointer", fontSize: 14,
+          fontFamily: "inherit", transition: "all .2s",
+          lineHeight: 1,
+        }}>{dark ? "☀️" : "🌙"}</button>
+      </div>
+    </header>
+  );
+}
+
+// ─── BACKGROUND CANVAS (Pendle-style orbs + grid) ────────────────────────────
+function Background({ dark }) {
+  const orbGrid = dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
+      {/* Dot grid */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: `radial-gradient(circle, ${orbGrid} 1px, transparent 1px)`,
+        backgroundSize: "32px 32px",
+        maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
+      }} />
+      {/* Orb 1 — teal left */}
+      <div style={{
+        position: "absolute", width: 700, height: 700,
+        left: "-15%", top: "-10%",
+        background: "radial-gradient(circle, rgba(45,212,191,0.13) 0%, transparent 65%)",
+        borderRadius: "50%",
+        animation: "orbFloat1 18s ease-in-out infinite",
+      }} />
+      {/* Orb 2 — amber center-right */}
+      <div style={{
+        position: "absolute", width: 600, height: 600,
+        right: "-10%", top: "15%",
+        background: "radial-gradient(circle, rgba(245,158,11,0.10) 0%, transparent 65%)",
+        borderRadius: "50%",
+        animation: "orbFloat2 22s ease-in-out infinite",
+      }} />
+      {/* Orb 3 — purple bottom */}
+      <div style={{
+        position: "absolute", width: 500, height: 500,
+        left: "30%", bottom: "-10%",
+        background: "radial-gradient(circle, rgba(167,139,250,0.09) 0%, transparent 65%)",
+        borderRadius: "50%",
+        animation: "orbFloat3 26s ease-in-out infinite",
+      }} />
+      {/* Horizontal line accent */}
+      <div style={{
+        position: "absolute", top: "45%", left: 0, right: 0,
+        height: 1,
+        background: `linear-gradient(90deg, transparent, ${T.teal}22, ${T.accent}18, transparent)`,
+      }} />
+    </div>
+  );
+}
+
+
+// ─── CLAUDE INTERACTIVE GUIDE COMPONENT ──────────────────────────────────────
+function ClaudeGuide({ lang, t, dark, bg, surface, border, text, muted, faint, headerBg, setDark, setLevel, setShowGuide }) {
+  const [activeCase, setActiveCase] = useState(0);
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState({});
+  const [copiedId, setCopiedId] = useState(null);
+
+  const PURPLE = "#7C3AED";
+  const PURPLELO = "rgba(124,58,237,0.12)";
+
+  const cp = useCallback((txt, id) => {
+    navigator.clipboard.writeText(txt).catch(() => {});
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  }, []);
+
+  const guide = CLAUDE_GUIDE[activeCase];
+  const step = guide.steps[activeStep];
+  const totalSteps = guide.steps.length;
+  const isFirst = activeStep === 0;
+  const isLast = activeStep === totalSteps - 1;
+
+  const goNext = () => {
+    setCompleted(prev => ({ ...prev, [`${activeCase}-${activeStep}`]: true }));
+    if (!isLast) { setActiveStep(s => s + 1); window.scrollTo(0, 0); }
+  };
+
+  const goBack = () => {
+    if (!isFirst) { setActiveStep(s => s - 1); window.scrollTo(0, 0); }
+  };
+
+  const selectCase = (idx) => {
+    setActiveCase(idx);
+    setActiveStep(0);
+    window.scrollTo(0, 0);
+  };
+
+  const diffColor = (d) => {
+    if (!d) return muted;
+    const cs = (d.cs || d).toLowerCase();
+    if (cs.includes("začáteč") || cs.toLowerCase().includes("beginner")) return "#10B981";
+    if (cs.includes("pokroč") || cs.toLowerCase().includes("advanced")) return T.accent;
+    return T.teal;
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: bg, color: text, fontFamily: "'Sora',sans-serif", position: "relative" }}>
+      <Background dark={dark} />
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <AppHeader lang={lang} setLang={() => {}} t={t} dark={dark} setDark={setDark} headerBg={headerBg} border={border} muted={muted} text={text} setLevel={setLevel} setShowGuide={setShowGuide} />
+        <main style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px 100px" }}>
+
+          {/* Back button */}
+          <button className="back-btn" onClick={() => { setLevel(null); setShowGuide(false); window.scrollTo(0, 0); }}
+            style={{ background: "transparent", border: `1px solid ${border}`, borderRadius: 7, padding: "7px 16px", fontSize: 13, color: muted, cursor: "pointer", fontFamily: "inherit", marginBottom: 24, transition: "all .2s" }}>
+            {lang === "cs" ? "← Zpět" : "← Back"}
+          </button>
+
+          {/* Header */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${PURPLE}, #A78BFA)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🤖</div>
+              <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", color: text }}>
+                {lang === "cs" ? "Claude Průvodce" : "Claude Guide"}
+              </h1>
+            </div>
+            <p style={{ color: muted, fontSize: 14, maxWidth: 560, lineHeight: 1.6 }}>
+              {lang === "cs" ? "Interaktivní průvodce reálnými use cases. Klikej se krok po kroku a kopíruj prompty přímo do Claudea." : "Interactive guide through real use cases. Click through step by step and copy prompts directly into Claude."}
+            </p>
           </div>
-          {sub && <div style={{fontSize:11,color:T.muted,marginTop:2,lineHeight:1.4}}>{sub}</div>}
+
+          <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+
+            {/* Left panel — use case selector */}
+            <div style={{ width: 240, flexShrink: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: faint, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
+                {lang === "cs" ? "Témata" : "Topics"}
+              </div>
+              {CLAUDE_GUIDE.map((g, i) => {
+                const isActive = i === activeCase;
+                const doneCount = g.steps.filter((_, si) => completed[`${i}-${si}`]).length;
+                return (
+                  <button key={g.id} onClick={() => selectCase(i)} style={{
+                    width: "100%", textAlign: "left", background: isActive ? PURPLELO : "transparent",
+                    border: `1px solid ${isActive ? PURPLE + "66" : border}`,
+                    borderRadius: 10, padding: "10px 14px", cursor: "pointer",
+                    fontFamily: "inherit", color: isActive ? "#C4B5FD" : muted,
+                    marginBottom: 6, transition: "all .2s", display: "flex", alignItems: "center", gap: 10,
+                  }}>
+                    <span style={{ fontSize: 18, flexShrink: 0 }}>{g.icon}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: isActive ? 600 : 400, color: isActive ? "#C4B5FD" : text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{g.title[lang]}</div>
+                      <div style={{ fontSize: 11, color: faint, marginTop: 2 }}>{g.time[lang]} · {g.steps.length} {lang === "cs" ? "kroků" : "steps"}</div>
+                    </div>
+                    {doneCount > 0 && (
+                      <span style={{ fontSize: 10, color: "#10B981", fontWeight: 700, flexShrink: 0 }}>{doneCount}/{g.steps.length}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Right panel — step walkthrough */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+
+              {/* Use case header */}
+              <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 16, padding: "24px 28px", marginBottom: 20 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+                  <div style={{ fontSize: 36 }}>{guide.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
+                      <h2 style={{ fontSize: 20, fontWeight: 700, color: text, letterSpacing: "-0.015em" }}>{guide.title[lang]}</h2>
+                      <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 5, background: diffColor(guide.difficulty) + "22", color: diffColor(guide.difficulty), border: `1px solid ${diffColor(guide.difficulty)}44` }}>
+                        {guide.difficulty[lang]}
+                      </span>
+                      <span style={{ fontSize: 11, color: faint }}>⏱ {guide.time[lang]}</span>
+                    </div>
+                    <p style={{ fontSize: 13, color: muted, lineHeight: 1.6 }}>{guide.desc[lang]}</p>
+                  </div>
+                </div>
+
+                {/* Step progress dots */}
+                <div style={{ display: "flex", gap: 6, marginTop: 20, flexWrap: "wrap" }}>
+                  {guide.steps.map((s, si) => {
+                    const isDone = completed[`${activeCase}-${si}`];
+                    const isCurrent = si === activeStep;
+                    return (
+                      <button key={si} onClick={() => setActiveStep(si)} style={{
+                        display: "flex", alignItems: "center", gap: 6,
+                        padding: "5px 12px", borderRadius: 6, border: `1px solid ${isCurrent ? PURPLE : isDone ? "#10B98144" : border}`,
+                        background: isCurrent ? PURPLELO : isDone ? "rgba(16,185,129,0.08)" : "transparent",
+                        color: isCurrent ? "#C4B5FD" : isDone ? "#10B981" : faint,
+                        cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: isCurrent ? 600 : 400,
+                        transition: "all .2s",
+                      }}>
+                        {isDone ? "✓" : si + 1}
+                        <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.title[lang]}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Current step */}
+              <div style={{ background: surface, border: `1px solid ${PURPLE}44`, borderRadius: 16, padding: "28px 32px", marginBottom: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: PURPLE, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    {lang === "cs" ? `Krok ${activeStep + 1} z ${totalSteps}` : `Step ${activeStep + 1} of ${totalSteps}`}
+                  </div>
+                  <div style={{ display: "flex", gap: 3 }}>
+                    {guide.steps.map((_, si) => (
+                      <div key={si} style={{ width: 24, height: 3, borderRadius: 2, background: si <= activeStep ? PURPLE : border, transition: "background .2s" }} />
+                    ))}
+                  </div>
+                </div>
+
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: text, marginBottom: 12, letterSpacing: "-0.01em" }}>{step.title[lang]}</h3>
+                <p style={{ fontSize: 14, color: muted, lineHeight: 1.7, marginBottom: 24 }}>{step.desc[lang]}</p>
+
+                {/* Prompt block */}
+                <div style={{ position: "relative", marginBottom: step.tip ? 20 : 0 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: faint, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>
+                    {lang === "cs" ? "Prompt k použití" : "Prompt to use"}
+                  </div>
+                  <div style={{ background: dark ? "#0D1117" : "#1E293B", border: `1px solid ${PURPLE}33`, borderRadius: 12, padding: "16px 18px", position: "relative" }}>
+                    <pre style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12.5, lineHeight: 1.85, color: "#E2E8F0", whiteSpace: "pre-wrap", wordBreak: "break-word", margin: 0, paddingRight: 80 }}>{step.prompt[lang]}</pre>
+                    <button onClick={() => cp(step.prompt[lang], `step-${activeCase}-${activeStep}`)}
+                      aria-label={t.copyAriaLabel}
+                      style={{
+                        position: "absolute", top: 12, right: 12,
+                        background: copiedId === `step-${activeCase}-${activeStep}` ? "#10B981" : "rgba(255,255,255,0.08)",
+                        border: `1px solid ${copiedId === `step-${activeCase}-${activeStep}` ? "#10B98144" : "rgba(255,255,255,0.1)"}`,
+                        borderRadius: 6, padding: "4px 12px", fontSize: 11,
+                        color: copiedId === `step-${activeCase}-${activeStep}` ? "#fff" : "#94A3B8",
+                        cursor: "pointer", fontFamily: "inherit", fontWeight: 500, transition: "all .2s",
+                      }}>
+                      {copiedId === `step-${activeCase}-${activeStep}` ? (lang === "cs" ? "✓ Zkopírováno" : "✓ Copied") : (lang === "cs" ? "Kopírovat" : "Copy")}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tip */}
+                {step.tip && (
+                  <div style={{ padding: "10px 14px", background: T.accentLo, border: `1px solid rgba(245,158,11,0.2)`, borderRadius: 10, fontSize: 13, color: T.accent, lineHeight: 1.6 }}>
+                    <strong>💡 {lang === "cs" ? "Tip:" : "Tip:"}</strong> {step.tip[lang]}
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <button onClick={goBack} disabled={isFirst} style={{
+                  padding: "10px 22px", borderRadius: 8, border: `1px solid ${isFirst ? border : PURPLE + "66"}`,
+                  background: "transparent", color: isFirst ? faint : "#C4B5FD",
+                  cursor: isFirst ? "default" : "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 500,
+                  transition: "all .2s", opacity: isFirst ? 0.4 : 1,
+                }}>
+                  ← {lang === "cs" ? "Zpět" : "Back"}
+                </button>
+
+                <button onClick={goNext} style={{
+                  padding: "10px 28px", borderRadius: 8,
+                  background: isLast ? "linear-gradient(135deg, #10B981, #059669)" : `linear-gradient(135deg, ${PURPLE}, #A78BFA)`,
+                  border: "none", color: "#fff",
+                  cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 600,
+                  boxShadow: `0 4px 16px ${isLast ? "rgba(16,185,129,0.3)" : "rgba(124,58,237,0.3)"}`,
+                  transition: "all .2s",
+                }}>
+                  {isLast ? (lang === "cs" ? "✓ Hotovo!" : "✓ Done!") : (lang === "cs" ? "Další krok →" : "Next step →")}
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+export default function AIGuide() {
+  const [lang, setLang]           = useState("cs");
+  const [level, setLevel]         = useState(null);
+  const [tab, setTab]             = useState("tools");
+  const [expCat, setExpCat]       = useState(null);
+  const [pView, setPView]         = useState("byTask");
+  const [pLang, setPLang]         = useState("cs");
+  const [expP, setExpP]           = useState(null);
+  const [expM, setExpM]           = useState(null);
+  const [expG, setExpG]           = useState(null);
+  const [copied, setCopied]       = useState(null);
+  const [showGuide, setShowGuide] = useState(false);
+  const [search, setSearch]       = useState("");
+  const [dark, setDark]           = useState(true);
+
+  const t = L[lang];
+  // Theme-aware tokens
+  const bg      = dark ? "#06060A"                    : "#FAFAF7";
+  const surface = dark ? "rgba(255,255,255,0.038)"    : "rgba(0,0,0,0.04)";
+  const border  = dark ? "rgba(255,255,255,0.07)"     : "rgba(0,0,0,0.09)";
+  const text    = dark ? "#F1F0EE"                    : "#111118";
+  const muted   = dark ? "#8A8A9A"                    : "#6B6B7A";
+  const faint   = dark ? "#4A4A5A"                    : "#B0B0BC";
+  const headerBg= dark ? "rgba(6,6,10,0.85)"          : "rgba(250,250,247,0.88)";
+  const orbGrid = dark ? "rgba(255,255,255,0.06)"     : "rgba(0,0,0,0.04)";
+
+  const cp = useCallback((txt, id) => {
+    navigator.clipboard.writeText(txt).catch(() => {});
+    setCopied(id);
+    setTimeout(() => setCopied(null), 2000);
+  }, []);
+
+  const handleSelectLevel = (id) => {
+    setLevel(id);
+    setExpCat(null); setExpP(null); setExpM(null); setExpG(null);
+    setTab("tools"); setShowGuide(false); setSearch("");
+    window.scrollTo(0, 0);
+  };
+
+  // ── Sub-components ──
+  const Pill = ({ active, children, onClick }) => (
+    <button onClick={onClick} style={{
+      padding: "5px 14px", borderRadius: 6,
+      border: `1px solid ${active ? T.accent : border}`,
+      background: active ? T.accentLo : "transparent",
+      color: active ? T.accent : muted,
+      cursor: "pointer", fontSize: 13, fontWeight: 500,
+      fontFamily: "inherit", transition: "all .2s",
+    }}>{children}</button>
+  );
+
+  const Badge = ({ price }) => {
+    const map = { free: [T.green, "rgba(16,185,129,0.12)"], paid: [T.red, "rgba(239,68,68,0.12)"], freemium: [T.accent, T.accentLo] };
+    const [clr, bg] = map[price] || [muted, surface];
+    return (
+      <span style={{ padding: "3px 9px", borderRadius: 5, fontSize: 11, fontWeight: 600, background: bg, color: clr, border: `1px solid ${clr}28`, letterSpacing: "0.03em" }}>
+        {t[price]}
+      </span>
+    );
+  };
+
+  const Acc = ({ expanded, onToggle, icon, title, sub, children }) => (
+    <div style={{
+      borderRadius: 12, marginBottom: 8, overflow: "hidden",
+      border: `1px solid ${expanded ? T.accent + "55" : border}`,
+      background: expanded ? `rgba(245,158,11,${dark ? "0.05" : "0.07"})` : surface,
+      transition: "all .25s",
+    }}>
+      <button onClick={onToggle} style={{
+        width: "100%", textAlign: "left", background: "transparent",
+        border: "none", padding: "16px 20px", cursor: "pointer",
+        fontFamily: "inherit", color: text,
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        minHeight: 60,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+          {icon && <span style={{ fontSize: 20, flexShrink: 0 }}>{icon}</span>}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 600, fontSize: 14, color: text }}>{title}</div>
+            {sub && <div style={{ fontSize: 12, color: muted, marginTop: 2 }}>{sub}</div>}
+          </div>
         </div>
-        <span style={{color:T.muted,fontSize:16,flexShrink:0,transition:"transform .2s",transform:expanded?"rotate(90deg)":"none"}}>›</span>
+        <span style={{
+          fontSize: 10, color: expanded ? T.accent : faint,
+          transition: "transform .25s", transform: expanded ? "rotate(180deg)" : "none",
+          flexShrink: 0, marginLeft: 10,
+        }}>▼</span>
       </button>
       {expanded && (
-        <div style={{padding:"0 15px 15px",borderTop:`1px solid ${T.border}`}}>
-          <div style={{height:11}} />
+        <div style={{ padding: "2px 20px 18px", animation: "fadeIn .2s ease" }}>
           {children}
         </div>
       )}
     </div>
   );
-}
 
-function TipBox({ text, acc=T.accent, accLo=T.accentLo, accBrd=T.accentBorder }) {
-  return <div style={{fontSize:12.5,color:acc,padding:"8px 12px",background:accLo,borderRadius:8,border:`1px solid ${accBrd}`,lineHeight:1.62,marginBottom:12}}>{text}</div>;
-}
-
-function CopyBtn({ text, id, copied, cp, t }) {
-  const done = copied===id;
-  return (
-    <button aria-label={t.copyAria} onClick={()=>cp(text,id)} style={{
-      position:"absolute",top:10,right:10,
-      background:done?T.green:"rgba(255,255,255,0.05)",
-      border:`1px solid ${done?T.green+"55":T.border}`,
-      borderRadius:5,padding:"4px 10px",fontSize:10.5,
-      color:done?"#fff":T.muted,
-      cursor:"pointer",fontFamily:"inherit",fontWeight:600,
-      transition:"all .2s",whiteSpace:"nowrap",
-    }}>{done?t.copied:t.copy}</button>
-  );
-}
-
-function AnatomyCard({ lang, acc=T.accent, accLo=T.accentLo, accBrd=T.accentBorder }) {
-  const t = L[lang];
-  const parts = [
-    {label:{cs:"Role",en:"Role"},ex:{cs:"Jsi zkušený obchodní stratég se zaměřením na technologické startupy.",en:"You are an experienced business strategist specializing in tech startups."},color:T.accent},
-    {label:{cs:"Úkol",en:"Task"},ex:{cs:"Vytvoř 90denní plán jak dostat nový AI nástroj k prvním zákazníkům.",en:"Create a 90-day plan to get a new AI tool to its first customers."},color:T.teal},
-    {label:{cs:"Kontext",en:"Context"},ex:{cs:"Produkt: AI správce úkolů. Tým: 2 lidé. Rozpočet: malý. 15–20 beta testovatelů. Největší rizika: lidé nástroj nepoužijí, nevydrží u něj.",en:"Product: AI task manager. Team: 2 people. Budget: small. 15–20 beta testers. Biggest risks: people won't use it, won't stick with it."},color:T.purple},
-    {label:{cs:"Reasoning (proč to tak je)",en:"Reasoning (why)"},ex:{cs:"Jasné zaměření na konkrétního zákazníka a zdůvodnění každého kroku zajistí výsledek který jde opravdu použít — ne jen hezky vypadající plán.",en:"Clear focus on a specific customer and justification for each step ensures a result that's actually usable — not just a nice-looking plan."},color:T.blue},
-    {label:{cs:"Stop podmínky",en:"Stop conditions"},ex:{cs:"Piš dokud nemáš plán s 3–4 konkrétními akcemi na každý týden a jasným bodem kdy přehodnotit celou strategii.",en:"Keep writing until you have a plan with 3–4 concrete actions each week and a clear point to reconsider the whole strategy."},color:T.orange},
-    {label:{cs:"Výstup",en:"Output"},ex:{cs:"Týdenní přehled: co udělat, kdo za to odpovídá, jaké je riziko a proč to dává smysl.",en:"Weekly overview: what to do, who is responsible, what the risk is and why it makes sense."},color:T.green},
-  ];
-  return (
-    <div style={{borderRadius:12,border:`1px solid ${accBrd}`,background:accLo,padding:"18px 20px",marginBottom:24}}>
-      <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:acc,marginBottom:6}}>{t.anatomyTitle}</div>
-      <div style={{fontSize:12,color:"inherit",opacity:.65,marginBottom:14,lineHeight:1.5}}>
-        {lang==="cs"
-          ? "Čím víc AI řeknete, tím lepší dostanete odpověď. Takhle vypadá dobře sestavený dotaz:"
-          : "The more you tell AI, the better the answer. Here's what a well-structured prompt looks like:"}
-      </div>
-      {parts.map((p,i)=>(
-        <div key={i} style={{display:"flex",gap:12,marginBottom:8}}>
-          <div style={{borderLeft:`3px solid ${p.color}`,paddingLeft:10,flex:1}}>
-            <div style={{fontSize:10,fontWeight:700,color:p.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:1}}>{p.label[lang]}</div>
-            <div style={{fontSize:12.5,color:"inherit",lineHeight:1.55,opacity:.85}}>{p.ex[lang]}</div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
-export default function PromptujAI() {
-  const [lang,setLang]         = useState("cs");
-  const [level,setLevel]       = useState(null);
-  const [tab,setTab]           = useState("tools");
-  const [expTool,setExpTool]   = useState(null);
-  const [expP,setExpP]         = useState(null);
-  const [expM,setExpM]         = useState(null);
-  const [expG,setExpG]         = useState(null);
-  const [pLang,setPLang]       = useState("cs");
-  const [pView,setPView]       = useState("byTask");
-  const [copied,setCopied]     = useState(null);
-  const [showGuide,setShowGuide] = useState(false);
-  const [search,setSearch]     = useState("");
-  const [dark,setDark]         = useState(true);
-  const [advSec,setAdvSec]     = useState(null);
-  const [makerFilter,setMakerFilter] = useState(null);
-
-  const t = L[lang];
-  const bg      = dark?"#06060A":"#FAFAF8";
-  const surface = dark?"rgba(255,255,255,0.036)":"rgba(0,0,0,0.04)";
-  const border  = dark?"rgba(255,255,255,0.07)":"rgba(0,0,0,0.08)";
-  const text    = dark?"#F1F0EE":"#111118";
-  const muted   = dark?"#8A8A9A":"#6B6B7A";
-  const hBg     = dark?"rgba(6,6,10,0.9)":"rgba(250,250,248,0.92)";
-  // Theme-aware accent — bright amber in dark, deep amber in light
-  const acc     = dark?"#F59E0B":"#92400E";
-  const accLo   = dark?"rgba(245,158,11,0.10)":"rgba(146,64,14,0.09)";
-  const accBrd  = dark?"rgba(245,158,11,0.28)":"rgba(146,64,14,0.25)";
-
-  const cp = useCallback((txt,id)=>{
-    navigator.clipboard.writeText(txt).catch(()=>{});
-    setCopied(id);
-    setTimeout(()=>setCopied(null),2200);
-  },[]);
-
-  const handleLevel = id => {
-    setLevel(id); setExpTool(null); setExpP(null); setExpM(null); setExpG(null);
-    setTab("tools"); setShowGuide(false); setSearch(""); setAdvSec(null); setMakerFilter(null);
-    window.scrollTo(0,0);
-  };
-  const goHome = () => { setLevel(null); setSearch(""); };
-
-  const guides     = GUIDE[level]?.[lang] || [];
-  const levelTools = TOOLS[level] || [];
-  const levelPros  = PROMPTS[level] || [];
-
-  const sq = search.trim().toLowerCase();
-  const fTools = sq.length<2 ? levelTools : levelTools.filter(x=>x.task[lang]?.toLowerCase().includes(sq)||x.desc[lang]?.toLowerCase().includes(sq));
-  const fPros  = sq.length<2 ? levelPros  : levelPros.filter(x=>x.task[lang]?.toLowerCase().includes(sq));
-
-  const ADV = ["marketing","seo","business","development","agents"];
-  const ADVL = {marketing:{cs:"Marketing",en:"Marketing"},seo:{cs:"SEO",en:"SEO"},business:{cs:"Byznys",en:"Business"},development:{cs:"Vývoj",en:"Dev"},agents:{cs:"Agenti",en:"Agents"}};
-  const shownPros = (level==="advanced"&&advSec) ? fPros.filter(p=>p.section===advSec) : fPros;
-
-  const MAKERS = [...new Set(ALL_MODELS.map(m=>m.maker))];
-  const shownModels = makerFilter ? ALL_MODELS.filter(m=>m.maker===makerFilter) : ALL_MODELS;
-
+  // Global CSS
   const css = `
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:${bg};transition:background .3s}
-    @keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(28px,18px)}}
-    @keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(-22px,26px)}}
-    @keyframes f3{0%,100%{transform:translate(0,0)}50%{transform:translate(14px,-22px)}}
-    @keyframes fi{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-    .fi{animation:fi .3s ease forwards}
-    input::placeholder{color:${muted};opacity:.65}
-    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:${T.accentBorder};border-radius:4px}
-    button{transition:all .18s}
-    a{text-decoration:none}
+    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: ${bg}; }
+    a { text-decoration: none; color: ${T.accent}; }
+    a:hover { opacity: .75; }
+    ::selection { background: ${T.accent}44; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes orbFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(40px,-30px) scale(1.05); } 66% { transform: translate(-20px,20px) scale(0.97); } }
+    @keyframes orbFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-30px,40px) scale(1.08); } }
+    @keyframes orbFloat3 { 0%,100% { transform: translate(0,0); } 40% { transform: translate(50px,-20px); } 80% { transform: translate(-10px,30px); } }
+    @keyframes shimmer { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    .lvl-card { transition: all .25s !important; }
+    .lvl-card:hover { border-color: ${T.accent}88 !important; background: rgba(245,158,11,0.06) !important; transform: translateY(-3px) !important; box-shadow: 0 8px 32px rgba(245,158,11,0.08) !important; }
+    .back-btn:hover { color: ${T.accent} !important; border-color: ${T.accent}66 !important; }
+    input:focus { outline: none; border-color: ${T.accent}88 !important; box-shadow: 0 0 0 3px ${T.accentLo} !important; }
+    .tab-btn:hover { border-color: ${T.accent}44 !important; }
+    .tool-link:hover { color: ${T.teal} !important; }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: ${faint}; border-radius: 4px; }
+    body { background: ${bg}; transition: background .3s; }
   `;
 
-  return (
-    <div style={{fontFamily:"'DM Sans',sans-serif",background:bg,color:text,minHeight:"100vh"}}>
-      <style>{css}</style>
+  // ── HOME SCREEN ──────────────────────────────────────────────────────────────
+  if (!level) {
+    const lvls = [
+      { id: "beginner",     e: "🌱", l: t.beg, d: t.begD, color: T.green, glow: "rgba(16,185,129,0.15)" },
+      { id: "intermediate", e: "🌿", l: t.mid, d: t.midD, color: T.teal,  glow: "rgba(45,212,191,0.15)" },
+      { id: "advanced",     e: "🌳", l: t.adv, d: t.advD, color: T.accent, glow: "rgba(245,158,11,0.15)" },
+      { id: "claude",       e: "🤖", l: t.claude, d: t.claudeD, color: "#7C3AED", glow: "rgba(124,58,237,0.15)" },
+    ];
+    return (
+      <div style={{ minHeight: "100vh", background: bg, color: text, fontFamily: "'Sora',sans-serif", position: "relative" }}>
+        <style>{css}</style>
+        <Background dark={dark} />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <AppHeader lang={lang} setLang={setLang} t={t} dark={dark} setDark={setDark} headerBg={headerBg} border={border} muted={muted} text={text} setLevel={setLevel} setShowGuide={setShowGuide} />
+          <main style={{ maxWidth: 520, margin: "0 auto", padding: "80px 24px 60px", textAlign: "center" }}>
 
-      {/* BG */}
-      <div style={{position:"fixed",inset:0,zIndex:0,overflow:"hidden",pointerEvents:"none"}}>
-        <div style={{position:"absolute",inset:0,backgroundImage:`radial-gradient(circle,${dark?"rgba(255,255,255,0.045)":"rgba(0,0,0,0.035)"} 1px,transparent 1px)`,backgroundSize:"28px 28px",maskImage:"radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%)"}} />
-        <div style={{position:"absolute",width:560,height:560,left:"-10%",top:"-8%",background:"radial-gradient(circle,rgba(45,212,191,0.09) 0%,transparent 65%)",borderRadius:"50%",animation:"f1 18s ease-in-out infinite"}} />
-        <div style={{position:"absolute",width:480,height:480,right:"-8%",top:"14%",background:"radial-gradient(circle,rgba(245,158,11,0.07) 0%,transparent 65%)",borderRadius:"50%",animation:"f2 22s ease-in-out infinite"}} />
-        <div style={{position:"absolute",width:380,height:380,left:"28%",bottom:"-8%",background:"radial-gradient(circle,rgba(167,139,250,0.07) 0%,transparent 65%)",borderRadius:"50%",animation:"f3 26s ease-in-out infinite"}} />
-      </div>
+            {/* Hero badge */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "6px 16px", borderRadius: 20,
+              border: `1px solid ${border}`,
+              background: surface, marginBottom: 32,
+              fontSize: 12, color: muted, letterSpacing: "0.06em",
+              animation: "shimmer .6s ease both",
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, display: "inline-block", boxShadow: `0 0 8px ${T.green}` }} />
+              PRŮVODCE · GUIDE
+            </div>
 
-      <div style={{position:"relative",zIndex:1}}>
-        {/* Header */}
-        <header style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 22px",height:56,borderBottom:`1px solid ${border}`,position:"sticky",top:0,zIndex:100,background:hBg,backdropFilter:"blur(24px)"}}>
-          <div onClick={goHome} style={{display:"flex",alignItems:"center",gap:9,cursor:"pointer"}}>
-            <div style={{width:28,height:28,borderRadius:6,background:`linear-gradient(135deg,${T.accent},${T.orange})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:"#000",boxShadow:`0 0 16px rgba(245,158,11,0.32)`,flexShrink:0}}>P</div>
-            <span style={{fontSize:15,fontWeight:700,color:text,letterSpacing:"-0.025em"}}>promptuj<span style={{color:T.accent}}>AI</span><span style={{fontSize:10,color:muted,opacity:.6,marginLeft:1,letterSpacing:"0.03em"}}>.cz</span></span>
-          </div>
-          <div style={{display:"flex",gap:4,alignItems:"center"}}>
-            {["cs","en"].map(l=>(
-              <button key={l} onClick={()=>setLang(l)} style={{padding:"3px 10px",borderRadius:5,border:`1px solid ${lang===l?acc:border}`,background:lang===l?accLo:"transparent",color:lang===l?acc:muted,cursor:"pointer",fontSize:10.5,fontWeight:700,fontFamily:"inherit",letterSpacing:"0.07em"}}>{l.toUpperCase()}</button>
-            ))}
-            <span style={{width:1,height:14,background:border,margin:"0 2px"}} />
-            <button onClick={()=>setDark(!dark)} style={{padding:"3px 9px",borderRadius:5,border:`1px solid ${border}`,background:"transparent",color:muted,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{dark?"○":"●"}</button>
-          </div>
-        </header>
+            <h1 style={{
+              fontSize: "clamp(36px, 7vw, 52px)", fontWeight: 700,
+              letterSpacing: "-0.035em", lineHeight: 1.1,
+              marginBottom: 16,
+              animation: "shimmer .7s .1s ease both",
+              opacity: 0, animationFillMode: "forwards",
+            }}>
+              <span style={{ color: T.accent }}>AI</span>{" "}
+              <span style={{ color: text }}>{lang === "cs" ? "Průvodce" : "Guide"}</span>
+            </h1>
 
-        <main style={{maxWidth:720,margin:"0 auto",padding:"26px 14px 80px"}}>
+            <p style={{
+              fontSize: 15, color: muted, marginBottom: 56, lineHeight: 1.7,
+              maxWidth: 380, margin: "0 auto 56px",
+              animation: "shimmer .7s .2s ease both", opacity: 0, animationFillMode: "forwards",
+            }}>{t.sub}</p>
 
-          {/* HOME */}
-          {!level && (
-            <div className="fi">
-              <div style={{textAlign:"center",marginBottom:32,paddingTop:10}}>
-                <div style={{fontSize:10,letterSpacing:"0.14em",textTransform:"uppercase",color:acc,marginBottom:12,fontWeight:700}}>promptujai.cz</div>
-                <h1 style={{fontSize:"clamp(22px,5vw,36px)",fontWeight:700,letterSpacing:"-0.03em",lineHeight:1.15,marginBottom:10}}>{t.sub}</h1>
-                <p style={{color:muted,fontSize:14,lineHeight:1.65}}>{t.pick}</p>
-              </div>
-              <AnatomyCard lang={lang} acc={acc} accLo={accLo} accBrd={accBrd} />
-              {[
-                {id:"beginner",label:t.beg,desc:t.begD,color:T.green},
-                {id:"intermediate",label:t.mid,desc:t.midD,color:acc},
-                {id:"advanced",label:t.adv,desc:t.advD,color:T.purple},
-              ].map(({id,label,desc,color})=>(
-                <div key={id} onClick={()=>handleLevel(id)}
-                  style={{padding:"17px 19px",borderRadius:11,border:`1px solid ${border}`,background:surface,marginBottom:8,cursor:"pointer"}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor=color+"55";e.currentTarget.style.background="rgba(255,255,255,0.048)"}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor=border;e.currentTarget.style.background=surface}}>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <div>
-                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
-                        <span style={{width:5,height:5,borderRadius:"50%",background:color,display:"inline-block",flexShrink:0}} />
-                        <span style={{fontSize:14,fontWeight:700}}>{label}</span>
-                      </div>
-                      <p style={{fontSize:12.5,color:muted,lineHeight:1.5}}>{desc}</p>
-                    </div>
-                    <span style={{color:color,fontSize:18,opacity:.6}}>›</span>
+            <p style={{ fontSize: 12, color: faint, marginBottom: 20, letterSpacing: "0.08em", textTransform: "uppercase" }}>{t.pick}</p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, animation: "shimmer .7s .3s ease both", opacity: 0, animationFillMode: "forwards" }}>
+              {lvls.map((lv, i) => (
+                <button key={lv.id} className="lvl-card" onClick={() => handleSelectLevel(lv.id)}
+                  style={{
+                    padding: "24px 28px", borderRadius: 16,
+                    border: `1px solid ${border}`,
+                    background: surface,
+                    cursor: "pointer", textAlign: "left",
+                    fontFamily: "inherit", color: text,
+                    display: "flex", alignItems: "center", gap: 20,
+                    animationDelay: `${0.35 + i * 0.07}s`,
+                  }}>
+                  {/* Icon circle */}
+                  <div style={{
+                    width: 48, height: 48, borderRadius: 12, flexShrink: 0,
+                    background: `radial-gradient(circle at 30% 30%, ${lv.glow}, transparent)`,
+                    border: `1px solid ${lv.color}30`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 22,
+                  }}>{lv.e}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4, color: text }}>{lv.l}</div>
+                    <div style={{ fontSize: 13, color: muted, lineHeight: 1.5 }}>{lv.d}</div>
                   </div>
-                </div>
+                  <span style={{ fontSize: 16, color: faint, flexShrink: 0 }}>→</span>
+                </button>
+              ))}
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  // ── LEVEL DATA ───────────────────────────────────────────────────────────────
+  const allTools   = TOOLS[level]   || [];
+  const prompts    = PROMPTS[level] || [];
+  const models     = MODELS[level]  || [];
+  const guide      = GUIDE[level]?.[lang] || [];
+  const hasGuide   = guide.length > 0;
+  const toolCount  = allTools.reduce((s, c) => s + c.items.length, 0);
+  const promptCount = prompts.reduce((s, p) => s + p.ps.length, 0);
+
+  const q = search.toLowerCase();
+  const tools = q
+    ? allTools.map(cat => ({ ...cat, items: cat.items.filter(i => i.name.toLowerCase().includes(q) || i.d[lang].toLowerCase().includes(q)) })).filter(c => c.items.length)
+    : allTools;
+
+  const levelEmoji = level === "beginner" ? "🌱" : level === "intermediate" ? "🌿" : level === "advanced" ? "🌳" : "🤖";
+  const levelName  = level === "beginner" ? t.beg : level === "intermediate" ? t.mid : level === "advanced" ? t.adv : t.claude;
+  const levelColor = level === "beginner" ? T.green : level === "intermediate" ? T.teal : level === "advanced" ? T.accent : "#7C3AED";
+
+  // ── CLAUDE GUIDE SCREEN ─────────────────────────────────────────────────────
+  if (level === "claude") {
+    return <ClaudeGuide lang={lang} t={t} dark={dark} bg={bg} surface={surface} border={border} text={text} muted={muted} faint={faint} headerBg={headerBg} setDark={setDark} setLevel={setLevel} setShowGuide={setShowGuide} />;
+  }
+
+  // ── LEVEL SCREEN ─────────────────────────────────────────────────────────────
+  return (
+    <div style={{ minHeight: "100vh", background: bg, color: text, fontFamily: "'Sora',sans-serif", position: "relative" }}>
+      <style>{css}</style>
+      <Background dark={dark} />
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <AppHeader lang={lang} setLang={setLang} t={t} dark={dark} setDark={setDark} headerBg={headerBg} border={border} muted={muted} text={text} setLevel={setLevel} setShowGuide={setShowGuide} />
+        <main style={{ maxWidth: 820, margin: "0 auto", padding: "32px 24px 100px" }}>
+
+          {/* Back button */}
+          <button className="back-btn" onClick={() => { setLevel(null); setShowGuide(false); window.scrollTo(0,0); }}
+            style={{
+              background: "transparent", border: `1px solid ${border}`, borderRadius: 7,
+              color: muted, cursor: "pointer", fontSize: 12, fontFamily: "inherit",
+              marginBottom: 28, padding: "6px 14px", transition: "all .2s",
+              letterSpacing: "0.02em",
+            }}>{t.back}</button>
+
+          {/* Level heading */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 28 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 11, fontSize: 22, flexShrink: 0,
+              background: surface, border: `1px solid ${levelColor}30`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer",
+            }} onClick={() => { setLevel(null); setShowGuide(false); window.scrollTo(0,0); }} title={t.back}>{levelEmoji}</div>
+            <div>
+              <div style={{ fontSize: 11, color: faint, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 3 }}>{t.breadcrumb}</div>
+              <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: text }}>{levelName}</h1>
+            </div>
+          </div>
+
+          {/* Guide toggle */}
+          {hasGuide && (
+            <button onClick={() => setShowGuide(!showGuide)} style={{
+              width: "100%", padding: "16px 20px", borderRadius: 12,
+              border: `1px solid ${showGuide ? T.accent + "55" : border}`,
+              background: showGuide ? "rgba(245,158,11,0.06)" : surface,
+              cursor: "pointer", fontFamily: "inherit", color: text,
+              marginBottom: 20, textAlign: "left",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              transition: "all .25s",
+            }}>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 14, color: showGuide ? T.accent : text }}>{t.guide}</div>
+                <div style={{ fontSize: 12, color: muted, marginTop: 3 }}>{t.guideIntro}</div>
+              </div>
+              <span style={{ fontSize: 10, color: muted, transform: showGuide ? "rotate(180deg)" : "none", transition: "transform .25s" }}>▼</span>
+            </button>
+          )}
+
+          {showGuide && (
+            <div style={{ marginBottom: 24, animation: "fadeIn .25s ease" }}>
+              {guide.map((s, i) => (
+                <Acc key={i} expanded={expG === i} onToggle={() => setExpG(expG === i ? null : i)} icon="" title={s.title} sub="">
+                  <div style={{ fontSize: 13, lineHeight: 1.85, color: muted, whiteSpace: "pre-line", paddingTop: 4 }}>{s.text}</div>
+                </Acc>
               ))}
             </div>
           )}
 
-          {/* LEVEL CONTENT */}
-          {level && (
-            <div className="fi">
-              {/* Breadcrumb */}
-              <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:16}}>
-                <button onClick={goHome} style={{background:"none",border:"none",color:muted,cursor:"pointer",fontSize:12.5,fontFamily:"inherit"}}>{t.back}</button>
-                <span style={{color:T.faint}}>›</span>
-                <span style={{fontSize:12.5,color:text,fontWeight:600}}>{level==="beginner"?t.beg:level==="intermediate"?t.mid:t.adv}</span>
+          {/* Tab bar */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 24, borderBottom: `1px solid ${border}`, paddingBottom: 0 }}>
+            {[["tools", t.tools, toolCount], ["prompts", t.prompts, promptCount]].map(([k, v, cnt]) => (
+              <button key={k} className="tab-btn" onClick={() => { setTab(k); setExpCat(null); setExpP(null); setExpM(null); setSearch(""); }}
+                style={{
+                  padding: "10px 18px", borderRadius: "8px 8px 0 0",
+                  background: tab === k ? surface : "transparent",
+                  color: tab === k ? text : faint,
+                  fontWeight: tab === k ? 600 : 400, fontSize: 13,
+                  border: tab === k ? `1px solid ${border}` : "1px solid transparent",
+                  borderBottom: tab === k ? `1px solid ${bg}` : "1px solid transparent",
+                  cursor: "pointer", fontFamily: "inherit",
+                  display: "flex", alignItems: "center", gap: 8,
+                  marginBottom: -1, transition: "all .2s",
+                  letterSpacing: "0.01em",
+                }}>
+                {v}
+                <span style={{
+                  fontSize: 10, fontWeight: 700,
+                  background: tab === k ? T.accentLo : "transparent",
+                  color: tab === k ? T.accent : faint,
+                  borderRadius: 5, padding: "2px 6px",
+                  border: `1px solid ${tab === k ? T.accent + "33" : "transparent"}`,
+                }}>{cnt}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* ── TOOLS TAB ── */}
+          {tab === "tools" && (
+            <>
+              <input type="text" placeholder={t.searchPlaceholder} value={search}
+                onChange={e => { setSearch(e.target.value); setExpCat(null); }}
+                style={{
+                  width: "100%", padding: "11px 16px", borderRadius: 9,
+                  border: `1px solid ${border}`, background: surface,
+                  color: text, fontSize: 13, fontFamily: "inherit",
+                  marginBottom: 16, transition: "all .2s",
+                }} />
+
+              {tools.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "60px 0", color: muted }}>
+                  <div style={{ fontSize: 36, marginBottom: 14 }}>🔍</div>
+                  <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, color: text }}>{t.noResults}</div>
+                  <div style={{ fontSize: 13 }}>{t.noResultsSub}</div>
+                </div>
+              ) : (
+                tools.map((cat, ci) => (
+                  <Acc key={ci} expanded={expCat === ci} onToggle={() => setExpCat(expCat === ci ? null : ci)} icon={cat.icon} title={cat.cat[lang]} sub={cat.desc[lang]}>
+                    {cat.items.map((tool, ti) => (
+                      <div key={ti} style={{
+                        padding: "14px 16px", borderRadius: 10,
+                        background: surface,
+                        border: `1px solid ${border}`,
+                        marginBottom: 8,
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                          <span style={{ fontWeight: 600, fontSize: 14, color: text }}>{tool.name}</span>
+                          <Badge price={tool.price} />
+                        </div>
+                        <div style={{ fontSize: 12, color: muted, marginBottom: 5, lineHeight: 1.5 }}>{tool.d[lang]}</div>
+                        <div style={{ fontSize: 12, color: muted, marginBottom: 6 }}>
+                          <span style={{ color: faint, marginRight: 4 }}>{t.how}</span>{tool.h[lang]}
+                        </div>
+                        {tool.tip && <div style={S.tipBox}>{t.tip} {tool.tip[lang]}</div>}
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+                          <a href={tool.url} target="_blank" rel="noopener noreferrer" className="tool-link"
+                            style={{ fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.02em" }}>{t.open}</a>
+                        </div>
+                      </div>
+                    ))}
+                  </Acc>
+                ))
+              )}
+            </>
+          )}
+
+          {/* ── PROMPTS TAB ── */}
+          {tab === "prompts" && (
+            <div>
+              {/* Controls row — view toggle only; language is set globally in header */}
+              <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
+                <Pill active={pView === "byTask"} onClick={() => { setPView("byTask"); setExpP(null); setExpM(null); }}>{t.byTask}</Pill>
+                <Pill active={pView === "byModel"} onClick={() => { setPView("byModel"); setExpP(null); setExpM(null); }}>{t.byModel}</Pill>
               </div>
 
-              {/* Search */}
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t.searchPH}
-                style={{width:"100%",padding:"9px 13px",borderRadius:8,background:surface,border:`1px solid ${border}`,color:text,fontSize:12.5,fontFamily:"inherit",outline:"none",marginBottom:13,transition:"border-color .2s"}}
-                onFocus={e=>e.target.style.borderColor=accBrd}
-                onBlur={e=>e.target.style.borderColor=border}
-              />
+              {prompts.length === 0 && (
+                <div style={{ textAlign: "center", padding: "60px 0", color: muted }}>
+                  <div style={{ fontSize: 36, marginBottom: 14 }}>🚧</div>
+                  <div style={{ fontWeight: 600, color: text }}>{t.comingSoon}</div>
+                </div>
+              )}
 
-              {/* Tabs */}
-              <div style={{display:"flex",gap:3,marginBottom:16,background:surface,borderRadius:8,padding:3}}>
-                {[["tools",t.tools],["prompts",t.prompts],["models",t.models]].map(([id,label])=>(
-                  <button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:"7px 10px",borderRadius:6,border:"none",background:tab===id?acc:"transparent",color:tab===id?(dark?"#000":"#fff"):muted,cursor:"pointer",fontSize:11.5,fontWeight:600,fontFamily:"inherit",letterSpacing:"0.02em"}}>{label}</button>
-                ))}
-              </div>
-
-              {/* ── TOOLS TAB ── */}
-              {tab==="tools" && (
-                <div>
-                  <button onClick={()=>setShowGuide(!showGuide)} style={{width:"100%",padding:"9px 14px",borderRadius:8,border:`1px solid ${showGuide?accBrd:border}`,background:showGuide?accLo:surface,color:showGuide?acc:muted,cursor:"pointer",fontSize:12.5,fontWeight:600,fontFamily:"inherit",textAlign:"left",marginBottom:11}}>
-                    {showGuide?"▾":"▸"} {t.guide} — <span style={{fontWeight:400,opacity:.7}}>{t.guideIntro}</span>
-                  </button>
-                  {showGuide && guides.map((g,i)=>(
-                    <Acc key={i} expanded={expG===i} onToggle={()=>setExpG(expG===i?null:i)} icon="▸" title={g.title.replace(/^[\W\s]+/,"")} acc={acc}>
-                      <div style={{fontSize:13,color:text,lineHeight:1.78,whiteSpace:"pre-wrap",opacity:.87}}>{g.text}</div>
-                    </Acc>
-                  ))}
-                  <div style={{fontSize:11,color:muted,marginBottom:11,lineHeight:1.5}}>{t.toolsDesc}</div>
-                  {fTools.length===0
-                    ? <div style={{textAlign:"center",padding:"36px 0",color:muted}}>{t.noResults}<br/><span style={{fontSize:11}}>{t.noResultsSub}</span></div>
-                    : fTools.map((tool,i)=>(
-                      <Acc key={i} expanded={expTool===i} onToggle={()=>setExpTool(expTool===i?null:i)} icon={tool.icon} title={tool.task[lang]} sub={tool.desc[lang]} acc={acc}>
-                        <div style={{marginBottom:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:acc,letterSpacing:"0.09em",textTransform:"uppercase",marginBottom:6}}>{t.recommended}</div>
-                          <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
-                            {tool.recommended.map((r,ri)=>(
-                              <span key={ri} style={{fontSize:11,padding:"3px 9px",borderRadius:5,border:`1px solid ${accBrd}`,background:accLo,color:acc,fontWeight:600}}>{r}</span>
-                            ))}
-                          </div>
-                        </div>
-                        <div style={{marginBottom:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:muted,letterSpacing:"0.09em",textTransform:"uppercase",marginBottom:6}}>{t.howTo}</div>
-                          {tool.steps[lang].map((step,si)=>(
-                            <div key={si} style={{display:"flex",gap:10,marginBottom:6}}>
-                              <span style={{fontSize:10,fontWeight:700,color:acc,minWidth:16,marginTop:2,flexShrink:0}}>{si+1}.</span>
-                              <span style={{fontSize:12.5,color:text,lineHeight:1.6,opacity:.88}}>{step}</span>
-                            </div>
-                          ))}
-                        </div>
-                        {tool.tip && <TipBox text={tool.tip[lang]} acc={acc} accLo={accLo} accBrd={accBrd} />}
-                        {tool.url && (
-                          <a href={tool.url} target="_blank" rel="noopener noreferrer" style={{
-                            display:"inline-flex", alignItems:"center", gap:6,
-                            marginTop:4, padding:"7px 14px", borderRadius:7,
-                            background:accLo, border:`1px solid ${accBrd}`,
-                            color:acc, fontSize:12, fontWeight:700, letterSpacing:"0.02em",
-                            textDecoration:"none",
+              {pView === "byTask" && prompts.map((item, i) => (
+                <Acc key={i} expanded={expP === i} onToggle={() => setExpP(expP === i ? null : i)} icon={item.icon} title={item.task[lang]} sub={t.models + " " + item.mods.join(", ")}>
+                  {item.promptTip && <div style={S.ptipBox}>{t.promptTip} {item.promptTip[lang]}</div>}
+                  {item.ps.map((p, pi) => (
+                    <div key={pi} style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: muted, marginBottom: 6, letterSpacing: "0.03em" }}>{p.label[lang]}</div>
+                      <div style={{
+                        padding: "14px 16px", borderRadius: 10,
+                        background: surface,
+                        border: `1px solid ${border}`,
+                        position: "relative",
+                      }}>
+                        <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, lineHeight: 1.8, color: text, whiteSpace: "pre-wrap", wordBreak: "break-word", paddingRight: 90 }}>{p.p[pLang]}</div>
+                        <button aria-label={t.copyAriaLabel}
+                          onClick={() => cp(p.p[pLang], `t${i}-${pi}`)}
+                          style={{
+                            position: "absolute", top: 12, right: 12,
+                            background: copied === `t${i}-${pi}` ? T.green : "rgba(255,255,255,0.06)",
+                            border: `1px solid ${copied === `t${i}-${pi}` ? T.green + "44" : border}`,
+                            borderRadius: 6, padding: "4px 12px", fontSize: 11,
+                            color: copied === `t${i}-${pi}` ? "#fff" : muted,
+                            cursor: "pointer", fontFamily: "inherit", fontWeight: 500,
+                            transition: "all .2s", whiteSpace: "nowrap",
                           }}>
-                            {tool.urlLabel?.[lang] || t.open} →
-                          </a>
-                        )}
-                      </Acc>
-                    ))
-                  }
-                </div>
-              )}
-
-              {/* ── PROMPTS TAB ── */}
-              {tab==="prompts" && (
-                <div>
-                  <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:13,flexWrap:"wrap"}}>
-                    <span style={{fontSize:11,color:muted}}>{t.pLang}:</span>
-                    {["cs","en"].map(l=>(
-                      <button key={l} onClick={()=>setPLang(l)} style={{padding:"3px 9px",borderRadius:5,border:`1px solid ${pLang===l?acc:border}`,background:pLang===l?accLo:"transparent",color:pLang===l?acc:muted,cursor:"pointer",fontSize:10.5,fontWeight:700,fontFamily:"inherit"}}>{l==="cs"?t.cs2:t.en2}</button>
-                    ))}
-                    <div style={{flex:1}} />
-                    {[["byTask",t.byTask],["byModel",t.byModel]].map(([id,label])=>(
-                      <button key={id} onClick={()=>setPView(id)} style={{padding:"3px 9px",borderRadius:5,border:`1px solid ${pView===id?acc:border}`,background:pView===id?accLo:"transparent",color:pView===id?acc:muted,cursor:"pointer",fontSize:10.5,fontWeight:700,fontFamily:"inherit"}}>{label}</button>
-                    ))}
-                  </div>
-
-                  {level==="advanced" && (
-                    <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:11}}>
-                      <button onClick={()=>setAdvSec(null)} style={{padding:"3px 9px",borderRadius:5,fontSize:10.5,fontWeight:700,border:`1px solid ${!advSec?acc:border}`,background:!advSec?accLo:"transparent",color:!advSec?acc:muted,cursor:"pointer",fontFamily:"inherit"}}>Vše</button>
-                      {ADV.map(s=>(
-                        <button key={s} onClick={()=>setAdvSec(advSec===s?null:s)} style={{padding:"3px 9px",borderRadius:5,fontSize:10.5,fontWeight:700,border:`1px solid ${advSec===s?acc:border}`,background:advSec===s?accLo:"transparent",color:advSec===s?acc:muted,cursor:"pointer",fontFamily:"inherit"}}>{ADVL[s][lang]}</button>
-                      ))}
+                          {copied === `t${i}-${pi}` ? t.copied : t.copy}
+                        </button>
+                      </div>
                     </div>
-                  )}
-
-                  {pView==="byTask" && shownPros.map((item,i)=>(
-                    <Acc key={i} expanded={expP===i} onToggle={()=>setExpP(expP===i?null:i)} icon={item.icon} title={item.task[lang]} sub={"Modely: "+item.mods.join(", ")} section={item.section} acc={acc}>
-                      {item.ptip && <div style={{fontSize:13,color:acc,padding:"9px 13px",background:accLo,borderRadius:10,border:`1px solid ${accBrd}`,marginBottom:14,lineHeight:1.6}}>{t.promptTip} {item.ptip[lang]}</div>}
-                      {item.ps.map((p,pi)=>(
-                        <div key={pi} style={{marginBottom:11}}>
-                          <div style={{fontSize:10.5,fontWeight:600,color:muted,marginBottom:5,letterSpacing:"0.04em"}}>{p.label[lang]}</div>
-                          <div style={{padding:"13px 15px",borderRadius:10,background:surface,border:`1px solid ${border}`,position:"relative"}}>
-                            <pre style={{fontFamily:"'DM Mono',monospace",fontSize:11,lineHeight:1.88,color:text,whiteSpace:"pre-wrap",wordBreak:"break-word",paddingRight:88}}>{p.p[pLang]||p.p["cs"]}</pre>
-                            <CopyBtn text={p.p[pLang]||p.p["cs"]} id={`p${i}-${pi}`} copied={copied} cp={cp} t={t} />
-                          </div>
-                        </div>
-                      ))}
-                    </Acc>
                   ))}
+                </Acc>
+              ))}
 
-                  {pView==="byModel" && ALL_MODELS.map((m,i)=>{
-                    const mp = levelPros.filter(item=>item.mods.some(mod=>mod.toLowerCase().includes(m.name.split(" ")[0].toLowerCase())));
-                    if(!mp.length) return null;
-                    return (
-                      <Acc key={i} expanded={expM===`pm${i}`} onToggle={()=>setExpM(expM===`pm${i}`?null:`pm${i}`)} icon="◆" title={m.name} sub={m.oneLiner[lang]} badge={m.price} acc={acc}>
-                        {mp.map((item,pi)=>item.ps.map((p,pj)=>(
-                          <div key={`${pi}-${pj}`} style={{marginBottom:9}}>
-                            <div style={{fontSize:10.5,color:muted,marginBottom:4,fontWeight:500}}>{item.task[lang]} — {p.label[lang]}</div>
-                            <div style={{padding:"11px 13px",borderRadius:9,background:surface,border:`1px solid ${border}`,position:"relative"}}>
-                              <pre style={{fontFamily:"'DM Mono',monospace",fontSize:11,lineHeight:1.88,color:text,whiteSpace:"pre-wrap",wordBreak:"break-word",paddingRight:85}}>{p.p[pLang]||p.p["cs"]}</pre>
-                              <CopyBtn text={p.p[pLang]||p.p["cs"]} id={`pm${i}-${pi}-${pj}`} copied={copied} cp={cp} t={t} />
-                            </div>
-                          </div>
-                        )))}
-                      </Acc>
-                    );
-                  })}
-                </div>
-              )}
+              {pView === "byModel" && models.map((m, i) => {
+                // Find prompts that reference this model by name
+                const modelPrompts = prompts.filter(item =>
+                  item.mods.some(mod => mod.toLowerCase().includes(m.name.split(" ")[0].toLowerCase()))
+                );
+                return (
+                  <Acc key={i} expanded={expM === i} onToggle={() => setExpM(expM === i ? null : i)} icon={m.icon} title={m.name} sub={m.d[lang]}>
+                    {m.mv && <div style={S.mvBox}><span style={{ fontWeight: 600 }}>{t.mv}:</span> {m.mv[lang]}</div>}
 
-              {/* ── MODELS TAB ── */}
-              {tab==="models" && (
-                <div>
-                  <div style={{fontSize:11,color:muted,marginBottom:11,lineHeight:1.5}}>{t.modelsDesc}</div>
-                  <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:13}}>
-                    <button onClick={()=>setMakerFilter(null)} style={{padding:"3px 9px",borderRadius:5,fontSize:10.5,fontWeight:700,border:`1px solid ${!makerFilter?acc:border}`,background:!makerFilter?accLo:"transparent",color:!makerFilter?acc:muted,cursor:"pointer",fontFamily:"inherit"}}>Vše</button>
-                    {MAKERS.map(mk=>(
-                      <button key={mk} onClick={()=>setMakerFilter(makerFilter===mk?null:mk)} style={{padding:"3px 9px",borderRadius:5,fontSize:10.5,fontWeight:700,border:`1px solid ${makerFilter===mk?acc:border}`,background:makerFilter===mk?accLo:"transparent",color:makerFilter===mk?acc:muted,cursor:"pointer",fontFamily:"inherit"}}>{mk}</button>
+                    {/* Tips */}
+                    <div style={{ fontSize: 11, fontWeight: 700, color: T.accent, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.tips}</div>
+                    {m.tips[lang].map((tip, ti) => (
+                      <div key={ti} style={{
+                        padding: "10px 14px", borderRadius: 8,
+                        background: surface,
+                        border: `1px solid ${border}`,
+                        marginBottom: 6, fontSize: 13, lineHeight: 1.6,
+                        display: "flex", gap: 10, color: text,
+                      }}>
+                        <span style={{ color: T.accent, flexShrink: 0 }}>→</span><span>{tip}</span>
+                      </div>
                     ))}
-                  </div>
-                  {shownModels.map((m,i)=>(
-                    <Acc key={i} expanded={expM===`m${i}`} onToggle={()=>setExpM(expM===`m${i}`?null:`m${i}`)} icon="◆" title={m.name} sub={m.oneLiner[lang]} badge={m.price} acc={acc}>
-                      <div style={{fontSize:11,color:muted,marginBottom:10,display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
-                        <span style={{fontWeight:700,color:acc}}>{m.maker}</span>
-                        {m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" style={{color:muted,fontSize:10.5}}>{t.open} ›</a>}
-                      </div>
-                      {m.versions && <div style={{padding:"9px 13px",borderRadius:9,background:accLo,marginBottom:12,fontSize:12.5,color:acc,lineHeight:1.6,border:`1px solid ${accBrd}`}}><span style={{fontWeight:600}}>{t.mv}</span> {m.versions[lang]}</div>}
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
-                        <div>
-                          <div style={{fontSize:10,fontWeight:700,color:T.green,letterSpacing:"0.09em",textTransform:"uppercase",marginBottom:5}}>{t.bestFor}</div>
-                          {m.bestFor[lang].map((item,j)=>(
-                            <div key={j} style={{fontSize:12,color:text,lineHeight:1.55,display:"flex",gap:6,marginBottom:4,opacity:.87}}>
-                              <span style={{color:T.green,flexShrink:0,marginTop:2}}>+</span><span>{item}</span>
+
+                    {/* Prompts for this model */}
+                    {modelPrompts.length > 0 && (
+                      <div style={{ marginTop: 16 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: T.accent, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>Prompty</div>
+                        {modelPrompts.map((item, pi) =>
+                          item.ps.map((p, pj) => (
+                            <div key={`${pi}-${pj}`} style={{ marginBottom: 10 }}>
+                              <div style={{ fontSize: 11, color: muted, marginBottom: 5, fontWeight: 500 }}>
+                                {item.icon} {item.task[lang]} — {p.label[lang]}
+                              </div>
+                              <div style={{
+                                padding: "12px 14px", borderRadius: 10,
+                                background: surface, border: `1px solid ${border}`,
+                                position: "relative",
+                              }}>
+                                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, lineHeight: 1.8, color: text, whiteSpace: "pre-wrap", wordBreak: "break-word", paddingRight: 86 }}>{p.p[lang]}</div>
+                                <button
+                                  aria-label={t.copyAriaLabel}
+                                  onClick={() => cp(p.p[lang], `m${i}-${pi}-${pj}`)}
+                                  style={{
+                                    position: "absolute", top: 10, right: 10,
+                                    background: copied === `m${i}-${pi}-${pj}` ? T.green : surface,
+                                    border: `1px solid ${copied === `m${i}-${pi}-${pj}` ? T.green + "44" : border}`,
+                                    borderRadius: 6, padding: "3px 10px", fontSize: 11,
+                                    color: copied === `m${i}-${pi}-${pj}` ? "#fff" : muted,
+                                    cursor: "pointer", fontFamily: "inherit", fontWeight: 500,
+                                    transition: "all .2s", whiteSpace: "nowrap",
+                                  }}>
+                                  {copied === `m${i}-${pi}-${pj}` ? t.copied : t.copy}
+                                </button>
+                              </div>
                             </div>
-                          ))}
-                        </div>
-                        <div>
-                          <div style={{fontSize:10,fontWeight:700,color:T.red,letterSpacing:"0.09em",textTransform:"uppercase",marginBottom:5}}>{t.notFor}</div>
-                          {m.notFor[lang].map((item,j)=>(
-                            <div key={j} style={{fontSize:12,color:text,lineHeight:1.55,display:"flex",gap:6,marginBottom:4,opacity:.87}}>
-                              <span style={{color:T.red,flexShrink:0,marginTop:2}}>−</span><span>{item}</span>
-                            </div>
-                          ))}
-                        </div>
+                          ))
+                        )}
                       </div>
-                      {m.tags && (
-                        <div style={{marginBottom:12,display:"flex",flexWrap:"wrap",gap:4}}>
-                          {m.tags.map((tag,ti)=>(
-                            <span key={ti} style={{fontSize:10,padding:"2px 7px",borderRadius:4,border:`1px solid ${border}`,color:muted,fontWeight:600,letterSpacing:"0.04em"}}>{tag}</span>
-                          ))}
-                        </div>
-                      )}
-                      <div style={{fontSize:10,fontWeight:700,color:acc,letterSpacing:"0.09em",textTransform:"uppercase",marginBottom:7}}>{t.idealPrompts}</div>
-                      {m.idealPrompts[lang].map((pr,pi)=>(
-                        <div key={pi} style={{padding:"11px 13px",borderRadius:9,background:surface,border:`1px solid ${border}`,marginBottom:7,position:"relative"}}>
-                          <pre style={{fontFamily:"'DM Mono',monospace",fontSize:10.5,lineHeight:1.88,color:text,whiteSpace:"pre-wrap",wordBreak:"break-word",paddingRight:84}}>{pr}</pre>
-                          <CopyBtn text={pr} id={`mp${i}-${pi}`} copied={copied} cp={cp} t={t} />
-                        </div>
-                      ))}
-                    </Acc>
-                  ))}
-                </div>
-              )}
+                    )}
+
+                    <a href={m.url} target="_blank" rel="noopener noreferrer"
+                      style={{ display: "inline-block", marginTop: 14, fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.02em" }}>{t.open}</a>
+                  </Acc>
+                );
+              })}
             </div>
           )}
         </main>
-
-        <footer style={{textAlign:"center",padding:"18px 16px 26px",borderTop:`1px solid ${border}`,color:muted,fontSize:11.5}}>
-          <span style={{color:acc,fontWeight:700,letterSpacing:"-0.01em"}}>promptujai.cz</span>
-          <span style={{margin:"0 7px",opacity:.35}}>·</span>
-          <span>Průvodce světem AI</span>
-          <span style={{margin:"0 7px",opacity:.35}}>·</span>
-          <span style={{opacity:.55}}>2026</span>
-        </footer>
       </div>
     </div>
   );
