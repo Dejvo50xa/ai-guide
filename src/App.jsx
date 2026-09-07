@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { Hero, ModelExplorer, Workflows, Mark } from "./Explore.jsx";
+import "./refresh.css";
 
 /* ═══════════════════════════════════════════════════════════════════
    PROMPTUJ.AI v2 — Interaktivní akademie promptování, agentů a smyček
@@ -6,27 +8,32 @@ import { useState, useRef, useEffect, useMemo } from "react";
    ═══════════════════════════════════════════════════════════════════ */
 
 var T = {
-  bg: "#050507", bg2: "#0A0A10", bg3: "#0E0E16",
-  surface: "rgba(255,255,255,0.035)", surfaceHi: "rgba(255,255,255,0.065)",
-  border: "rgba(255,255,255,0.08)", borderHi: "rgba(139,92,246,0.5)",
-  violet: "#8B5CF6", violetLo: "rgba(139,92,246,0.12)",
-  cyan: "#22D3EE", cyanLo: "rgba(34,211,238,0.1)",
-  amber: "#F59E0B", amberLo: "rgba(245,158,11,0.1)",
-  green: "#34D399", greenLo: "rgba(52,211,153,0.1)",
-  red: "#F87171", redLo: "rgba(248,113,113,0.1)",
-  text: "#EDEDF2", muted: "#9494A6", faint: "#55556A",
-  sans: "'Inter','DM Sans',-apple-system,sans-serif",
-  mono: "'JetBrains Mono','SF Mono',monospace",
-  r: 18, rs: 12,
+  bg: "#F7F8F2", bg2: "#F0F3E9", bg3: "#E8EDDF",
+  surface: "#FFFefa", surfaceHi: "#E8EDDF", border: "#D8DFD0", borderHi: "#7C9064",
+  violet: "#526A3F", violetLo: "#E9EEDD", cyan: "#376B6C", cyanLo: "#E5EFEC",
+  amber: "#85602C", amberLo: "#F3EBDD", green: "#426846", greenLo: "#E8F0E3",
+  red: "#A0443D", redLo: "#F7EBE7", text: "#283D31", muted: "#586653", faint: "#626D5B",
+  sans: "'DM Sans',-apple-system,sans-serif", mono: "'DM Sans',sans-serif", r: 14, rs: 10,
 };
 
-var CSS = "\n@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');\n*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}\nhtml{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}\nbody{background:" + T.bg + ";color:" + T.text + ";font-family:" + T.sans + ";overflow-x:hidden}\n::selection{background:rgba(139,92,246,0.4)}\n.mx{max-width:1140px;margin:0 auto;padding:0 28px}\ntextarea,select,input{font-family:inherit}\ntextarea:focus,select:focus,input:focus{outline:none;border-color:rgba(139,92,246,0.55)!important}\n@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}\n@keyframes pulsed{0%,100%{opacity:0.45}50%{opacity:1}}\n@keyframes floaty{0%{transform:translate(0,0)}50%{transform:translate(-20px,16px)}100%{transform:translate(14px,-12px)}}\n@keyframes marq{to{transform:translateX(-50%)}}\n.marq{display:flex;gap:52px;width:max-content;animation:marq 32s linear infinite;align-items:center}\n.marq:hover{animation-play-state:paused}\n.gradtxt{background:linear-gradient(95deg,#8B5CF6 5%,#22D3EE 95%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}\n.lift{transition:transform 0.3s cubic-bezier(.4,0,.2,1),box-shadow 0.3s ease,border-color 0.3s ease,background 0.3s ease}\n.lift:hover{transform:translateY(-4px);border-color:rgba(139,92,246,0.45)!important;background:rgba(255,255,255,0.055)!important}\n.navlink{position:relative;cursor:pointer}\n.navlink::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:2px;border-radius:2px;background:linear-gradient(90deg,#8B5CF6,#22D3EE);transition:width 0.25s ease}\n.navlink:hover::after{width:100%}\n@media(max-width:880px){.g2,.g3,.g4,.split{grid-template-columns:1fr!important}.hideMob{display:none!important}}\ncode.inl{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:rgba(139,92,246,0.14);padding:2px 7px;border-radius:6px;color:#C4B5FD}\n";
+var CSS = `
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:110px;-webkit-font-smoothing:antialiased}
+body{background:${T.bg};color:${T.text};font-family:${T.sans}}
+.mx{max-width:1240px;margin:0 auto;padding:0 32px}
+textarea,select,input,button{font-family:inherit}
+.gradtxt{color:#647D4E}.lift{transition:transform .2s,box-shadow .2s,border-color .2s}
+.lift:hover{transform:translateY(-3px);border-color:#A7B698!important;box-shadow:0 12px 32px #283D3109}
+code.inl{font-size:.86em;background:#E9EEDD;padding:2px 7px;border-radius:6px;color:#526A3F}
+@media(max-width:880px){.g2,.g3,.g4,.split{grid-template-columns:1fr!important}.hideMob{display:none!important}}
+`;
+
 
 /* ══════════════ DATA: TECHNIKY ══════════════ */
 var TECHNIKY = [
   { id: "role", icon: "\u{1F3AD}", name: "Role & persona", lvl: 1, tag: "základ",
     kdy: "Vždy, když chcete konzistentní tón, perspektivu a úroveň odbornosti.",
-    co: "Přidělte modelu konkrétní roli s kontextem — ne jen „jsi expert“, ale kdo, pro koho a s jakým cílem pracuje. Role aktivuje relevantní znalosti a kalibruje jazyk.",
+    co: "Přidělte modelu konkrétní roli s kontextem — ne jen „jsi expert“, ale kdo, pro koho a s jakým cílem pracuje. Role pomáhá vymezit styl a perspektivu, nezaručuje odbornost ani správnost.",
     spatne: "Napiš mi něco o investování.",
     dobre: "Jsi finanční poradce, který 15 let vysvětluje investování úplným začátečníkům v ČR. Vysvětli rozdíl mezi ETF a podílovým fondem — česky, bez žargonu, s příkladem v korunách.",
     tip: "Čím konkrétnější role (obor + publikum + styl), tím méně generická odpověď." },
@@ -48,9 +55,9 @@ var TECHNIKY = [
     spatne: "Porovnej tyhle tři notebooky.",
     dobre: "Porovnej 3 notebooky v markdown tabulce: Model | Cena | Výdrž | Váha | Pro koho. Pod tabulku sekce „Verdikt“ (max 3 věty) — doporuč jeden pro studenta s rozpočtem 25 000 Kč.",
     tip: "Pro strojové zpracování chtějte čistý JSON bez markdown bloků." },
-  { id: "cot", icon: "\u{1F9E0}", name: "Chain-of-thought", lvl: 2, tag: "uvažování",
+  { id: "cot", icon: "\u{1F9E0}", name: "Uvažování & kontrola", lvl: 2, tag: "uvažování",
     kdy: "Složitější logika, matematika, plánování, rozhodování s více kritérii.",
-    co: "Požádejte model, ať nejdřív přemýšlí krok za krokem a teprve pak odpoví. Mezikroky dramaticky snižují chyby. Moderní modely mají i zabudované „rozšířené přemýšlení“.",
+    co: "Reasoning modely už uvažují interně. Zadejte jasný cíl a kritéria, případně zvolte vyšší úsilí uvažování, pokud ho aplikace nabízí. Požadujte stručné zdůvodnění a ověřitelný výpočet, ne skryté vnitřní úvahy.",
     spatne: "Vyplatí se roční tarif za 2 880 Kč, když měsíční je 290 Kč?",
     dobre: "Vyplatí se roční tarif 2 880 Kč proti měsíčnímu 290 Kč? Postupuj krok za krokem: 1) roční náklady obou variant, 2) úspora v Kč a %, 3) rizika ročního závazku, 4) finální doporučení jednou větou.",
     tip: "U výpočtů přidejte: „výsledek zkontroluj opačným postupem“." },
@@ -62,7 +69,7 @@ var TECHNIKY = [
     tip: "Zákazy formulujte pozitivně: místo „nepiš dlouze“ → „max 100 slov“." },
   { id: "selfcrit", icon: "\u{1FA9E}", name: "Sebekritika & revize", lvl: 2, tag: "uvažování",
     kdy: "Texty, kód, strategie — cokoli, kde první verze nebývá nejlepší.",
-    co: "Nechte model vytvořit výstup, pak ať ho sám zkritizuje z konkrétních hledisek a napíše vylepšenou verzi. Minismyčka, která zvedá kvalitu o ligu.",
+    co: "Nechte model vytvořit výstup, pak ať ho sám zkritizuje z konkrétních hledisek a napíše vylepšenou verzi. Revize může pomoci, ale nenahrazuje nezávislé ověření faktů.",
     spatne: "Napiš prodejní e-mail pro náš nový kurz.",
     dobre: "Úkol: prodejní e-mail pro kurz promptování (1 990 Kč, cílovka marketéři).\n1) Napiš první verzi. 2) Zkritizuj: subject, první věta, benefit, CTA, délka — 1–10 a proč. 3) Napiš finální verzi zapracující kritiku. Ukaž vše.",
     tip: "Kritéria kritiky zadejte vy — jinak si model vybere snadná." },
@@ -72,21 +79,21 @@ var TECHNIKY = [
     spatne: "Napiš mi e-book o zdravém spánku.",
     dobre: "Krok 1 (teď): Navrhni osnovu e-booku „Zdravý spánek pro práci z domova“ — 6 kapitol, u každé 3 odrážky a cílový počet slov. Nic nepiš, jen osnovu. Po schválení píšeme kapitolu po kapitole.",
     tip: "Mezi kroky vkládejte korekce — model se přizpůsobí směru." },
-  { id: "prefill", icon: "\u{1F58A}️", name: "Předvyplnění odpovědi", lvl: 3, tag: "pokročilé",
-    kdy: "Když chcete vynutit formát od prvního znaku — JSON, tabulka, začátek.",
-    co: "Začněte odpověď za model: „začni rovnou znakem {“. V API jde odpověď doslova předvyplnit; v chatu funguje „začni přesně takto: …“. Model dokončí vzor.",
+  { id: "prefill", icon: "\u{1F58A}️", name: "Schéma & validace", lvl: 3, tag: "pokročilé",
+    kdy: "Když výstup zpracovává aplikace a potřebuje přesně dané schéma.",
+    co: "Pro JSON používejte strukturovaný výstup se schématem, pokud jej dané API podporuje. Samotná textová instrukce platný JSON nezaručí. Podpora předvyplnění odpovědi závisí na modelu; není univerzální.",
     spatne: "Vrať mi to jako JSON.",
     dobre: "Extrahuj kontakty z textu. Vrať POUZE validní JSON, žádný další text. Začni přesně znakem { a použij schéma: {\"kontakty\":[{\"jmeno\":\"\",\"email\":\"\",\"telefon\":null}]}. Chybějící = null.",
     tip: "Kombinujte se zákazem: „žádný text před ani za JSON“." },
   { id: "chaining", icon: "\u{1F517}", name: "Řetězení promptů", lvl: 3, tag: "pokročilé",
     kdy: "Workflow s fázemi: výzkum → osnova → draft → revize → finále.",
-    co: "Výstup jednoho promptu je vstupem dalšího. Každý krok má jeden jasný úkol. Řetěz jednoduchých promptů poráží mega-prompt: líp se ladí a opravuje. Předstupeň agentů.",
+    co: "Výstup jednoho promptu je vstupem dalšího. Každý krok má jeden jasný úkol. Jednotlivé kroky se snáze ladí a opravují; přínos ověřte na svém úkolu. Předstupeň agentů.",
     spatne: "Přečti recenze, najdi problémy, navrhni řešení a plán. (vše najednou)",
     dobre: "P1: „Z 50 recenzí extrahuj všechny stížnosti jako seznam.“\nP2: „Seskup do max 5 témat, seřaď podle četnosti.“\nP3: „Pro top 3 navrhni opatření s odhadem nákladů.“\nKaždý krok zkontrolujete.",
     tip: "Mezivýstupy ukládejte — když krok 3 selže, neopakujete 1–2." },
   { id: "meta", icon: "\u{1FA84}", name: "Meta-prompting", lvl: 3, tag: "pokročilé",
     kdy: "Když nevíte, jak prompt napsat — nebo ho chcete zlepšit.",
-    co: "Nechte model napsat či vylepšit prompt za vás. Popište cíl a požádejte o prompt včetně otázek, na které se vás má zeptat. Model zná své slabiny líp než vy.",
+    co: "Nechte model napsat či vylepšit prompt za vás. Popište cíl a požádejte o prompt včetně otázek, na které se vás má zeptat. Návrh ověřte na reálných vstupních příkladech.",
     spatne: "(hodiny ručního ladění metodou pokus–omyl)",
     dobre: "Chci, aby mi AI pravidelně pomáhala psát LinkedIn posty v mém stylu. Navrhni znovupoužitelnou prompt-šablonu. Nejdřív se zeptej na vše potřebné (styl, témata, publikum, příklady), pak šablonu sestav s poli k doplnění.",
     tip: "Funguje i obráceně: „Tady je můj prompt a špatný výstup. Proč selhává?“" },
@@ -140,7 +147,7 @@ var LOOP_PRINCIPY = [
   { icon: "\u{1F6D1}", name: "Vždy definuj konec", desc: "Každá smyčka potřebuje podmínku ukončení A tvrdý limit kroků. Bez brzdy agent buď utratí rozpočet, nebo se zacyklí." },
   { icon: "\u{1F465}", name: "Člověk v kritických bodech", desc: "Nevratné akce (e-mail, platba, smazání) nech schválit. Agent připraví, člověk odsouhlasí, agent provede." },
   { icon: "\u{1F4C9}", name: "Kontext je rozpočet", desc: "Každý krok plní okno kontextu. Dlouhé smyčky zahltí paměť a kvalita padá. Průběžně shrnujte místo vlečení historie." },
-  { icon: "\u{1F50D}", name: "Loguj každý krok", desc: "Zaznamenávejte myšlenku, akci i výsledek. Když agent selže na kroku 12, bez logu nevíte proč. Pozorovatelnost = laditelnost." },
+  { icon: "\u{1F50D}", name: "Loguj každý krok", desc: "Zaznamenávejte volání nástrojů, vstupy, výsledky a chyby; citlivé údaje odstraňte. Když agent selže na kroku 12, bez logu nevíte proč. Pozorovatelnost = laditelnost." },
   { icon: "\u{1F4B0}", name: "Hlídej náklady", desc: "Autonomní smyčka = N volání modelu. Nastavte strop tokenů/peněz na úkol. Zacyklený agent utratí přes noc dost." },
   { icon: "\u{1F9EA}", name: "Začni malý a pevný", desc: "Nejdřív deterministický chain, pak přidávejte autonomii. Plná volnost je poslední krok, ne první. Většina úloh ji nepotřebuje." },
 ];
@@ -151,19 +158,23 @@ var SABLONY = [
   { name: "Iterativní vylepšení textu", tag: "psaní", text: "Úkol: [napiš X pro publikum Y].\nPostup, ukaž všechny kroky:\n1) Napiš první verzi.\n2) Zkritizuj podle: [jasnost, délka, tón, CTA] — 1–10 + proč.\n3) Napiš finální verzi, která kritiku zapracuje." },
   { name: "Extrakce do JSON", tag: "data", text: "Z textu níže extrahuj [co]. Vrať POUZE validní JSON, žádný text, začni znakem {.\nSchéma: {\"polozky\":[{\"nazev\":\"\",\"hodnota\":null}]}\nChybějící údaje = null. Nic nedomýšlej.\n\nTEXT:\n\"\"\"\n[vlož text]\n\"\"\"" },
   { name: "Rešerše s ověřením", tag: "fakta", text: "Téma: [X].\n1) Shrň spolehlivě známé — u každého tvrzení míra jistoty (vysoká/střední/nízká).\n2) Vyznač sporné nebo vyvíjející se.\n3) Co nevíš s jistotou, označ „nejisté“ — nevymýšlej zdroje." },
-  { name: "Plán agentního úkolu", tag: "agenti", text: "Cíl: [měřitelný výsledek].\nHotovo, když: [podmínka].\nNástroje: [search, kód, …].\nLimity: max [N] kroků, rozpočet [X].\nPostup: nejdřív navrhni plán a počkej na schválení. Nevratné akce nech schválit.\nLoguj: myšlenka → akce → výsledek." },
+  { name: "Plán agentního úkolu", tag: "agenti", text: "Cíl: [měřitelný výsledek].\nHotovo, když: [podmínka].\nNástroje: [search, kód, …].\nLimity: max [N] kroků, rozpočet [X].\nPostup: nejdřív navrhni plán a počkej na schválení. Nevratné akce nech schválit.\nLoguj: akce → výsledek → chyba; bez citlivých údajů." },
   { name: "Meta-prompt", tag: "pokročilé", text: "Chci opakovaně používat AI pro [účel].\nNavrhni znovupoužitelnou prompt-šablonu.\nNejdřív se zeptej na vše potřebné (styl, publikum, příklady, omezení), pak ji sestav s poli k doplnění." },
 ];
 
 var GLOSAR = [
-  { t: "Prompt", d: "Vstup pro model — instrukce, otázka, kontext. Kvalita promptu = strop kvality výstupu." },
-  { t: "Token", d: "Kousek textu (~0,75 slova). Modely čtou i účtují v tokenech; kontext i cena se měří v nich." },
+  { t: "Multimodalita", d: "Práce s více druhy vstupu či výstupu, například textem a obrázky. Podporované formáty se liší podle konkrétního modelu a aplikace." },
+  { t: "Reasoning model", d: "Model, který věnuje výpočty internímu uvažování. U náročných úkolů může pomoci vyšší úsilí; počítej s delší odezvou a možnými vyššími náklady." },
+  { t: "Evaluace (eval)", d: "Měření kvality na sadě skutečných úloh s předem danými kritérii. Pomáhá porovnat prompty i modely bez spoléhání na jeden povedený výstup." },
+  { t: "Prompt injection", d: "Instrukce skryté v nedůvěryhodných podkladech, které se pokoušejí změnit chování agenta. Odděluj data od instrukcí a omezuj oprávnění nástrojů." },
+  { t: "Prompt", d: "Vstup pro model — instrukce, otázka, kontext. Výsledek závisí také na modelu, podkladech a dostupných nástrojích." },
+  { t: "Token", d: "Jednotka, na kterou se vstup rozděluje. Poměr ke slovům závisí na jazyku a modelu; v češtině nejde o pevný převod." },
   { t: "Kontextové okno", d: "Maximum tokenů, které model vidí najednou. Vše nad limit vypadne — proto dlouhé chaty ztrácejí nit." },
   { t: "System prompt", d: "Trvalá instrukce nad konverzací: role, tón, pravidla. Platí pro celý chat." },
   { t: "Halucinace", d: "Sebejisté, ale nepravdivé tvrzení. Model generuje pravděpodobný text, ne ověřenou pravdu." },
-  { t: "Teplota", d: "Míra náhodnosti výstupu. Nízká = předvídatelné a faktické, vysoká = kreativní." },
+  { t: "Teplota", d: "Parametr náhodnosti výstupu. Nízká hodnota nezaručuje pravdivost. Některé reasoning modely nastavení nepodporují." },
   { t: "Few-shot", d: "Pár příkladů vstup→výstup přímo v promptu. Model napodobí vzor líp než slovní popis." },
-  { t: "Chain-of-thought", d: "Postup „krok za krokem“ před odpovědí. Snižuje chyby u logiky a počtů." },
+  { t: "Chain-of-thought", d: "Řetězec úvah při řešení úkolu. Reasoning modely uvažují interně; žádej stručné zdůvodnění a ověření výsledku." },
   { t: "RAG", d: "Retrieval-Augmented Generation: model si před odpovědí vyhledá dokumenty a opírá se o ně." },
   { t: "Agent", d: "Systém, kde LLM v smyčce sám volí a volá nástroje, dokud nesplní cíl. Nejen mluví — koná." },
   { t: "Nástroj (tool)", d: "Funkce, kterou model umí zavolat: vyhledávání, kód, API. Rozšiřuje model o akce." },
@@ -171,14 +182,14 @@ var GLOSAR = [
   { t: "Orchestrátor", d: "Hlavní agent, který rozděluje práci mezi sub-agenty a skládá výsledky." },
   { t: "Human-in-the-loop", d: "Architektura, kde člověk schvaluje kritické či nevratné kroky agenta." },
   { t: "MCP", d: "Model Context Protocol — standard pro připojení nástrojů a dat k modelům. „USB“ pro AI." },
-  { t: "Fine-tuning", d: "Doučení modelu na vlastních datech pro konkrétní úkol. Silnější, dražší než promptování." },
+  { t: "Fine-tuning", d: "Dodatečné trénování pro konkrétní úkol nebo styl. Vyžaduje kvalitní data a měření; nenahrazuje vyhledávání aktuálních faktů." },
   { t: "Embedding", d: "Převod textu na vektor zachycující význam. Základ vyhledávání podle smyslu a RAG." },
-  { t: "Self-consistency", d: "Více nezávislých odpovědí a výběr nejlepší. Zvyšuje spolehlivost u uvažování." },
+  { t: "Self-consistency", d: "Více řešení a porovnání jejich shody. Může pomoci, ale shodná odpověď více modelů stále nemusí být pravdivá." },
 ];
 
 var ROADMAP = [
   { f: "1", name: "Mluvit s modelem", lvl: "Začátečník", weeks: "Týden 1–2", items: ["Role + kontext + jasný úkol", "Iterace: „verze 2, konkrétnější“", "Strukturovaný výstup (tabulky)", "Rozpoznat a ověřit halucinaci"] },
-  { f: "2", name: "Promptovat jako profík", lvl: "Mírně pokročilý", weeks: "Týden 3–5", items: ["Few-shot příklady", "Chain-of-thought u logiky", "Mantinely a zákazy", "Sebekritika a revize", "Vlastní system prompt"] },
+  { f: "2", name: "Promptovat jako profík", lvl: "Mírně pokročilý", weeks: "Týden 3–5", items: ["Few-shot příklady", "Uvažování a kontrola výsledku", "Mantinely a zákazy", "Sebekritika a revize", "Vlastní system prompt"] },
   { f: "3", name: "Stavět workflow", lvl: "Pokročilý", weeks: "Týden 6–9", items: ["Dekompozice úkolů", "Řetězení s kontrolami", "Meta-prompting a šablony", "Ověřování přes oponenta", "Testovací sada promptů"] },
   { f: "4", name: "Orchestrovat agenty", lvl: "Expert", weeks: "Týden 10+", items: ["Anatomie agenta", "ReAct a tool-use", "Reflexní a routing vzory", "Smyčky s limity a logy", "Orchestrátor + sub-agenti"] },
 ];
@@ -186,7 +197,7 @@ var ROADMAP = [
 var FAQ_DATA = [
   { q: "Musím umět programovat, abych využil agenty?", a: "Pro pochopení principů ne. Pro stavbu vlastních agentů se hodí základy (Python, API), ale řada no-code nástrojů dnes umožní postavit funkční agentní workflow bez kódu. Začněte porozuměním smyčce a architekturám — nástroj je až druhý krok." },
   { q: "Jaký je rozdíl mezi chatbotem a agentem?", a: "Chatbot odpoví na zprávu a čeká. Agent dostane cíl a sám v smyčce rozhoduje, volá nástroje a opakuje kroky, dokud cíl nesplní — bez diktování každého kroku. Klíč je autonomní smyčka a přístup k nástrojům." },
-  { q: "Halucinují i nejnovější modely?", a: "Ano, i když výrazně méně. Halucinace plyne z principu — model generuje pravděpodobný text, ne ověřenou pravdu. Proto chtějte u faktů zdroje a míru jistoty, kritické údaje ověřujte a používejte RAG či vyhledávání, které model uzemní v reálných datech." },
+  { q: "Halucinují i nejnovější modely?", a: "Ano. Četnost závisí na modelu, úkolu a dostupných podkladech. Halucinace plyne z principu — model generuje pravděpodobný text, ne ověřenou pravdu. Proto chtějte u faktů zdroje a míru jistoty, kritické údaje ověřujte a používejte RAG či vyhledávání, které model uzemní v reálných datech." },
   { q: "Vyplatí se platit za prémiové modely?", a: "U jednoduchých úkolů stačí levnější/zdarma modely. U složitějšího uvažování, kódu, dlouhého kontextu a agentních smyček se kvalitnější model vyplatí — chybovost a počet iterací klesnou natolik, že ušetří víc času, než stojí." },
   { q: "Jak dlouhý má být ideální prompt?", a: "Tak dlouhý, aby obsahoval potřebný kontext a instrukce — a ani slovo navíc. Lepší je strukturovaný prompt o pěti jasných částech než odstavec vaty. Délka není cíl; jasnost ano." },
   { q: "Co je nejčastější chyba začátečníků?", a: "Nulový kontext a vágní zadání — lidé píší modelu, jako by jim viděl do hlavy. Druhá: spokojit se s první odpovědí místo iterace. Opravení těchto dvou věcí zvedne kvalitu víc než jakákoli pokročilá technika." },
@@ -203,16 +214,16 @@ function useReveal(th) {
     var el = ref.current; if (!el) return;
     var o = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { set(true); o.disconnect(); } }, { threshold: th });
     o.observe(el); return function () { o.disconnect(); };
-  }, [th]);
+  }, [th, set]);
   return [ref, vis];
 }
 
 function Reveal(props) {
   var r = useReveal(0.1), ref = r[0], vis = r[1];
-  return <div ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? "none" : "translateY(24px)", transition: "opacity 0.7s ease " + (props.delay || 0) + "s, transform 0.7s cubic-bezier(.4,0,.2,1) " + (props.delay || 0) + "s", height: props.fill ? "100%" : undefined }}>{props.children}</div>;
+  return <div className="reveal" ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? "none" : "translateY(24px)", transition: "opacity 0.7s ease " + (props.delay || 0) + "s, transform 0.7s cubic-bezier(.4,0,.2,1) " + (props.delay || 0) + "s", height: props.fill ? "100%" : undefined }}>{props.children}</div>;
 }
 
-function goTo(id) { var el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth" }); }
+function goTo(id) { var el = document.getElementById(id); if (el) { history.replaceState(null, "", "#"+id); el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }); } }
 
 function Eyebrow(props) {
   return <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: props.color || T.violet, marginBottom: 12, fontWeight: 600 }}>{props.children}</div>;
@@ -233,7 +244,7 @@ function SectionHead(props) {
 function Pill(props) {
   var prim = props.primary;
   return (
-    <button onClick={props.onClick} style={{ border: prim ? "none" : "1.5px solid " + T.border, cursor: "pointer", fontFamily: T.sans, fontWeight: 600, borderRadius: 999, padding: props.big ? "15px 34px" : "10px 22px", fontSize: props.big ? 15 : 13.5, color: prim ? "#0A0A12" : T.text, background: prim ? "linear-gradient(95deg,#8B5CF6,#22D3EE)" : T.surface, transition: "transform 0.15s ease,box-shadow 0.15s ease", boxShadow: prim ? "0 8px 26px rgba(139,92,246,0.32)" : "none", ...(props.style || {}) }}
+    <button onClick={props.onClick} style={{ border: prim ? "none" : "1.5px solid " + T.border, cursor: "pointer", fontFamily: T.sans, fontWeight: 600, borderRadius: 999, padding: props.big ? "15px 34px" : "10px 22px", fontSize: props.big ? 15 : 13.5, color: prim ? "#FFFFFF" : T.text, background: prim ? "#2D4434" : T.surface, transition: "transform 0.15s ease,box-shadow 0.15s ease", boxShadow: prim ? "none" : "none", ...(props.style || {}) }}
       onMouseEnter={function (e) { e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={function (e) { e.currentTarget.style.transform = "translateY(0)"; }}>
       {props.children}
@@ -243,50 +254,19 @@ function Pill(props) {
 
 function CopyBtn(props) {
   var s = useState(false), done = s[0], set = s[1];
-  function copy() {
-    try { navigator.clipboard.writeText(props.text); } catch (e) {}
-    set(true); setTimeout(function () { set(false); }, 1600);
+  async function copy() {
+    try { await navigator.clipboard.writeText(props.text); set(true); }
+    catch { set("error"); }
+    setTimeout(function () { set(false); }, 2200);
   }
   return (
     <button onClick={copy} style={{ border: "1px solid " + (done ? "rgba(52,211,153,0.5)" : T.border), background: done ? T.greenLo : T.surface, color: done ? T.green : T.muted, fontFamily: T.mono, fontSize: 11.5, fontWeight: 600, padding: "6px 13px", borderRadius: 8, cursor: "pointer", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>
-      {done ? "✓ Zkopírováno" : (props.label || "Kopírovat")}
+      {done === "error" ? "Označ a zkopíruj ručně" : done ? "✓ Zkopírováno" : (props.label || "Kopírovat")}
     </button>
   );
 }
 
 /* ══════════════ HERO TYPING ══════════════ */
-function TypingDemo() {
-  var lines = useMemo(function () { return [
-    "Jsi finanční poradce pro začátečníky…",
-    "Postupuj krok za krokem a výsledek ověř…",
-    "Vrať POUZE validní JSON, začni znakem {…",
-    "Cíl: najdi 3 dodavatele. Max 15 kroků…",
-  ]; }, []);
-  var s1 = useState(0), li = s1[0], setLi = s1[1];
-  var s2 = useState(""), txt = s2[0], setTxt = s2[1];
-  var s3 = useState(false), del = s3[0], setDel = s3[1];
-  useEffect(function () {
-    var full = lines[li];
-    var t;
-    if (!del && txt.length < full.length) t = setTimeout(function () { setTxt(full.slice(0, txt.length + 1)); }, 38);
-    else if (!del && txt.length === full.length) t = setTimeout(function () { setDel(true); }, 1500);
-    else if (del && txt.length > 0) t = setTimeout(function () { setTxt(full.slice(0, txt.length - 1)); }, 18);
-    else { setDel(false); setLi((li + 1) % lines.length); }
-    return function () { clearTimeout(t); };
-  }, [txt, del, li, lines]);
-  return (
-    <div style={{ fontFamily: T.mono, fontSize: 14, background: "#0B0B12", border: "1px solid " + T.border, borderRadius: 14, padding: "18px 20px", textAlign: "left", maxWidth: 560, margin: "0 auto", boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}>
-      <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-        {["#F87171", "#F59E0B", "#34D399"].map(function (c) { return <span key={c} style={{ width: 11, height: 11, borderRadius: "50%", background: c, opacity: 0.8 }} />; })}
-        <span style={{ marginLeft: "auto", color: T.faint, fontSize: 11 }}>prompt.txt</span>
-      </div>
-      <span style={{ color: T.violet }}>&gt; </span>
-      <span style={{ color: T.text }}>{txt}</span>
-      <span style={{ display: "inline-block", width: 8, height: 16, background: T.cyan, marginLeft: 2, verticalAlign: "text-bottom", animation: "blink 1s step-end infinite" }} />
-    </div>
-  );
-}
-
 /* ══════════════ INTERAKTIVNÍ PROMPT BUILDER ══════════════ */
 function PromptBuilder() {
   var s = useState({ role: "", kontext: "", ukol: "", format: "Odrážky", mantinely: true, cot: false }), v = s[0], set = s[1];
@@ -298,43 +278,43 @@ function PromptBuilder() {
     parts.push("Úkol: " + (v.ukol.trim() || "[doplň, co přesně chceš]") + ".");
     var fmap = { "Odrážky": "stručné odrážky", "Tabulka": "markdown tabulku", "JSON": "POUZE validní JSON (začni znakem {, žádný další text)", "Krátký odstavec": "jeden krátký odstavec (max 100 slov)", "Krok za krokem": "číslovaný postup" };
     parts.push("Formát: Odpověz jako " + fmap[v.format] + ".");
-    if (v.cot) parts.push("Postup: Nejdřív přemýšlej krok za krokem, pak teprve odpověz.");
+    if (v.cot) parts.push("Kontrola: Uveď stručné zdůvodnění, klíčové předpoklady a ověř výpočty dostupným nástrojem.");
     if (v.mantinely) parts.push("Mantinely: Drž se faktů. Pokud něco nevíš, napiš to — nevymýšlej. Žádná zbytečná omáčka.");
     return parts.join("\n");
   }, [v]);
-  var score = (v.role ? 1 : 0) + (v.kontext ? 1 : 0) + (v.ukol ? 1 : 0) + 1 + (v.cot ? 1 : 0) + (v.mantinely ? 1 : 0);
-  var inp = { width: "100%", background: "#0B0B12", border: "1px solid " + T.border, borderRadius: 10, color: T.text, fontSize: 13.5, padding: "11px 13px", marginTop: 6 };
+  var score = (v.role.trim() ? 1 : 0) + (v.kontext.trim() ? 1 : 0) + (v.ukol.trim() ? 1 : 0) + 1 + (v.cot ? 1 : 0) + (v.mantinely ? 1 : 0);
+  var inp = { width: "100%", background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: 10, color: T.text, fontSize: 13.5, padding: "11px 13px", marginTop: 6 };
   var lab = { fontSize: 12.5, fontWeight: 600, color: T.muted };
   return (
     <div className="split" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
       <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: T.r, padding: 24 }}>
         <div style={{ marginBottom: 14 }}>
           <div style={lab}>Role <span style={{ color: T.faint }}>— kdo a pro koho</span></div>
-          <input style={inp} value={v.role} placeholder="daňový poradce pro OSVČ" onChange={function (e) { upd("role", e.target.value); }} />
+          <input id="builder-role" aria-label="Role" style={inp} value={v.role} placeholder="daňový poradce pro OSVČ" onChange={function (e) { upd("role", e.target.value); }} />
         </div>
         <div style={{ marginBottom: 14 }}>
           <div style={lab}>Kontext <span style={{ color: T.faint }}>— vaše situace</span></div>
-          <textarea rows={2} style={inp} value={v.kontext} placeholder="jsem OSVČ na volné noze, paušální daň, řeším přechod na s.r.o." onChange={function (e) { upd("kontext", e.target.value); }} />
+          <textarea rows={2} id="builder-kontext" aria-label="Kontext" style={inp} value={v.kontext} placeholder="jsem OSVČ na volné noze, paušální daň, řeším přechod na s.r.o." onChange={function (e) { upd("kontext", e.target.value); }} />
         </div>
         <div style={{ marginBottom: 14 }}>
           <div style={lab}>Úkol <span style={{ color: T.faint }}>— co chcete</span></div>
-          <textarea rows={2} style={inp} value={v.ukol} placeholder="vysvětli, kdy se mi přechod na s.r.o. vyplatí" onChange={function (e) { upd("ukol", e.target.value); }} />
+          <textarea rows={2} id="builder-ukol" aria-label="Úkol" style={inp} value={v.ukol} placeholder="vysvětli, kdy se mi přechod na s.r.o. vyplatí" onChange={function (e) { upd("ukol", e.target.value); }} />
         </div>
         <div style={{ marginBottom: 14 }}>
           <div style={lab}>Formát výstupu</div>
-          <select style={inp} value={v.format} onChange={function (e) { upd("format", e.target.value); }}>
+          <select id="builder-format" aria-label="Formát výstupu" style={inp} value={v.format} onChange={function (e) { upd("format", e.target.value); }}>
             {["Odrážky", "Tabulka", "JSON", "Krátký odstavec", "Krok za krokem"].map(function (o) { return <option key={o} value={o}>{o}</option>; })}
           </select>
         </div>
         <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
-          {[["cot", "Chain-of-thought"], ["mantinely", "Mantinely proti halucinaci"]].map(function (c) { return (
+          {[["cot", "Zdůvodnění a kontrola"], ["mantinely", "Práce s nejistotou"]].map(function (c) { return (
             <label key={c[0]} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: T.text }}>
               <input type="checkbox" checked={v[c[0]]} onChange={function (e) { upd(c[0], e.target.checked); }} style={{ accentColor: T.violet, width: 16, height: 16 }} />
               {c[1]}
             </label>); })}
         </div>
       </div>
-      <div style={{ background: "#0B0B12", border: "1px solid " + T.border, borderRadius: T.r, padding: 24, display: "flex", flexDirection: "column" }}>
+      <div style={{ background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: T.r, padding: 24, display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
           <span style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: 1.5, color: T.faint, textTransform: "uppercase" }}>Tvůj prompt</span>
           <CopyBtn text={prompt} />
@@ -342,10 +322,10 @@ function PromptBuilder() {
         <pre style={{ fontFamily: T.mono, fontSize: 12.8, lineHeight: 1.75, color: T.text, whiteSpace: "pre-wrap", flex: 1, margin: 0 }}>{prompt}</pre>
         <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid " + T.border }}>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: T.muted, marginBottom: 6 }}>
-            <span>Síla promptu</span><span style={{ color: score >= 5 ? T.green : score >= 3 ? T.amber : T.red, fontWeight: 700 }}>{score}/6</span>
+            <span>Vyplněné části (ne hodnocení kvality)</span><span style={{ color: score >= 5 ? T.green : score >= 3 ? T.amber : T.red, fontWeight: 700 }}>{score}/6</span>
           </div>
           <div style={{ height: 7, background: "rgba(255,255,255,0.06)", borderRadius: 99, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: (score / 6 * 100) + "%", background: "linear-gradient(90deg,#8B5CF6,#22D3EE)", borderRadius: 99, transition: "width 0.4s ease" }} />
+            <div style={{ height: "100%", width: (score / 6 * 100) + "%", background: "linear-gradient(90deg,#526A3F,#376B6C)", borderRadius: 99, transition: "width 0.4s ease" }} />
           </div>
         </div>
       </div>
@@ -361,12 +341,12 @@ function LoopSimulator() {
     if (!playing) return;
     var t = setTimeout(function () { setStep(function (p) { return (p + 1) % LOOP_STEPS.length; }); }, 1700);
     return function () { clearTimeout(t); };
-  }, [playing, step]);
+  }, [playing, step, setStep]);
   var cur = LOOP_STEPS[step];
   var R = 132, cx = 160, cy = 160;
   return (
     <div className="split" style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 28, alignItems: "center" }}>
-      <div style={{ position: "relative", width: 320, height: 320, margin: "0 auto" }}>
+      <div style={{ position: "relative", width: "100%", maxWidth: 320, aspectRatio: "1", margin: "0 auto" }}>
         <svg viewBox="0 0 320 320" style={{ width: "100%", height: "100%" }}>
           <circle cx={cx} cy={cy} r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" strokeDasharray="4 6" />
           {LOOP_STEPS.map(function (st, i) {
@@ -374,9 +354,9 @@ function LoopSimulator() {
             var x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R;
             var on = i === step;
             return (
-              <g key={i} style={{ cursor: "pointer" }} onClick={function () { setPlaying(false); setStep(i); }}>
-                <circle cx={x} cy={y} r={on ? 26 : 20} fill={on ? st.color : "#12121C"} stroke={on ? st.color : T.border} strokeWidth={on ? 2 : 1} style={{ transition: "all 0.4s ease", filter: on ? "drop-shadow(0 0 12px " + st.color + ")" : "none" }} />
-                <text x={x} y={y + 5} textAnchor="middle" fontSize={on ? 18 : 14} style={{ transition: "all 0.3s ease" }}>{st.icon}</text>
+              <g key={i} role="button" tabIndex={0} aria-label={st.cz} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setPlaying(false);setStep(i);}}} style={{ cursor: "pointer" }} onClick={function () { setPlaying(false); setStep(i); }}>
+                <circle cx={x} cy={y} r={on ? 26 : 20} fill={on ? st.color : "#E8EDDF"} stroke={on ? st.color : T.border} strokeWidth={on ? 2 : 1} style={{ transition: "all 0.4s ease", filter: on ? "drop-shadow(0 0 12px " + st.color + ")" : "none" }} />
+                <text x={x} y={y + 5} textAnchor="middle" fontSize={on ? 18 : 14} style={{ transition: "all 0.3s ease" }}>{i+1}</text>
               </g>
             );
           })}
@@ -392,10 +372,10 @@ function LoopSimulator() {
         </div>
         <div style={{ background: T.surface, border: "1px solid " + cur.color + "55", borderRadius: T.r, padding: 22, transition: "border-color 0.4s ease" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-            <span style={{ fontSize: 22 }}>{cur.icon}</span>
+            <span style={{ fontSize: 22 }}><Mark kind="flow"/></span>
             <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: cur.color, letterSpacing: 1 }}>{cur.k} · {cur.cz}</span>
           </div>
-          <div style={{ fontFamily: T.mono, fontSize: 13.5, color: T.text, background: "#0B0B12", border: "1px solid " + T.border, borderRadius: 10, padding: "11px 14px", marginBottom: 12 }}>{cur.txt}</div>
+          <div style={{ fontFamily: T.mono, fontSize: 13.5, color: T.text, background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: 10, padding: "11px 14px", marginBottom: 12 }}>{cur.txt}</div>
           <p style={{ fontSize: 13.5, lineHeight: 1.7, color: T.muted }}>{cur.detail}</p>
         </div>
         <div style={{ display: "flex", gap: 5, marginTop: 12 }}>
@@ -411,9 +391,9 @@ function TechCard(props) {
   var t = props.t;
   var lvlc = t.lvl === 1 ? T.green : t.lvl === 2 ? T.amber : T.violet;
   return (
-    <div className="lift" onClick={props.onOpen} style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: T.r, padding: "22px 22px", cursor: "pointer", height: "100%" }}>
+    <div className="lift" role="button" tabIndex={0} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();props.onOpen();}}} onClick={props.onOpen} style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: T.r, padding: "22px 22px", cursor: "pointer", height: "100%" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-        <span style={{ fontSize: 26 }}>{t.icon}</span>
+        <span style={{ fontSize: 26 }}><Mark kind="book"/></span>
         <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: lvlc, background: lvlc + "18", border: "1px solid " + lvlc + "44", borderRadius: 99, padding: "3px 10px", textTransform: "uppercase", letterSpacing: 0.5 }}>{t.tag}</span>
       </div>
       <h3 style={{ fontFamily: T.sans, fontSize: 17, fontWeight: 700, marginBottom: 6 }}>{t.name}</h3>
@@ -425,21 +405,22 @@ function TechCard(props) {
 
 function TechModal(props) {
   var t = props.t;
+  const dialogRef = useRef(null);
+  useEffect(() => { const el = dialogRef.current; el.showModal(); return () => el.close(); }, []);
   useEffect(function () { document.body.style.overflow = "hidden"; return function () { document.body.style.overflow = ""; }; }, []);
   if (!t) return null;
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={props.onClose}>
-      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }} />
+    <dialog ref={dialogRef} className="tech-dialog" aria-label={t.name} onCancel={props.onClose} onClick={e=>{if(e.target===e.currentTarget)props.onClose();}}>
       <div onClick={function (e) { e.stopPropagation(); }} style={{ position: "relative", background: T.bg2, border: "1px solid " + T.border, borderRadius: 22, maxWidth: 680, width: "100%", maxHeight: "88vh", overflow: "auto", padding: "30px 34px 36px", boxShadow: "0 40px 100px rgba(0,0,0,0.6)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
           <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-            <span style={{ fontSize: 32 }}>{t.icon}</span>
+            <span style={{ fontSize: 32 }}><Mark kind="book"/></span>
             <div>
               <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: 2, color: T.violet, textTransform: "uppercase", marginBottom: 3 }}>Technika promptování</div>
               <h2 style={{ fontFamily: T.sans, fontSize: 24, fontWeight: 800, letterSpacing: -0.5 }}>{t.name}</h2>
             </div>
           </div>
-          <button onClick={props.onClose} style={{ width: 38, height: 38, borderRadius: 99, border: "1px solid " + T.border, background: T.surface, cursor: "pointer", fontSize: 20, color: T.muted, flexShrink: 0 }}>×</button>
+          <button aria-label="Zavřít detail techniky" onClick={props.onClose} style={{ width: 38, height: 38, borderRadius: 99, border: "1px solid " + T.border, background: T.surface, cursor: "pointer", fontSize: 20, color: T.muted, flexShrink: 0 }}>×</button>
         </div>
         <p style={{ fontSize: 14.5, lineHeight: 1.8, color: T.text, marginBottom: 20 }}>{t.co}</p>
         <div style={{ display: "grid", gap: 12, marginBottom: 18 }}>
@@ -456,11 +437,11 @@ function TechModal(props) {
           </div>
         </div>
         <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: T.violetLo, border: "1px solid rgba(139,92,246,0.3)", borderRadius: 12, padding: "13px 16px" }}>
-          <span style={{ fontSize: 16 }}>💡</span>
-          <span style={{ fontSize: 13.5, lineHeight: 1.65, color: "#D6CCFA" }}>{t.tip}</span>
+          <span style={{ fontSize: 16 }}><Mark/></span>
+          <span style={{ fontSize: 13.5, lineHeight: 1.65, color: "#526A3F" }}>{t.tip}</span>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
 
@@ -469,11 +450,11 @@ function FaqItem(props) {
   var s = useState(false), open = s[0], set = s[1];
   return (
     <div style={{ border: "1px solid " + T.border, borderRadius: 14, background: T.surface, marginBottom: 10, overflow: "hidden" }}>
-      <button onClick={function () { set(!open); }} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, padding: "18px 22px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
+      <button aria-expanded={open} onClick={function () { set(!open); }} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, padding: "18px 22px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
         <span style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 600, color: T.text }}>{props.q}</span>
         <span style={{ flexShrink: 0, width: 27, height: 27, borderRadius: 99, border: "1.5px solid " + T.violet, color: T.violet, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, transform: open ? "rotate(45deg)" : "none", transition: "transform 0.25s ease" }}>+</span>
       </button>
-      <div style={{ maxHeight: open ? 360 : 0, overflow: "hidden", transition: "max-height 0.35s cubic-bezier(.4,0,.2,1)" }}>
+      <div hidden={!open} style={{ maxHeight: open ? "none" : 0, overflow: "hidden", transition: "max-height 0.35s cubic-bezier(.4,0,.2,1)" }}>
         <p style={{ padding: "0 22px 20px", fontSize: 14, lineHeight: 1.8, color: T.muted }}>{props.a}</p>
       </div>
     </div>
@@ -487,8 +468,8 @@ function Glosar() {
   return (
     <div>
       <div style={{ maxWidth: 420, margin: "0 auto 30px", position: "relative" }}>
-        <span style={{ position: "absolute", left: 18, top: "50%", transform: "translateY(-50%)", color: T.faint }}>🔍</span>
-        <input value={q} onChange={function (e) { set(e.target.value); }} placeholder={"Hledej v " + GLOSAR.length + " pojmech…"} style={{ width: "100%", padding: "13px 20px 13px 44px", borderRadius: 999, border: "1px solid " + T.border, background: T.surface, color: T.text, fontSize: 14 }} />
+        <span style={{ position: "absolute", left: 18, top: "50%", transform: "translateY(-50%)", color: T.faint }}><Mark kind="search"/></span>
+        <input aria-label="Hledat ve slovníku" value={q} onChange={function (e) { set(e.target.value); }} placeholder={"Hledej v " + GLOSAR.length + " pojmech…"} style={{ width: "100%", padding: "13px 20px 13px 44px", borderRadius: 999, border: "1px solid " + T.border, background: T.surface, color: T.text, fontSize: 14 }} />
       </div>
       <div className="g3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
         {f.map(function (g) { return (
@@ -504,25 +485,9 @@ function Glosar() {
 
 /* ══════════════ NAV + PROGRESS ══════════════ */
 function Nav() {
-  var bar = useRef(null);
-  useEffect(function () {
-    function on() { var h = document.documentElement; var p = h.scrollTop / (h.scrollHeight - h.clientHeight); if (bar.current) bar.current.style.width = (p * 100).toFixed(2) + "%"; }
-    window.addEventListener("scroll", on, { passive: true }); on();
-    return function () { window.removeEventListener("scroll", on); };
-  }, []);
-  var links = [["Techniky", "techniky"], ["Builder", "builder"], ["Agenti", "agenti"], ["Smyčka", "smycka"], ["Šablony", "sablony"], ["Slovník", "slovnik"]];
-  return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(5,5,7,0.8)", backdropFilter: "blur(18px)", borderBottom: "1px solid " + T.border }}>
-      <div className="mx" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 28px" }}>
-        <div onClick={function () { window.scrollTo({ top: 0, behavior: "smooth" }); }} style={{ fontFamily: T.sans, fontWeight: 800, fontSize: 16, cursor: "pointer", letterSpacing: -0.5 }}>promptuj<span className="gradtxt">.ai</span></div>
-        <div className="hideMob" style={{ display: "flex", gap: 24 }}>
-          {links.map(function (l) { return <span key={l[1]} className="navlink" onClick={function () { goTo(l[1]); }} style={{ fontSize: 13.5, fontWeight: 500, color: T.muted }}>{l[0]}</span>; })}
-        </div>
-        <Pill primary onClick={function () { goTo("builder"); }} style={{ padding: "9px 18px", fontSize: 13 }}>Vyzkoušet builder</Pill>
-      </div>
-      <div style={{ height: 2, background: "transparent" }}><div ref={bar} style={{ height: "100%", width: "0%", background: "linear-gradient(90deg,#8B5CF6,#22D3EE)" }} /></div>
-    </nav>
-  );
+  const [open, setOpen] = useState(false);
+  const links = [["Modely", "modely"], ["Workflow", "workflow"], ["Techniky", "techniky"], ["Agenti", "agenti"], ["Slovník", "slovnik"]];
+  return <header className="site-header"><nav className="mx" aria-label="Hlavní navigace"><a className="brand" href="#uvod"><Mark/> promptuj<span>ai</span><small>PROSTOR PRO TVOJE NÁPADY</small></a><div className="desktop-nav">{links.map(([label,id])=><a key={id} href={"#"+id}>{label}</a>)}</div><a className="solid nav-cta" href="#builder">Vytvořit prompt ↗</a><button className="menu-toggle" aria-expanded={open} aria-controls="mobile-nav" onClick={()=>setOpen(!open)}>{open ? "Zavřít" : "Menu"}</button></nav>{open && <div className="mobile-nav" id="mobile-nav">{[...links,["Vytvořit prompt","builder"],["Šablony","sablony"],["Moje cesta","cesta"]].map(([label,id])=><a key={id} href={"#"+id} onClick={()=>setOpen(false)}>{label}</a>)}</div>}</header>;
 }
 
 /* ═══════════════════════════ MAIN ═══════════════════════════ */
@@ -536,37 +501,16 @@ export default function App() {
     <>
       <style>{CSS}</style>
       {tech && <TechModal t={tech} onClose={function () { setTech(null); }} />}
+      <a className="skip-link" href="#modely">Přejít k obsahu</a>
       <Nav />
 
-      {/* HERO */}
-      <section style={{ position: "relative", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", paddingTop: 90, paddingBottom: 60, textAlign: "center" }}>
-        <div style={{ position: "absolute", top: "-10%", right: "-8%", width: 540, height: 540, borderRadius: "50%", background: "radial-gradient(circle,rgba(139,92,246,0.16),transparent 70%)", pointerEvents: "none", animation: "floaty 18s ease-in-out infinite alternate" }} />
-        <div style={{ position: "absolute", bottom: "-12%", left: "-8%", width: 560, height: 560, borderRadius: "50%", background: "radial-gradient(circle,rgba(34,211,238,0.12),transparent 70%)", pointerEvents: "none", animation: "floaty 22s ease-in-out infinite alternate-reverse" }} />
-        <div className="mx" style={{ position: "relative", zIndex: 1, maxWidth: 860 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 18px", borderRadius: 99, background: T.surface, border: "1px solid " + T.border, marginBottom: 28 }}>
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: T.green, animation: "pulsed 2s infinite" }} />
-            <span style={{ fontFamily: T.mono, fontSize: 11, color: T.muted, letterSpacing: 1, textTransform: "uppercase" }}>Od prvního promptu k vlastním agentům</span>
-          </div>
-          <h1 style={{ fontFamily: T.sans, fontSize: "clamp(40px,7vw,76px)", fontWeight: 800, lineHeight: 1.02, letterSpacing: -2.5, marginBottom: 22 }}>Ovládni AI.<br /><span className="gradtxt">Od promptu k agentům.</span></h1>
-          <p style={{ fontSize: "clamp(15px,2vw,19px)", color: T.muted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 34px" }}>Interaktivní česká akademie promptování, agentních systémů a smyček. Žádná teorie do šuplíku — techniky, živé nástroje a vzory, které použiješ ještě dnes.</p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 44 }}>
-            <Pill primary big onClick={function () { goTo("techniky"); }}>Začít se učit</Pill>
-            <Pill big onClick={function () { goTo("smycka"); }}>Spustit simulátor smyčky</Pill>
-          </div>
-          <TypingDemo />
-        </div>
-      </section>
-
-      {/* MARQUEE */}
-      <div style={{ padding: "18px 0", borderTop: "1px solid " + T.border, borderBottom: "1px solid " + T.border, overflow: "hidden", position: "relative", background: T.bg2 }}>
-        <div className="marq">
-          {[0, 1].map(function (rep) { return ["Role & kontext", "Few-shot", "Chain-of-thought", "Sebekritika", "Řetězení promptů", "ReAct agenti", "Reflexní smyčka", "Orchestrace", "RAG", "Human-in-the-loop", "Meta-prompting", "Self-consistency"].map(function (w) { return <span key={rep + w} style={{ fontFamily: T.mono, fontSize: 13, fontWeight: 600, color: T.faint, whiteSpace: "nowrap", letterSpacing: 0.5 }}>{w}</span>; }); })}
-        </div>
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: "linear-gradient(90deg," + T.bg2 + " 0%,transparent 10%,transparent 90%," + T.bg2 + " 100%)" }} />
-      </div>
+      <main>
+      <Hero />
+      <ModelExplorer />
+      <Workflows />
 
       {/* CESTA */}
-      <section style={{ padding: "90px 0 70px" }}>
+      <section id="cesta" style={{ padding: "90px 0 70px" }}>
         <div className="mx">
           <SectionHead eyebrow="Tvoje cesta" title="Čtyři úrovně, jeden směr" sub="Od první konverzace s modelem až po orchestraci více agentů. Každá úroveň staví na předchozí." />
           <div className="g4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14 }}>
@@ -574,7 +518,7 @@ export default function App() {
               <Reveal key={i} delay={i * 0.1} fill>
                 <div className="lift" style={{ ...card, padding: "24px 22px", height: "100%" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg,#8B5CF6,#22D3EE)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "#0A0A12", fontFamily: T.mono }}>{r.f}</div>
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: "#DCE5CD", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "#0A0A12", fontFamily: T.mono }}>{r.f}</div>
                     <div style={{ fontFamily: T.mono, fontSize: 10, color: T.faint, letterSpacing: 1, textTransform: "uppercase" }}>{r.weeks}</div>
                   </div>
                   <div style={{ fontSize: 11, color: T.violet, fontWeight: 600, marginBottom: 3 }}>{r.lvl}</div>
@@ -598,7 +542,7 @@ export default function App() {
           <SectionHead eyebrow="Knihovna technik" title="12 technik promptování" sub="U každé: kdy ji použít, slabá vs. silná verze promptu a tip navíc. Klikni pro příklad k okopírování." />
           <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 30, flexWrap: "wrap" }}>
             {[["vse", "Vše"], ["1", "Základ"], ["2", "Uvažování"], ["3", "Pokročilé"]].map(function (o) { return (
-              <button key={o[0]} onClick={function () { setFilter(o[0]); }} style={{ padding: "8px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, cursor: "pointer", border: "1px solid " + (filter === o[0] ? T.violet : T.border), background: filter === o[0] ? T.violetLo : T.surface, color: filter === o[0] ? "#C4B5FD" : T.muted }}>{o[1]}</button>); })}
+              <button key={o[0]} aria-pressed={filter === o[0]} onClick={function () { setFilter(o[0]); }} style={{ padding: "8px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, cursor: "pointer", border: "1px solid " + (filter === o[0] ? T.violet : T.border), background: filter === o[0] ? T.violetLo : T.surface, color: filter === o[0] ? "#526A3F" : T.muted }}>{o[1]}</button>); })}
           </div>
           <div className="g3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
             {techShown.map(function (t, i) { return <Reveal key={t.id} delay={(i % 3) * 0.08} fill><TechCard t={t} onOpen={function () { setTech(t); }} /></Reveal>; })}
@@ -611,6 +555,7 @@ export default function App() {
         <div className="mx">
           <SectionHead eyebrow="Interaktivní nástroj" title="Postav si prompt naživo" sub="Vyplň pole vlevo, sleduj, jak vpravo roste profesionální prompt — a zkopíruj ho jedním klikem." />
           <PromptBuilder />
+          <p className="learning-source">K principům uvažování: <a href="https://developers.openai.com/api/docs/guides/reasoning-best-practices" target="_blank" rel="noreferrer">oficiální doporučení OpenAI ↗</a>. Builder skládá šablonu lokálně, nevolá model.</p>
         </div>
       </section>
 
@@ -622,7 +567,7 @@ export default function App() {
             {ANTIPATTERNS.map(function (a, i) { return (
               <Reveal key={i} delay={(i % 2) * 0.08} fill>
                 <div className="lift" style={{ ...card, padding: "18px 20px", display: "flex", gap: 14, height: "100%" }}>
-                  <span style={{ fontSize: 24, flexShrink: 0 }}>{a.icon}</span>
+                  <span style={{ fontSize: 24, flexShrink: 0 }}><Mark kind="flow"/></span>
                   <div>
                     <div style={{ fontSize: 14.5, fontWeight: 700, color: T.red, marginBottom: 5, textDecoration: "line-through", textDecorationColor: "rgba(248,113,113,0.45)" }}>{a.p}</div>
                     <div style={{ fontSize: 13, lineHeight: 1.6, color: T.muted }}><span style={{ color: T.green, fontWeight: 700 }}>→ </span>{a.fix}</div>
@@ -641,7 +586,7 @@ export default function App() {
             {AGENT_PARTS.map(function (p, i) { return (
               <Reveal key={i} delay={(i % 3) * 0.08} fill>
                 <div className="lift" style={{ ...card, padding: "22px 22px", height: "100%" }}>
-                  <div style={{ fontSize: 26, marginBottom: 12 }}>{p.icon}</div>
+                  <div style={{ fontSize: 26, marginBottom: 12 }}><Mark kind="flow"/></div>
                   <h3 style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 700, marginBottom: 7 }}>{p.name}</h3>
                   <p style={{ fontSize: 13, lineHeight: 1.65, color: T.muted }}>{p.desc}</p>
                 </div>
@@ -656,7 +601,7 @@ export default function App() {
               <Reveal key={i} delay={i * 0.07}>
                 <div className="lift" style={{ ...card, padding: "22px 26px", display: "grid", gridTemplateColumns: "auto 1fr", gap: 20, alignItems: "start" }}>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 88 }}>
-                    <div style={{ width: 52, height: 52, borderRadius: 14, background: a.color + "18", border: "1px solid " + a.color + "55", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{a.icon}</div>
+                    <div style={{ width: 52, height: 52, borderRadius: 14, background: a.color + "18", border: "1px solid " + a.color + "55", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}><Mark kind="flow"/></div>
                     <span style={{ fontFamily: T.mono, fontSize: 9.5, color: a.color, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>{a.lvl}</span>
                   </div>
                   <div>
@@ -674,9 +619,9 @@ export default function App() {
       </section>
 
       {/* SMYČKA */}
-      <section id="smycka" style={{ padding: "90px 0", background: "linear-gradient(180deg," + T.bg2 + ", #0C0C16)", borderTop: "1px solid " + T.border, borderBottom: "1px solid " + T.border }}>
+      <section id="smycka" style={{ padding: "90px 0", background: "linear-gradient(180deg," + T.bg2 + ", #E8EDDF)", borderTop: "1px solid " + T.border, borderBottom: "1px solid " + T.border }}>
         <div className="mx">
-          <SectionHead color={T.green} eyebrow="Srdce každého agenta" title="Agentní smyčka naživo" sub="Klikni na „Spustit“ a sleduj, jak agent cyklí: pozoruj → mysli → jednej → vyhodnoť → opakuj, dokud nesplní cíl. Klikni na kterýkoli uzel." />
+          <SectionHead color={T.green} eyebrow="Srdce každého agenta" title="Jak funguje agentní smyčka" sub="Výuková simulace, která nevolá skutečný model ani nástroje. Klikni na „Spustit“ a sleduj cyklus: pozoruj → mysli → jednej → vyhodnoť → opakuj, dokud nesplní cíl. Klikni na kterýkoli uzel." />
           <Reveal><LoopSimulator /></Reveal>
           <Reveal>
             <h3 style={{ textAlign: "center", fontFamily: T.sans, fontSize: 22, fontWeight: 700, margin: "64px 0 8px", letterSpacing: -0.5 }}>6 principů bezpečné smyčky</h3>
@@ -686,7 +631,7 @@ export default function App() {
             {LOOP_PRINCIPY.map(function (p, i) { return (
               <Reveal key={i} delay={(i % 3) * 0.08} fill>
                 <div className="lift" style={{ ...card, padding: "22px 22px", height: "100%" }}>
-                  <div style={{ fontSize: 24, marginBottom: 12 }}>{p.icon}</div>
+                  <div style={{ fontSize: 24, marginBottom: 12 }}><Mark kind="flow"/></div>
                   <h4 style={{ fontFamily: T.sans, fontSize: 15.5, fontWeight: 700, marginBottom: 7 }}>{p.name}</h4>
                   <p style={{ fontSize: 13, lineHeight: 1.65, color: T.muted }}>{p.desc}</p>
                 </div>
@@ -707,7 +652,7 @@ export default function App() {
                     <h4 style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 700 }}>{s.name}</h4>
                     <span style={{ fontFamily: T.mono, fontSize: 10, color: T.amber, background: T.amberLo, border: "1px solid rgba(245,158,11,0.3)", borderRadius: 99, padding: "3px 10px", textTransform: "uppercase" }}>{s.tag}</span>
                   </div>
-                  <pre style={{ fontFamily: T.mono, fontSize: 12.3, lineHeight: 1.7, color: T.muted, whiteSpace: "pre-wrap", background: "#0B0B12", border: "1px solid " + T.border, borderRadius: 10, padding: "14px 16px", flex: 1, margin: "0 0 12px" }}>{s.text}</pre>
+                  <pre style={{ fontFamily: T.mono, fontSize: 12.3, lineHeight: 1.7, color: T.muted, whiteSpace: "pre-wrap", background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: 10, padding: "14px 16px", flex: 1, margin: "0 0 12px" }}>{s.text}</pre>
                   <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={s.text} /></div>
                 </div>
               </Reveal>); })}
@@ -724,7 +669,7 @@ export default function App() {
       </section>
 
       {/* FAQ */}
-      <section style={{ padding: "90px 0" }}>
+      <section id="faq" style={{ padding: "90px 0" }}>
         <div className="mx" style={{ maxWidth: 760 }}>
           <SectionHead eyebrow="FAQ" title="Časté otázky" />
           {FAQ_DATA.map(function (f, i) { return <FaqItem key={i} q={f.q} a={f.a} />; })}
@@ -734,7 +679,7 @@ export default function App() {
       {/* CTA */}
       <section style={{ padding: "0 0 90px" }}>
         <div className="mx">
-          <div style={{ borderRadius: 28, padding: "clamp(40px,6vw,72px) 32px", textAlign: "center", position: "relative", overflow: "hidden", background: "linear-gradient(135deg,#13102A,#0E1C2E 60%,#0C2420)", border: "1px solid " + T.border }}>
+          <div style={{ borderRadius: 28, padding: "clamp(40px,6vw,72px) 32px", textAlign: "center", position: "relative", overflow: "hidden", background: "#E8EDDF", border: "1px solid " + T.border }}>
             <div style={{ position: "absolute", top: "-40%", right: "-10%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle,rgba(139,92,246,0.22),transparent 70%)", pointerEvents: "none" }} />
             <div style={{ position: "relative" }}>
               <h2 style={{ fontFamily: T.sans, fontSize: "clamp(26px,4.5vw,42px)", fontWeight: 800, letterSpacing: -1.2, lineHeight: 1.1, marginBottom: 14 }}>Přestaň hádat. Začni <span className="gradtxt">promptovat</span>.</h2>
@@ -748,6 +693,7 @@ export default function App() {
         </div>
       </section>
 
+      </main>
       {/* FOOTER */}
       <footer style={{ borderTop: "1px solid " + T.border, background: T.bg2 }}>
         <div className="mx" style={{ padding: "48px 28px 30px" }}>
@@ -756,10 +702,10 @@ export default function App() {
               <div style={{ fontFamily: T.sans, fontWeight: 800, fontSize: 17, marginBottom: 10, letterSpacing: -0.5 }}>promptuj<span className="gradtxt">.ai</span></div>
               <p style={{ fontSize: 13, color: T.muted, lineHeight: 1.7, maxWidth: 280 }}>Česká interaktivní akademie promptování, agentních systémů a smyček. Učení praxí, ne teorií.</p>
             </div>
-            {[["Učení", [["Techniky", "techniky"], ["Prompt builder", "builder"], ["Šablony", "sablony"], ["Slovník", "slovnik"]]], ["Agenti", [["Architektury", "agenti"], ["Simulátor smyčky", "smycka"], ["Principy smyčky", "smycka"]]], ["Cesta", [["Roadmapa", "techniky"], ["FAQ", "techniky"]]]].map(function (col, ci) { return (
+            {[["Učení", [["Techniky", "techniky"], ["Prompt builder", "builder"], ["Šablony", "sablony"], ["Slovník", "slovnik"]]], ["Agenti", [["Architektury", "agenti"], ["Simulátor smyčky", "smycka"], ["Principy smyčky", "smycka"]]], ["Cesta", [["Roadmapa", "cesta"], ["FAQ", "faq"]]]].map(function (col, ci) { return (
               <div key={ci}>
                 <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: 2, color: T.faint, textTransform: "uppercase", marginBottom: 14 }}>{col[0]}</div>
-                {col[1].map(function (l, j) { return <div key={j} onClick={function () { goTo(l[1]); }} style={{ fontSize: 13, color: T.muted, marginBottom: 9, cursor: "pointer" }}>{l[0]}</div>; })}
+                {col[1].map(function (l, j) { return <a key={j} href={"#"+l[1]} style={{ display: "block", fontSize: 13, color: T.muted, marginBottom: 9 }}>{l[0]}</a>; })}
               </div>); })}
           </div>
           <div style={{ borderTop: "1px solid " + T.border, marginTop: 36, paddingTop: 20, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
