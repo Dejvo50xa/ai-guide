@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { TaskLauncher, PromptStudio } from "./Studio.jsx";
+import { useState, useRef, useEffect } from "react";
 import { Hero, ModelExplorer, Workflows, Mark } from "./Explore.jsx";
 import "./refresh.css";
 
@@ -268,71 +269,6 @@ function CopyBtn(props) {
 
 /* ══════════════ HERO TYPING ══════════════ */
 /* ══════════════ INTERAKTIVNÍ PROMPT BUILDER ══════════════ */
-function PromptBuilder() {
-  var s = useState({ role: "", kontext: "", ukol: "", format: "Odrážky", mantinely: true, cot: false }), v = s[0], set = s[1];
-  function upd(k, val) { set(function (p) { var n = Object.assign({}, p); n[k] = val; return n; }); }
-  var prompt = useMemo(function () {
-    var parts = [];
-    parts.push("Role: Jsi " + (v.role.trim() || "[doplň konkrétního experta a pro koho pracuje]") + ".");
-    parts.push("Kontext: " + (v.kontext.trim() || "[doplň svou situaci, cíl a omezení]") + ".");
-    parts.push("Úkol: " + (v.ukol.trim() || "[doplň, co přesně chceš]") + ".");
-    var fmap = { "Odrážky": "stručné odrážky", "Tabulka": "markdown tabulku", "JSON": "POUZE validní JSON (začni znakem {, žádný další text)", "Krátký odstavec": "jeden krátký odstavec (max 100 slov)", "Krok za krokem": "číslovaný postup" };
-    parts.push("Formát: Odpověz jako " + fmap[v.format] + ".");
-    if (v.cot) parts.push("Kontrola: Uveď stručné zdůvodnění, klíčové předpoklady a ověř výpočty dostupným nástrojem.");
-    if (v.mantinely) parts.push("Mantinely: Drž se faktů. Pokud něco nevíš, napiš to — nevymýšlej. Žádná zbytečná omáčka.");
-    return parts.join("\n");
-  }, [v]);
-  var score = (v.role.trim() ? 1 : 0) + (v.kontext.trim() ? 1 : 0) + (v.ukol.trim() ? 1 : 0) + 1 + (v.cot ? 1 : 0) + (v.mantinely ? 1 : 0);
-  var inp = { width: "100%", background: "#f3f8fd", border: "1px solid " + T.border, borderRadius: 10, color: T.text, fontSize: 13.5, padding: "11px 13px", marginTop: 6 };
-  var lab = { fontSize: 12.5, fontWeight: 600, color: T.muted };
-  return (
-    <div className="split" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
-      <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: T.r, padding: 24 }}>
-        <div style={{ marginBottom: 14 }}>
-          <div style={lab}>Role <span style={{ color: T.faint }}>— kdo a pro koho</span></div>
-          <input id="builder-role" aria-label="Role" style={inp} value={v.role} placeholder="daňový poradce pro OSVČ" onChange={function (e) { upd("role", e.target.value); }} />
-        </div>
-        <div style={{ marginBottom: 14 }}>
-          <div style={lab}>Kontext <span style={{ color: T.faint }}>— vaše situace</span></div>
-          <textarea rows={2} id="builder-kontext" aria-label="Kontext" style={inp} value={v.kontext} placeholder="jsem OSVČ na volné noze, paušální daň, řeším přechod na s.r.o." onChange={function (e) { upd("kontext", e.target.value); }} />
-        </div>
-        <div style={{ marginBottom: 14 }}>
-          <div style={lab}>Úkol <span style={{ color: T.faint }}>— co chcete</span></div>
-          <textarea rows={2} id="builder-ukol" aria-label="Úkol" style={inp} value={v.ukol} placeholder="vysvětli, kdy se mi přechod na s.r.o. vyplatí" onChange={function (e) { upd("ukol", e.target.value); }} />
-        </div>
-        <div style={{ marginBottom: 14 }}>
-          <div style={lab}>Formát výstupu</div>
-          <select id="builder-format" aria-label="Formát výstupu" style={inp} value={v.format} onChange={function (e) { upd("format", e.target.value); }}>
-            {["Odrážky", "Tabulka", "JSON", "Krátký odstavec", "Krok za krokem"].map(function (o) { return <option key={o} value={o}>{o}</option>; })}
-          </select>
-        </div>
-        <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
-          {[["cot", "Zdůvodnění a kontrola"], ["mantinely", "Práce s nejistotou"]].map(function (c) { return (
-            <label key={c[0]} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: T.text }}>
-              <input type="checkbox" checked={v[c[0]]} onChange={function (e) { upd(c[0], e.target.checked); }} style={{ accentColor: T.violet, width: 16, height: 16 }} />
-              {c[1]}
-            </label>); })}
-        </div>
-      </div>
-      <div style={{ background: "#f3f8fd", border: "1px solid " + T.border, borderRadius: T.r, padding: 24, display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <span style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: 1.5, color: T.faint, textTransform: "uppercase" }}>Tvůj prompt</span>
-          <CopyBtn text={prompt} />
-        </div>
-        <pre style={{ fontFamily: T.mono, fontSize: 12.8, lineHeight: 1.75, color: T.text, whiteSpace: "pre-wrap", flex: 1, margin: 0 }}>{prompt}</pre>
-        <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid " + T.border }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: T.muted, marginBottom: 6 }}>
-            <span>Vyplněné části (ne hodnocení kvality)</span><span style={{ color: score >= 5 ? T.green : score >= 3 ? T.amber : T.red, fontWeight: 700 }}>{score}/6</span>
-          </div>
-          <div style={{ height: 7, background: "rgba(255,255,255,0.06)", borderRadius: 99, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: (score / 6 * 100) + "%", background: "linear-gradient(90deg,#356c9b,#3b709c)", borderRadius: 99, transition: "width 0.4s ease" }} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ══════════════ SIMULÁTOR AGENTNÍ SMYČKY ══════════════ */
 function LoopSimulator() {
   var s1 = useState(0), step = s1[0], setStep = s1[1];
@@ -506,6 +442,7 @@ export default function App() {
 
       <main>
       <Hero />
+      <TaskLauncher />
       <ModelExplorer />
       <Workflows />
 
@@ -554,7 +491,7 @@ export default function App() {
       <section id="builder" style={{ padding: "90px 0" }}>
         <div className="mx">
           <SectionHead eyebrow="Interaktivní nástroj" title="Postav si prompt naživo" sub="Vyplň pole vlevo, sleduj, jak vpravo roste profesionální prompt — a zkopíruj ho jedním klikem." />
-          <PromptBuilder />
+          <PromptStudio />
           <p className="learning-source">K principům uvažování: <a href="https://developers.openai.com/api/docs/guides/reasoning-best-practices" target="_blank" rel="noreferrer">oficiální doporučení OpenAI ↗</a>. Builder skládá šablonu lokálně, nevolá model.</p>
         </div>
       </section>
