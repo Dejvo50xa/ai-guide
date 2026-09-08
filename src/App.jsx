@@ -8,11 +8,11 @@ import "./refresh.css";
    ═══════════════════════════════════════════════════════════════════ */
 
 var T = {
-  bg: "#F7F8F2", bg2: "#F0F3E9", bg3: "#E8EDDF",
-  surface: "#FFFefa", surfaceHi: "#E8EDDF", border: "#D8DFD0", borderHi: "#7C9064",
-  violet: "#526A3F", violetLo: "#E9EEDD", cyan: "#376B6C", cyanLo: "#E5EFEC",
-  amber: "#85602C", amberLo: "#F3EBDD", green: "#426846", greenLo: "#E8F0E3",
-  red: "#A0443D", redLo: "#F7EBE7", text: "#283D31", muted: "#586653", faint: "#626D5B",
+  bg: "#f3f8fd", bg2: "#eaf3fc", bg3: "#e2effb",
+  surface: "#ffffff", surfaceHi: "#e2effb", border: "#d3e2ef", borderHi: "#6c9fc7",
+  violet: "#356c9b", violetLo: "#e4f0fc", cyan: "#3b709c", cyanLo: "#e7f1fa",
+  amber: "#85602C", amberLo: "#F3EBDD", green: "#326b9d", greenLo: "#e4f0fb",
+  red: "#A0443D", redLo: "#F7EBE7", text: "#203b56", muted: "#526b82", faint: "#587086",
   sans: "'DM Sans',-apple-system,sans-serif", mono: "'DM Sans',sans-serif", r: 14, rs: 10,
 };
 
@@ -22,9 +22,9 @@ html{scroll-behavior:smooth;scroll-padding-top:110px;-webkit-font-smoothing:anti
 body{background:${T.bg};color:${T.text};font-family:${T.sans}}
 .mx{max-width:1240px;margin:0 auto;padding:0 32px}
 textarea,select,input,button{font-family:inherit}
-.gradtxt{color:#647D4E}.lift{transition:transform .2s,box-shadow .2s,border-color .2s}
-.lift:hover{transform:translateY(-3px);border-color:#A7B698!important;box-shadow:0 12px 32px #283D3109}
-code.inl{font-size:.86em;background:#E9EEDD;padding:2px 7px;border-radius:6px;color:#526A3F}
+.gradtxt{color:#3974a6}.lift{transition:transform .2s,box-shadow .2s,border-color .2s}
+.lift:hover{transform:translateY(-3px);border-color:#9cbfdc!important;box-shadow:0 12px 32px #203b5609}
+code.inl{font-size:.86em;background:#e4f0fc;padding:2px 7px;border-radius:6px;color:#356c9b}
 @media(max-width:880px){.g2,.g3,.g4,.split{grid-template-columns:1fr!important}.hideMob{display:none!important}}
 `;
 
@@ -244,7 +244,7 @@ function SectionHead(props) {
 function Pill(props) {
   var prim = props.primary;
   return (
-    <button onClick={props.onClick} style={{ border: prim ? "none" : "1.5px solid " + T.border, cursor: "pointer", fontFamily: T.sans, fontWeight: 600, borderRadius: 999, padding: props.big ? "15px 34px" : "10px 22px", fontSize: props.big ? 15 : 13.5, color: prim ? "#FFFFFF" : T.text, background: prim ? "#2D4434" : T.surface, transition: "transform 0.15s ease,box-shadow 0.15s ease", boxShadow: prim ? "none" : "none", ...(props.style || {}) }}
+    <button onClick={props.onClick} style={{ border: prim ? "none" : "1.5px solid " + T.border, cursor: "pointer", fontFamily: T.sans, fontWeight: 600, borderRadius: 999, padding: props.big ? "15px 34px" : "10px 22px", fontSize: props.big ? 15 : 13.5, color: prim ? "#FFFFFF" : T.text, background: prim ? "#245b86" : T.surface, transition: "transform 0.15s ease,box-shadow 0.15s ease", boxShadow: prim ? "none" : "none", ...(props.style || {}) }}
       onMouseEnter={function (e) { e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={function (e) { e.currentTarget.style.transform = "translateY(0)"; }}>
       {props.children}
@@ -260,7 +260,7 @@ function CopyBtn(props) {
     setTimeout(function () { set(false); }, 2200);
   }
   return (
-    <button onClick={copy} style={{ border: "1px solid " + (done ? "rgba(52,211,153,0.5)" : T.border), background: done ? T.greenLo : T.surface, color: done ? T.green : T.muted, fontFamily: T.mono, fontSize: 11.5, fontWeight: 600, padding: "6px 13px", borderRadius: 8, cursor: "pointer", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>
+    <button onClick={copy} style={{ border: "1px solid " + (done ? "rgba(57,116,166,0.5)" : T.border), background: done ? T.greenLo : T.surface, color: done ? T.green : T.muted, fontFamily: T.mono, fontSize: 11.5, fontWeight: 600, padding: "6px 13px", borderRadius: 8, cursor: "pointer", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>
       {done === "error" ? "Označ a zkopíruj ručně" : done ? "✓ Zkopírováno" : (props.label || "Kopírovat")}
     </button>
   );
@@ -283,7 +283,7 @@ function PromptBuilder() {
     return parts.join("\n");
   }, [v]);
   var score = (v.role.trim() ? 1 : 0) + (v.kontext.trim() ? 1 : 0) + (v.ukol.trim() ? 1 : 0) + 1 + (v.cot ? 1 : 0) + (v.mantinely ? 1 : 0);
-  var inp = { width: "100%", background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: 10, color: T.text, fontSize: 13.5, padding: "11px 13px", marginTop: 6 };
+  var inp = { width: "100%", background: "#f3f8fd", border: "1px solid " + T.border, borderRadius: 10, color: T.text, fontSize: 13.5, padding: "11px 13px", marginTop: 6 };
   var lab = { fontSize: 12.5, fontWeight: 600, color: T.muted };
   return (
     <div className="split" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
@@ -314,7 +314,7 @@ function PromptBuilder() {
             </label>); })}
         </div>
       </div>
-      <div style={{ background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: T.r, padding: 24, display: "flex", flexDirection: "column" }}>
+      <div style={{ background: "#f3f8fd", border: "1px solid " + T.border, borderRadius: T.r, padding: 24, display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
           <span style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: 1.5, color: T.faint, textTransform: "uppercase" }}>Tvůj prompt</span>
           <CopyBtn text={prompt} />
@@ -325,7 +325,7 @@ function PromptBuilder() {
             <span>Vyplněné části (ne hodnocení kvality)</span><span style={{ color: score >= 5 ? T.green : score >= 3 ? T.amber : T.red, fontWeight: 700 }}>{score}/6</span>
           </div>
           <div style={{ height: 7, background: "rgba(255,255,255,0.06)", borderRadius: 99, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: (score / 6 * 100) + "%", background: "linear-gradient(90deg,#526A3F,#376B6C)", borderRadius: 99, transition: "width 0.4s ease" }} />
+            <div style={{ height: "100%", width: (score / 6 * 100) + "%", background: "linear-gradient(90deg,#356c9b,#3b709c)", borderRadius: 99, transition: "width 0.4s ease" }} />
           </div>
         </div>
       </div>
@@ -355,7 +355,7 @@ function LoopSimulator() {
             var on = i === step;
             return (
               <g key={i} role="button" tabIndex={0} aria-label={st.cz} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setPlaying(false);setStep(i);}}} style={{ cursor: "pointer" }} onClick={function () { setPlaying(false); setStep(i); }}>
-                <circle cx={x} cy={y} r={on ? 26 : 20} fill={on ? st.color : "#E8EDDF"} stroke={on ? st.color : T.border} strokeWidth={on ? 2 : 1} style={{ transition: "all 0.4s ease", filter: on ? "drop-shadow(0 0 12px " + st.color + ")" : "none" }} />
+                <circle cx={x} cy={y} r={on ? 26 : 20} fill={on ? st.color : "#e2effb"} stroke={on ? st.color : T.border} strokeWidth={on ? 2 : 1} style={{ transition: "all 0.4s ease", filter: on ? "drop-shadow(0 0 12px " + st.color + ")" : "none" }} />
                 <text x={x} y={y + 5} textAnchor="middle" fontSize={on ? 18 : 14} style={{ transition: "all 0.3s ease" }}>{i+1}</text>
               </g>
             );
@@ -375,7 +375,7 @@ function LoopSimulator() {
             <span style={{ fontSize: 22 }}><Mark kind="flow"/></span>
             <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: cur.color, letterSpacing: 1 }}>{cur.k} · {cur.cz}</span>
           </div>
-          <div style={{ fontFamily: T.mono, fontSize: 13.5, color: T.text, background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: 10, padding: "11px 14px", marginBottom: 12 }}>{cur.txt}</div>
+          <div style={{ fontFamily: T.mono, fontSize: 13.5, color: T.text, background: "#f3f8fd", border: "1px solid " + T.border, borderRadius: 10, padding: "11px 14px", marginBottom: 12 }}>{cur.txt}</div>
           <p style={{ fontSize: 13.5, lineHeight: 1.7, color: T.muted }}>{cur.detail}</p>
         </div>
         <div style={{ display: "flex", gap: 5, marginTop: 12 }}>
@@ -428,7 +428,7 @@ function TechModal(props) {
             <div style={{ fontFamily: T.mono, fontSize: 11, color: T.red, fontWeight: 700, marginBottom: 7, letterSpacing: 0.5 }}>✗ SLABÝ PROMPT</div>
             <div style={{ fontFamily: T.mono, fontSize: 13, color: T.text, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{t.spatne}</div>
           </div>
-          <div style={{ background: T.greenLo, border: "1px solid rgba(52,211,153,0.3)", borderRadius: 12, padding: "14px 16px", position: "relative" }}>
+          <div style={{ background: T.greenLo, border: "1px solid rgba(57,116,166,0.3)", borderRadius: 12, padding: "14px 16px", position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
               <div style={{ fontFamily: T.mono, fontSize: 11, color: T.green, fontWeight: 700, letterSpacing: 0.5 }}>✓ SILNÝ PROMPT</div>
               <CopyBtn text={t.dobre} label="Kopírovat" />
@@ -436,9 +436,9 @@ function TechModal(props) {
             <div style={{ fontFamily: T.mono, fontSize: 13, color: T.text, whiteSpace: "pre-wrap", lineHeight: 1.65 }}>{t.dobre}</div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: T.violetLo, border: "1px solid rgba(139,92,246,0.3)", borderRadius: 12, padding: "13px 16px" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: T.violetLo, border: "1px solid rgba(57,116,166,0.3)", borderRadius: 12, padding: "13px 16px" }}>
           <span style={{ fontSize: 16 }}><Mark/></span>
-          <span style={{ fontSize: 13.5, lineHeight: 1.65, color: "#526A3F" }}>{t.tip}</span>
+          <span style={{ fontSize: 13.5, lineHeight: 1.65, color: "#356c9b" }}>{t.tip}</span>
         </div>
       </div>
     </dialog>
@@ -518,7 +518,7 @@ export default function App() {
               <Reveal key={i} delay={i * 0.1} fill>
                 <div className="lift" style={{ ...card, padding: "24px 22px", height: "100%" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <div style={{ width: 34, height: 34, borderRadius: 10, background: "#DCE5CD", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "#0A0A12", fontFamily: T.mono }}>{r.f}</div>
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: "#d7eafa", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "#0A0A12", fontFamily: T.mono }}>{r.f}</div>
                     <div style={{ fontFamily: T.mono, fontSize: 10, color: T.faint, letterSpacing: 1, textTransform: "uppercase" }}>{r.weeks}</div>
                   </div>
                   <div style={{ fontSize: 11, color: T.violet, fontWeight: 600, marginBottom: 3 }}>{r.lvl}</div>
@@ -542,7 +542,7 @@ export default function App() {
           <SectionHead eyebrow="Knihovna technik" title="12 technik promptování" sub="U každé: kdy ji použít, slabá vs. silná verze promptu a tip navíc. Klikni pro příklad k okopírování." />
           <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 30, flexWrap: "wrap" }}>
             {[["vse", "Vše"], ["1", "Základ"], ["2", "Uvažování"], ["3", "Pokročilé"]].map(function (o) { return (
-              <button key={o[0]} aria-pressed={filter === o[0]} onClick={function () { setFilter(o[0]); }} style={{ padding: "8px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, cursor: "pointer", border: "1px solid " + (filter === o[0] ? T.violet : T.border), background: filter === o[0] ? T.violetLo : T.surface, color: filter === o[0] ? "#526A3F" : T.muted }}>{o[1]}</button>); })}
+              <button key={o[0]} aria-pressed={filter === o[0]} onClick={function () { setFilter(o[0]); }} style={{ padding: "8px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, cursor: "pointer", border: "1px solid " + (filter === o[0] ? T.violet : T.border), background: filter === o[0] ? T.violetLo : T.surface, color: filter === o[0] ? "#356c9b" : T.muted }}>{o[1]}</button>); })}
           </div>
           <div className="g3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
             {techShown.map(function (t, i) { return <Reveal key={t.id} delay={(i % 3) * 0.08} fill><TechCard t={t} onOpen={function () { setTech(t); }} /></Reveal>; })}
@@ -619,7 +619,7 @@ export default function App() {
       </section>
 
       {/* SMYČKA */}
-      <section id="smycka" style={{ padding: "90px 0", background: "linear-gradient(180deg," + T.bg2 + ", #E8EDDF)", borderTop: "1px solid " + T.border, borderBottom: "1px solid " + T.border }}>
+      <section id="smycka" style={{ padding: "90px 0", background: "linear-gradient(180deg," + T.bg2 + ", #e2effb)", borderTop: "1px solid " + T.border, borderBottom: "1px solid " + T.border }}>
         <div className="mx">
           <SectionHead color={T.green} eyebrow="Srdce každého agenta" title="Jak funguje agentní smyčka" sub="Výuková simulace, která nevolá skutečný model ani nástroje. Klikni na „Spustit“ a sleduj cyklus: pozoruj → mysli → jednej → vyhodnoť → opakuj, dokud nesplní cíl. Klikni na kterýkoli uzel." />
           <Reveal><LoopSimulator /></Reveal>
@@ -652,7 +652,7 @@ export default function App() {
                     <h4 style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 700 }}>{s.name}</h4>
                     <span style={{ fontFamily: T.mono, fontSize: 10, color: T.amber, background: T.amberLo, border: "1px solid rgba(245,158,11,0.3)", borderRadius: 99, padding: "3px 10px", textTransform: "uppercase" }}>{s.tag}</span>
                   </div>
-                  <pre style={{ fontFamily: T.mono, fontSize: 12.3, lineHeight: 1.7, color: T.muted, whiteSpace: "pre-wrap", background: "#F7F8F2", border: "1px solid " + T.border, borderRadius: 10, padding: "14px 16px", flex: 1, margin: "0 0 12px" }}>{s.text}</pre>
+                  <pre style={{ fontFamily: T.mono, fontSize: 12.3, lineHeight: 1.7, color: T.muted, whiteSpace: "pre-wrap", background: "#f3f8fd", border: "1px solid " + T.border, borderRadius: 10, padding: "14px 16px", flex: 1, margin: "0 0 12px" }}>{s.text}</pre>
                   <div style={{ display: "flex", justifyContent: "flex-end" }}><CopyBtn text={s.text} /></div>
                 </div>
               </Reveal>); })}
@@ -679,8 +679,8 @@ export default function App() {
       {/* CTA */}
       <section style={{ padding: "0 0 90px" }}>
         <div className="mx">
-          <div style={{ borderRadius: 28, padding: "clamp(40px,6vw,72px) 32px", textAlign: "center", position: "relative", overflow: "hidden", background: "#E8EDDF", border: "1px solid " + T.border }}>
-            <div style={{ position: "absolute", top: "-40%", right: "-10%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle,rgba(139,92,246,0.22),transparent 70%)", pointerEvents: "none" }} />
+          <div style={{ borderRadius: 28, padding: "clamp(40px,6vw,72px) 32px", textAlign: "center", position: "relative", overflow: "hidden", background: "#e2effb", border: "1px solid " + T.border }}>
+            <div style={{ position: "absolute", top: "-40%", right: "-10%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle,rgba(57,116,166,0.22),transparent 70%)", pointerEvents: "none" }} />
             <div style={{ position: "relative" }}>
               <h2 style={{ fontFamily: T.sans, fontSize: "clamp(26px,4.5vw,42px)", fontWeight: 800, letterSpacing: -1.2, lineHeight: 1.1, marginBottom: 14 }}>Přestaň hádat. Začni <span className="gradtxt">promptovat</span>.</h2>
               <p style={{ color: T.muted, fontSize: 15.5, lineHeight: 1.7, maxWidth: 500, margin: "0 auto 30px" }}>Otevři builder, postav první profesionální prompt a pak se pusť do agentů. Vše na téhle stránce, zdarma a česky.</p>
