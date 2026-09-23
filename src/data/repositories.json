@@ -1,0 +1,582 @@
+[
+  {
+    "id": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "name": "UI/UX Pro Max",
+    "type": "skill",
+    "categories": [
+      "web",
+      "ios",
+      "android"
+    ],
+    "description": "Návrh rozhraní, barev, typografie a přístupnosti pro web i mobilní aplikace.",
+    "setup": "Vyber podporovaného AI asistenta a postup instalace v README. Skill pak použij při zadání návrhu nebo úpravy rozhraní.",
+    "prompt": "Navrhni přehlednější objednávkový formulář pro mobil. Vycházej ze stávajících komponent a zkontroluj přístupnost.",
+    "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+    "stars": 130033,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-21T13:01:10Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill#readme"
+  },
+  {
+    "id": "AThevon/genjutsu",
+    "name": "Genjutsu",
+    "type": "skill",
+    "categories": [
+      "web",
+      "ios",
+      "android",
+      "video"
+    ],
+    "description": "Skilly pro vizuální návrh, animace a drobné interakce. Zahrnuje web, SwiftUI i Compose.",
+    "setup": "Nainstaluj cast pro interakce nebo paint pro celý vizuální návrh. Připoj také podpůrné moduly podle dokumentace.",
+    "prompt": "Navrhni jemné animace pro můj web. Nejprve ukaž zamýšlené chování a respektuj omezení pohybu.",
+    "url": "https://github.com/AThevon/genjutsu",
+    "stars": 368,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-08T13:55:27Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "NOASSERTION",
+    "readme": "https://github.com/AThevon/genjutsu#readme"
+  },
+  {
+    "id": "AvdLee/SwiftUI-Agent-Skill",
+    "name": "SwiftUI Expert",
+    "type": "skill",
+    "categories": [
+      "ios"
+    ],
+    "description": "Postupy pro SwiftUI: stav aplikace, skládání obrazovek, výkon a rozhraní pro zařízení Apple.",
+    "setup": "Přidej swiftui-expert-skill do asistenta, který podporuje Agent Skills. Používej ho nad konkrétním SwiftUI projektem.",
+    "prompt": "Zkontroluj tuto SwiftUI obrazovku: správu stavu, navigaci, velikost textu a ovládání jednou rukou.",
+    "url": "https://github.com/AvdLee/SwiftUI-Agent-Skill",
+    "stars": 3603,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-18T19:55:34Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/AvdLee/SwiftUI-Agent-Skill#readme"
+  },
+  {
+    "id": "expo/skills",
+    "name": "Expo Skills",
+    "type": "skill",
+    "categories": [
+      "ios",
+      "android",
+      "code"
+    ],
+    "description": "Oficiální skilly pro vývoj, ladění, aktualizace a nasazování aplikací Expo.",
+    "setup": "Postup pro tvého asistenta najdeš v README. Skill potřebuje kontext existujícího Expo projektu.",
+    "prompt": "Prověř navigaci a práci s klávesnicí v této Expo aplikaci pro iOS i Android.",
+    "url": "https://github.com/expo/skills",
+    "stars": 2599,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T05:09:01Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/expo/skills#readme"
+  },
+  {
+    "id": "vercel-labs/agent-skills",
+    "name": "Vercel Agent Skills",
+    "type": "skill",
+    "categories": [
+      "web",
+      "code",
+      "cloud"
+    ],
+    "description": "Kolekce instrukcí a skriptů pro AI agenty při práci na webových projektech.",
+    "setup": "Vyber konkrétní skill z kolekce a nainstaluj ho podle README. Nepotřebuješ přidávat celou sadu.",
+    "prompt": "Projdi můj webový projekt a navrhni úpravy odpovídající jeho frameworku a způsobu nasazení.",
+    "url": "https://github.com/vercel-labs/agent-skills",
+    "stars": 31477,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-08-28T13:36:31Z",
+    "archived": false,
+    "maintenance": false,
+    "license": null,
+    "readme": "https://github.com/vercel-labs/agent-skills#readme"
+  },
+  {
+    "id": "anthropics/skills",
+    "name": "Anthropic Skills",
+    "type": "skill",
+    "categories": [
+      "docs",
+      "web",
+      "data",
+      "writing"
+    ],
+    "description": "Sada skillů pro dokumenty, tabulky, prezentace, design a další úkoly v Claude.",
+    "setup": "Vyber složku se SKILL.md. Instalace a dostupnost jednotlivých funkcí závisí na prostředí, ve kterém Claude používáš.",
+    "prompt": "Z přiložených podkladů vytvoř upravitelnou prezentaci a zkontroluj čitelnost každého snímku.",
+    "url": "https://github.com/anthropics/skills",
+    "stars": 177763,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-22T17:16:36Z",
+    "archived": false,
+    "maintenance": false,
+    "license": null,
+    "readme": "https://github.com/anthropics/skills#readme"
+  },
+  {
+    "id": "openai/skills",
+    "name": "OpenAI Skills",
+    "type": "skill",
+    "categories": [
+      "code",
+      "docs",
+      "data"
+    ],
+    "description": "Katalog skillů pro opakovatelné úkoly v Codexu včetně práce se soubory a vývoje.",
+    "setup": "V Codexu vyber konkrétní skill z katalogu. Dokumentace repozitáře popisuje instalaci i strukturu vlastních skillů.",
+    "prompt": "Vyber z katalogu skill vhodný pro tento úkol a vysvětli, jaké vstupy bude potřebovat.",
+    "url": "https://github.com/openai/skills",
+    "stars": 27577,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-08T20:35:26Z",
+    "archived": false,
+    "maintenance": false,
+    "license": null,
+    "readme": "https://github.com/openai/skills#readme"
+  },
+  {
+    "id": "obra/superpowers",
+    "name": "Superpowers",
+    "type": "skill",
+    "categories": [
+      "code",
+      "testing",
+      "agents"
+    ],
+    "description": "Postupy pro plánování vývoje, implementaci, testování a kontrolu práce kódovacích agentů.",
+    "setup": "Zvol instalační postup pro Claude Code, Codex nebo další podporované prostředí v README.",
+    "prompt": "Navrhni postup opravy této chyby. Nejprve ji reprodukuj, potom oprav a ověř regresi.",
+    "url": "https://github.com/obra/superpowers",
+    "stars": 290449,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-22T18:22:49Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/obra/superpowers#readme"
+  },
+  {
+    "id": "github/awesome-copilot",
+    "name": "Awesome Copilot",
+    "type": "collection",
+    "categories": [
+      "code",
+      "web",
+      "agents"
+    ],
+    "description": "Komunitní knihovna agentů, instrukcí, skillů a workflow pro GitHub Copilot.",
+    "setup": "Vyber konkrétní položku nebo plugin pro svůj úkol a přidej ho do odpovídajícího prostředí Copilotu.",
+    "prompt": "Najdi v kolekci instrukce pro code review odpovídající jazyku tohoto projektu.",
+    "url": "https://github.com/github/awesome-copilot",
+    "stars": 39304,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T03:27:03Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/github/awesome-copilot#readme"
+  },
+  {
+    "id": "microsoft/playwright-mcp",
+    "name": "Playwright MCP",
+    "type": "mcp",
+    "categories": [
+      "testing",
+      "web",
+      "automation"
+    ],
+    "description": "Zpřístupní AI práci s webovou stránkou přes prohlížeč a jeho strom přístupnosti.",
+    "setup": "Přidej server do nastavení MCP klienta podle README. Pro lokální spuštění ověř požadovanou verzi Node.js.",
+    "prompt": "Otevři lokální web a otestuj registraci, chybové zprávy a ovládání klávesnicí.",
+    "url": "https://github.com/microsoft/playwright-mcp",
+    "stars": 37498,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-18T23:35:04Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "Apache-2.0",
+    "readme": "https://github.com/microsoft/playwright-mcp#readme"
+  },
+  {
+    "id": "ChromeDevTools/chrome-devtools-mcp",
+    "name": "Chrome DevTools MCP",
+    "type": "mcp",
+    "categories": [
+      "testing",
+      "web",
+      "code"
+    ],
+    "description": "Umožní agentovi používat Chrome DevTools pro ladění, síťové požadavky a výkon webu.",
+    "setup": "Nastav MCP server a připojení k podporované verzi Chromu podle dokumentace.",
+    "prompt": "Zjisti, proč se tato stránka pomalu načítá. Uveď konkrétní požadavky a navrhni opravy.",
+    "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+    "stars": 52509,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T12:50:46Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "Apache-2.0",
+    "readme": "https://github.com/ChromeDevTools/chrome-devtools-mcp#readme"
+  },
+  {
+    "id": "upstash/context7",
+    "name": "Context7",
+    "type": "mcp",
+    "categories": [
+      "code",
+      "research"
+    ],
+    "description": "Dodává agentům dokumentaci a příklady použití knihoven v kontextu vývoje.",
+    "setup": "Zvol MCP server nebo variantu CLI se skillem. Nastavení přístupu a případné přihlášení popisuje README.",
+    "prompt": "Najdi dokumentaci pro verzi knihovny, kterou používá tento projekt, a ověř navržené API.",
+    "url": "https://github.com/upstash/context7",
+    "stars": 62356,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T09:58:35Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/upstash/context7#readme"
+  },
+  {
+    "id": "github/github-mcp-server",
+    "name": "GitHub MCP Server",
+    "type": "mcp",
+    "categories": [
+      "code",
+      "automation"
+    ],
+    "description": "Oficiální propojení AI s repozitáři, issues, pull requesty a dalšími funkcemi GitHubu.",
+    "setup": "Připoj vzdálený nebo lokální server podle svého MCP klienta a nastav přístup k potřebným repozitářům.",
+    "prompt": "Shrň otevřené issues v tomto repozitáři a připrav návrh pořadí oprav.",
+    "url": "https://github.com/github/github-mcp-server",
+    "stars": 33143,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-22T12:33:40Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/github/github-mcp-server#readme"
+  },
+  {
+    "id": "supabase/mcp",
+    "name": "Supabase MCP",
+    "type": "mcp",
+    "categories": [
+      "data",
+      "code"
+    ],
+    "description": "Propojí asistenta s projektem Supabase pro práci s databází a vývojovým kontextem.",
+    "setup": "Nastav MCP připojení, vyber projekt a rozsah přístupu. Pro první průzkum použij režim jen pro čtení, pokud ho klient podporuje.",
+    "prompt": "Prohlédni schéma vývojové databáze a navrhni indexy pro tento pomalý dotaz.",
+    "url": "https://github.com/supabase/mcp",
+    "stars": 2918,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T11:57:14Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "Apache-2.0",
+    "readme": "https://github.com/supabase/mcp#readme"
+  },
+  {
+    "id": "microsoft/markitdown",
+    "name": "MarkItDown",
+    "type": "library",
+    "categories": [
+      "docs",
+      "data",
+      "research"
+    ],
+    "description": "Převádí kancelářské dokumenty a další soubory na Markdown pro další zpracování AI.",
+    "setup": "Nainstaluj Python balíček s podporou potřebných formátů. Převod pak zapoj jako krok před zpracováním textu modelem.",
+    "prompt": "Převeď tyto dokumenty do Markdownu, zachovej nadpisy a označ části, které se nepodařilo převést.",
+    "url": "https://github.com/microsoft/markitdown",
+    "stars": 186577,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-21T21:03:34Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/microsoft/markitdown#readme"
+  },
+  {
+    "id": "firecrawl/firecrawl",
+    "name": "Firecrawl",
+    "type": "mcp",
+    "categories": [
+      "research",
+      "automation",
+      "data"
+    ],
+    "description": "Nástroje pro vyhledávání a získávání obsahu webů ve formátu použitelném pro AI.",
+    "setup": "Použij MCP, CLI nebo API podle dokumentace. Hostovaná varianta může vyžadovat účet, klíč a placený tarif.",
+    "prompt": "Z těchto veřejných produktových stránek vytáhni názvy a parametry včetně odkazů na zdroje.",
+    "url": "https://github.com/firecrawl/firecrawl",
+    "stars": 183633,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T12:53:33Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "AGPL-3.0",
+    "readme": "https://github.com/firecrawl/firecrawl#readme"
+  },
+  {
+    "id": "browser-use/browser-use",
+    "name": "Browser Use",
+    "type": "library",
+    "categories": [
+      "automation",
+      "research",
+      "testing"
+    ],
+    "description": "Nástroje a knihovna pro agenty, kteří vykonávají úkoly v prohlížeči.",
+    "setup": "Vyber Python knihovnu, CLI nebo podporovanou integraci. Doplň přístup k modelu a prohlížeči podle README.",
+    "prompt": "Projdi tento testovací web a zkontroluj, zda lze dokončit objednávku bez skutečné platby.",
+    "url": "https://github.com/browser-use/browser-use",
+    "stars": 116038,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-18T22:34:42Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/browser-use/browser-use#readme"
+  },
+  {
+    "id": "n8n-io/n8n",
+    "name": "n8n",
+    "type": "platform",
+    "categories": [
+      "automation",
+      "agents",
+      "data"
+    ],
+    "description": "Vizuální workflow propojující aplikace, data a AI kroky. Lze provozovat samostatně nebo v cloudu.",
+    "setup": "Spusť n8n nebo použij jeho cloud. Model a externí služby připoj uvnitř workflow pomocí vlastních přístupů.",
+    "prompt": "Navrhni workflow, které z příchozího formuláře připraví návrh odpovědi ke schválení.",
+    "url": "https://github.com/n8n-io/n8n",
+    "stars": 205757,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T12:52:14Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "NOASSERTION",
+    "readme": "https://github.com/n8n-io/n8n#readme"
+  },
+  {
+    "id": "langgenius/dify",
+    "name": "Dify",
+    "type": "platform",
+    "categories": [
+      "agents",
+      "automation",
+      "research"
+    ],
+    "description": "Prostředí pro AI aplikace, agenty a práci s vlastními znalostními podklady.",
+    "setup": "Zvol cloud nebo vlastní provoz a připoj poskytovatele modelu. Aplikaci sestav ve workflow editoru.",
+    "prompt": "Navrhni asistenta, který odpovídá z našich interních návodů a u každé odpovědi uvede zdroj.",
+    "url": "https://github.com/langgenius/dify",
+    "stars": 156953,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T12:42:59Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "NOASSERTION",
+    "readme": "https://github.com/langgenius/dify#readme"
+  },
+  {
+    "id": "langchain-ai/langgraph",
+    "name": "LangGraph",
+    "type": "library",
+    "categories": [
+      "agents",
+      "code"
+    ],
+    "description": "Knihovna pro stavové agenty a vícekrokové postupy s řízením průběhu a lidskou kontrolou.",
+    "setup": "Přidej knihovnu do aplikace a definuj stav, kroky a přechody mezi nimi. Není to samostatný skill do chatu.",
+    "prompt": "Navrhni workflow rešerše se stavem, kontrolou zdrojů a schválením před zveřejněním.",
+    "url": "https://github.com/langchain-ai/langgraph",
+    "stars": 42176,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T04:02:15Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/langchain-ai/langgraph#readme"
+  },
+  {
+    "id": "microsoft/autogen",
+    "name": "AutoGen",
+    "type": "library",
+    "categories": [
+      "agents",
+      "code"
+    ],
+    "description": "Framework pro spolupráci více agentů. Projekt je v režimu údržby; README odkazuje na Microsoft Agent Framework.",
+    "setup": "Hodí se zejména k práci na existujícím projektu AutoGen. Před novým nasazením si přečti oznámení o údržbě v README.",
+    "prompt": "Vysvětli architekturu tohoto existujícího projektu AutoGen a možnosti jeho další údržby.",
+    "url": "https://github.com/microsoft/autogen",
+    "stars": 61118,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-04-15T11:59:09Z",
+    "archived": false,
+    "maintenance": true,
+    "license": "CC-BY-4.0",
+    "readme": "https://github.com/microsoft/autogen#readme"
+  },
+  {
+    "id": "openai/openai-agents-python",
+    "name": "OpenAI Agents SDK",
+    "type": "library",
+    "categories": [
+      "agents",
+      "code"
+    ],
+    "description": "Python SDK pro agenty, nástroje, předávání úkolů a sledování běhu.",
+    "setup": "Nainstaluj openai-agents do Python projektu a nakonfiguruj poskytovatele modelu podle dokumentace.",
+    "prompt": "Navrhni agenta, který používá dva nástroje a před zápisem změn čeká na potvrzení uživatele.",
+    "url": "https://github.com/openai/openai-agents-python",
+    "stars": 29653,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-22T15:09:34Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/openai/openai-agents-python#readme"
+  },
+  {
+    "id": "promptfoo/promptfoo",
+    "name": "Promptfoo",
+    "type": "library",
+    "categories": [
+      "testing",
+      "security",
+      "agents"
+    ],
+    "description": "Testování promptů, agentů a RAG aplikací včetně porovnávání výstupů a bezpečnostních testů.",
+    "setup": "Spusť CLI, vytvoř testovací konfiguraci a připoj testované modely. Výsledky lze vyhodnocovat také v CI.",
+    "prompt": "Připrav testovací sadu pro tohoto asistenta: správné odpovědi, chybějící podklady a pokusy o změnu instrukcí.",
+    "url": "https://github.com/promptfoo/promptfoo",
+    "stars": 25394,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T05:43:03Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/promptfoo/promptfoo#readme"
+  },
+  {
+    "id": "awslabs/mcp",
+    "name": "AWS MCP Servers",
+    "type": "mcp",
+    "categories": [
+      "cloud",
+      "data",
+      "code"
+    ],
+    "description": "Kolekce specializovaných MCP serverů pro služby a vývojové úkoly v AWS.",
+    "setup": "Vyber konkrétní server. Nastav jeho požadavky a potřebná oprávnění AWS podle příslušného README.",
+    "prompt": "Vyber vhodný server z kolekce pro průzkum dokumentace a návrh infrastruktury této aplikace.",
+    "url": "https://github.com/awslabs/mcp",
+    "stars": 9726,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-22T15:43:05Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "Apache-2.0",
+    "readme": "https://github.com/awslabs/mcp#readme"
+  },
+  {
+    "id": "coreyhaines31/marketingskills",
+    "name": "Marketing Skills",
+    "type": "skill",
+    "categories": [
+      "marketing",
+      "writing",
+      "web"
+    ],
+    "description": "Skilly pro obsah, SEO, analytiku a práci na konverzích webu.",
+    "setup": "Nainstaluj vybrané skilly a přidej kontext produktu, zákazníků a cíle stránky.",
+    "prompt": "Projdi tuto produktovou stránku a navrhni konkrétnější nadpisy podle přiložených zákaznických rozhovorů.",
+    "url": "https://github.com/coreyhaines31/marketingskills",
+    "stars": 51273,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-05T04:48:10Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "MIT",
+    "readme": "https://github.com/coreyhaines31/marketingskills#readme"
+  },
+  {
+    "id": "trailofbits/skills",
+    "name": "Trail of Bits Skills",
+    "type": "skill",
+    "categories": [
+      "security",
+      "testing",
+      "code"
+    ],
+    "description": "Skilly pro bezpečnostní analýzu kódu, hledání zranitelností a auditní postupy.",
+    "setup": "Vyber plugin nebo skill podle jazyka a typu auditu. Postup pro Claude Code a Codex uvádí README.",
+    "prompt": "Prověř tuto změnu z hlediska autorizace a práce s nedůvěryhodným vstupem. Každý nález dolož místem v kódu.",
+    "url": "https://github.com/trailofbits/skills",
+    "stars": 7212,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-23T08:29:10Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "CC-BY-SA-4.0",
+    "readme": "https://github.com/trailofbits/skills#readme"
+  },
+  {
+    "id": "remotion-dev/skills",
+    "name": "Remotion Skills",
+    "type": "skill",
+    "categories": [
+      "video",
+      "code"
+    ],
+    "description": "Instrukce pro AI agenty, kteří vytvářejí videa v projektech Remotion.",
+    "setup": "Přidej skilly do asistenta a pracuj v projektu s Remotion. Samotný skill nenahrazuje vykreslovací prostředí.",
+    "prompt": "Vytvoř v tomto Remotion projektu krátké produktové video podle scénáře a firemních barev.",
+    "url": "https://github.com/remotion-dev/skills",
+    "stars": 4697,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-09-22T07:16:36Z",
+    "archived": false,
+    "maintenance": false,
+    "license": null,
+    "readme": "https://github.com/remotion-dev/skills#readme"
+  },
+  {
+    "id": "nowork-ai/anti-ai-slop-cz",
+    "name": "Anti-AI Slop CZ",
+    "type": "skill",
+    "categories": [
+      "writing",
+      "marketing"
+    ],
+    "description": "Pravidla pro konkrétní, přirozené české texty bez výplňových frází.",
+    "setup": "V běžném chatu vlož krátkou verzi pravidel. V kódovacím agentovi přidej složku skill se SKILL.md a referencemi.",
+    "prompt": "Přepiš tento český text. Zachovej fakta, nahraď obecné sliby konkrétními příklady a nic si nevymýšlej.",
+    "url": "https://github.com/nowork-ai/anti-ai-slop-cz",
+    "stars": 21,
+    "checkedAt": "2026-09-23T12:54:08.720989+00:00",
+    "pushedAt": "2026-06-03T15:29:33Z",
+    "archived": false,
+    "maintenance": false,
+    "license": "NOASSERTION",
+    "readme": "https://github.com/nowork-ai/anti-ai-slop-cz#readme"
+  }
+]

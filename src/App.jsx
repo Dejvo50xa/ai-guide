@@ -1,3 +1,4 @@
+import SiteNav from "./SiteNav.jsx";
 import { TaskLauncher, PromptStudio } from "./Studio.jsx";
 import { useState, useRef, useEffect } from "react";
 import { Hero, ModelExplorer, Workflows, Mark } from "./Explore.jsx";
@@ -420,12 +421,6 @@ function Glosar() {
 }
 
 /* ══════════════ NAV + PROGRESS ══════════════ */
-function Nav() {
-  const [open, setOpen] = useState(false);
-  const links = [["Modely", "modely"], ["Workflow", "workflow"], ["Techniky", "techniky"], ["Agenti", "agenti"], ["Slovník", "slovnik"]];
-  return <header className="site-header"><nav className="mx" aria-label="Hlavní navigace"><a className="brand" href="#uvod"><Mark/> promptuj<span>ai</span><small>PROSTOR PRO TVOJE NÁPADY</small></a><div className="desktop-nav">{links.map(([label,id])=><a key={id} href={"#"+id}>{label}</a>)}</div><a className="solid nav-cta" href="#builder">Vytvořit prompt ↗</a><button className="menu-toggle" aria-expanded={open} aria-controls="mobile-nav" onClick={()=>setOpen(!open)}>{open ? "Zavřít" : "Menu"}</button></nav>{open && <div className="mobile-nav" id="mobile-nav">{[...links,["Vytvořit prompt","builder"],["Šablony","sablony"],["Moje cesta","cesta"]].map(([label,id])=><a key={id} href={"#"+id} onClick={()=>setOpen(false)}>{label}</a>)}</div>}</header>;
-}
-
 /* ═══════════════════════════ MAIN ═══════════════════════════ */
 export default function App() {
   var sm = useState(null), tech = sm[0], setTech = sm[1];
@@ -438,10 +433,11 @@ export default function App() {
       <style>{CSS}</style>
       {tech && <TechModal t={tech} onClose={function () { setTech(null); }} />}
       <a className="skip-link" href="#modely">Přejít k obsahu</a>
-      <Nav />
+      <SiteNav />
 
       <main>
       <Hero />
+      <div className="mx"><section className="repo-home-promo"><div><span className="kicker">NOVĚ NA PROMPTUJAI</span><h2>Repozitáře, které rozšíří tvoji AI</h2><p>Skilly, MCP servery a knihovny pro design, programování i práci s textem. Vyber si podle úkolu a počtu hvězdiček.</p></div><a className="solid" href="/repozitare/">Otevřít katalog ↗</a></section></div>
       <TaskLauncher />
       <ModelExplorer />
       <Workflows />

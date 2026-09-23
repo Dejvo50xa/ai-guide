@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:catalog": "node --test scripts/catalog.test.mjs",
+    "refresh:repositories": "node scripts/refresh-repositories.mjs"
   },
   "dependencies": {
     "react": "^19.2.4",
