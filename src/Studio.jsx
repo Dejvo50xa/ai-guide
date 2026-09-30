@@ -1,28 +1,160 @@
 import { createContext, useContext, useState } from 'react';
-const StudioContext=createContext(null);
-const empty={title:'',role:'',context:'',task:'',sources:'',criteria:'',format:'Odrážky'};
-const presets=[
- {id:'email',name:'Napsat pracovní e-mail',tool:'Textový chat',steps:'Doplň příjemce a účel → vlož fakta → zkontroluj tón a závěrečnou výzvu.',fields:{title:'Pracovní e-mail',role:'Editor pracovní komunikace',context:'Píšu [komu] kvůli [situaci].',task:'Napiš e-mail, který [cíl].',sources:'[Fakta, která smí e-mail obsahovat]',criteria:'Max 150 slov. Přirozený, zdvořilý tón. Jasný další krok.',format:'E-mail'}},
- {id:'document',name:'Pochopit dokument',tool:'Chat s nahráváním souborů',steps:'Přilož dokument ve zvolené aplikaci → zadej otázky → ověř odkazy na pasáže.',fields:{title:'Shrnutí dokumentu',role:'Pečlivý analytik dokumentů',context:'Potřebuji pochopit [dokument] pro [účel].',task:'Shrň hlavní body, závazky a nejasnosti.',sources:'[Vlož text nebo přilož dokument v AI aplikaci]',criteria:'Vycházej pouze z dokumentu. Uveď stránky nebo pasáže. Chybějící informace označ.',format:'Odrážky'}},
- {id:'research',name:'Udělat rešerši',tool:'AI aplikace s vyhledáváním',steps:'Vymez otázku a datum → zapni vyhledávání → otevři a prověř citace.',fields:{title:'Rešerše se zdroji',role:'Rešeršér',context:'Zajímá mě [téma] v [region] k [datum].',task:'Porovnej hlavní zjištění a rozpory.',sources:'[Výchozí odkazy nebo vlastní podklady]',criteria:'Preferuj primární zdroje. Uváděj odkazy a data. Bez přístupu k webu nevymýšlej aktuální fakta.',format:'Tabulka'}},
- {id:'data',name:'Analyzovat tabulku',tool:'Chat se soubory a výpočty',steps:'Anonymizuj data → vysvětli sloupce → ověř výpočty a jednotky.',fields:{title:'Analýza dat',role:'Datový analytik',context:'Podle dat chci rozhodnout [rozhodnutí].',task:'Zkontroluj kvalitu dat a najdi tři podstatná zjištění.',sources:'[Tabulka, význam sloupců a jednotky; soubor přilož v AI aplikaci]',criteria:'Výpočty proveď nástrojem. Uveď definice metrik, chybějící hodnoty a omezení.',format:'Tabulka'}},
- {id:'image',name:'Vytvořit obrázek',tool:'Nástroj na generování obrázků',steps:'Urči účel → popiš kompozici → ověř text a detaily.',fields:{title:'Zadání obrázku',role:'Vizuální designér',context:'Obrázek použiji pro [účel].',task:'Vytvoř [motiv], kompozice [popis], světlo [popis], barvy [paleta].',sources:'[Reference a co z ní převzít]',criteria:'Poměr stran [formát]. Přesný text [text / bez textu].',format:'Obrázek'}},
- {id:'web',name:'Postavit web',tool:'Vývojový AI nástroj s přístupem k projektu',steps:'Popiš návštěvníka a cíl → vymez malou funkční verzi → ověř mobil i klávesnici.',fields:{title:'Zadání webu',role:'Webový vývojář a designér',context:'Web pro [publikum] má pomoci s [cílem].',task:'Prozkoumej projekt a implementuj [konkrétní funkci].',sources:'[Existující projekt, obsah a reference]',criteria:'Respektuj existující styl. Ověř sestavení, mobilní zobrazení a klávesnici. Uveď neověřené části.',format:'Implementace a přehled změn'}}
-];
-const KEY='promptujai.library.v1';
-export function StudioProvider({children}){
- const [editing,setEditing]=useState(null); const [draft,setDraft]=useState(empty); const [selected,setSelected]=useState(null); const [notice,setNotice]=useState('');
- const [library,setLibrary]=useState(()=>{try{const data=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(data)?data.filter(x=>typeof x.id==='string'&&typeof x.title==='string'&&typeof x.prompt==='string'&&x.fields&&Object.keys(empty).every(k=>typeof x.fields[k]==='string')):[];}catch{return [];}});
- function persist(next){try{localStorage.setItem(KEY,JSON.stringify(next));setLibrary(next);return true;}catch{setNotice('Uložení se nepodařilo. Úložiště může být plné nebo blokované. Exportuj si prompt.');return false;}}
- function choose(p){if(Object.values(draft).some(v=>v&&v!=='Odrážky')&&!window.confirm('Nahradit rozpracované zadání? Neuložené změny se ztratí.'))return;setEditing(null);setDraft({...empty,...p.fields});setSelected(p);setNotice('Předloha načtena. Doplň hranaté závorky.');document.getElementById('builder')?.scrollIntoView({behavior:'instant'});}
- return <StudioContext.Provider value={{editing,setEditing,draft,setDraft,selected,setSelected,notice,setNotice,library,persist,choose}}>{children}</StudioContext.Provider>;
+import { Mark, SectionHead } from './Explore.jsx';
+import { copyText } from './clipboard.js';
+import { useContent } from './i18n.jsx';
+
+const StudioContext = createContext(null);
+const KEY = 'promptujai.library.v1';
+const fieldKeys = ['title', 'role', 'context', 'task', 'sources', 'criteria', 'format'];
+
+function loadLibrary() {
+  try {
+    const data = JSON.parse(localStorage.getItem(KEY) || '[]');
+    return Array.isArray(data) ? data.filter(x => x && typeof x.id === 'string' && typeof x.title === 'string' && typeof x.prompt === 'string' && x.fields && fieldKeys.every(k => typeof x.fields[k] === 'string')) : [];
+  } catch { return []; }
 }
-export function TaskLauncher(){const {choose}=useContext(StudioContext);return <section className="mx task-launcher" id="ukoly"><div className="editorial-head"><div><span className="kicker">ZAČNI SVÝM ÚKOLEM</span><h2>Co chceš dnes zvládnout?</h2><p>Vyber si cíl. Dostaneš postup, vhodný typ nástroje a připravené zadání.</p></div></div><div className="task-grid">{presets.map((p,i)=><button key={p.id} onClick={()=>choose(p)}><small>0{i+1}</small><strong>{p.name}</strong><span>{p.tool}</span><b aria-hidden="true">↗</b></button>)}</div></section>}
-export function PromptStudio(){
- const {editing,setEditing,draft,setDraft,selected,notice,setNotice,library,persist,choose,setSelected}=useContext(StudioContext);
- const prompt=[['Role',draft.role],['Kontext',draft.context],['Úkol',draft.task],['Podklady',draft.sources],['Kritéria výsledku',draft.criteria],['Formát',draft.format]].filter(([,v])=>v.trim()).map(([k,v])=>`${k}: ${v.trim()}`).join('\n\n');
- function save(){if(!draft.title.trim()||!draft.task.trim()){setNotice('Pro uložení doplň název a úkol.');return;}const item={id:editing||crypto.randomUUID(),title:draft.title.trim(),prompt,fields:{...draft},updated:new Date().toISOString()};const next=editing?library.map(x=>x.id===editing?item:x):[item,...library];if(persist(next)){setEditing(item.id);setNotice('Uloženo v tomto prohlížeči.');}}
- async function copy(text){try{await navigator.clipboard.writeText(text);setNotice('Prompt zkopírován.');}catch{setNotice('Kopírování se nepodařilo. Označ text a zkopíruj jej ručně.');}}
- function download(data,name){const url=URL.createObjectURL(new Blob([data],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
- return <><div className="preset-row" aria-label="Předvolby builderu">{presets.map(p=><button key={p.id} onClick={()=>choose(p)}>{p.fields.title}</button>)}<a href="#knihovna">Moje knihovna ({library.length}) ↓</a></div>{selected&&<aside className="knowledge-note"><p><strong>{selected.tool}</strong><br/>{selected.steps}</p></aside>}<div className="studio-grid"><div className="studio-fields">{[['title','Název promptu'],['role','Role'],['context','Kontext'],['task','Úkol'],['sources','Podklady'],['criteria','Kritéria dobrého výsledku']].map(([key,label])=><label key={key}>{label}{key==='title'?<input maxLength={120} value={draft[key]} onChange={e=>setDraft({...draft,[key]:e.target.value})}/>:<textarea rows={key==='role'?2:3} value={draft[key]} onChange={e=>setDraft({...draft,[key]:e.target.value})}/>}</label>)}<label>Formát výstupu<select value={draft.format} onChange={e=>setDraft({...draft,format:e.target.value})}>{['Odrážky','Tabulka','JSON','E-mail','Krátký odstavec','Krok za krokem','Obrázek','Implementace a přehled změn'].map(x=><option key={x}>{x}</option>)}</select></label></div><div className="studio-output"><span className="kicker">TVŮJ PROMPT</span><pre>{prompt}</pre><div className="studio-actions"><button className="solid" onClick={()=>copy(prompt)}>Kopírovat prompt</button><button onClick={save}>{editing?'Uložit změny':'Uložit do knihovny'}</button><button onClick={()=>download(prompt,'prompt.txt')}>Exportovat prompt</button></div><p role="status">{notice}</p><small>Nic se neposílá do AI. Prompt zkopíruj do vybrané aplikace a přilož tam soubory.</small></div></div><section id="knihovna" className="prompt-library"><div className="editorial-head"><div><span className="kicker">TVŮJ PRACOVNÍ PROSTOR</span><h2>Moje knihovna</h2><p>Uloženo jen v tomto prohlížeči. Bez účtu a synchronizace. Vymazáním dat prohlížeče o prompty přijdeš; zálohu si exportuj.</p></div><button disabled={!library.length} onClick={()=>download(JSON.stringify({version:1,prompts:library},null,2),'promptujai-knihovna.json')}>Exportovat knihovnu</button></div>{!library.length?<p className="library-empty">Zatím tu nic není. Pojmenuj svůj první prompt v builderu a ulož ho.</p>:<div className="model-grid">{library.map(item=><article className="model-card" key={item.id}><h3>{item.title}</h3><p>{item.fields.task}</p><div className="studio-actions"><button onClick={()=>{if(Object.values(draft).some(v=>v&&v!=='Odrážky')&&!window.confirm('Načíst uložený prompt a nahradit rozpracované zadání?'))return;setDraft(item.fields);setSelected(null);setEditing(item.id);setNotice('Načteno pro úpravu.');document.getElementById('builder')?.scrollIntoView({behavior:'instant'});}}>Upravit</button><button onClick={()=>copy(item.prompt)}>Kopírovat</button><button onClick={()=>{if(window.confirm(`Smazat prompt „${item.title}“ z knihovny?`)&&persist(library.filter(x=>x.id!==item.id))){if(editing===item.id)setEditing(null);setNotice('Prompt smazán.');}}}>Smazat</button></div></article>)}</div>}</section></>;
+
+function scrollToBuilder() { document.getElementById('builder')?.scrollIntoView({ behavior: 'instant' }); }
+
+// Shared builder state, so the task launcher, career paths and library can all load prompts into the builder.
+export function StudioProvider({ children }) {
+  const { builder } = useContent();
+  const empty = { title: '', role: '', context: '', task: '', sources: '', criteria: '', format: builder.formats[0] };
+  const [editing, setEditing] = useState(null);
+  const [draft, setDraft] = useState(empty);
+  const [selected, setSelected] = useState(null);
+  const [notice, setNotice] = useState('');
+  const [library, setLibrary] = useState(loadLibrary);
+  const dirty = fieldKeys.some(k => draft[k] !== empty[k]);
+  function persist(next) {
+    try { localStorage.setItem(KEY, JSON.stringify(next)); setLibrary(next); return true; }
+    catch { setNotice(builder.notices.storageFailed); return false; }
+  }
+  function load(fields, message, confirmText) {
+    if (dirty && !window.confirm(confirmText || builder.confirmReplace)) return false;
+    setDraft({ ...empty, ...fields });
+    setNotice(message);
+    scrollToBuilder();
+    return true;
+  }
+  function choose(preset) {
+    if (load(preset.fields, builder.notices.loaded)) { setEditing(null); setSelected(preset); }
+  }
+  const value = { editing, setEditing, draft, setDraft, selected, setSelected, notice, setNotice, library, persist, choose, load };
+  return <StudioContext.Provider value={value}>{children}</StudioContext.Provider>;
 }
+
+export function TaskLauncher() {
+  const { tasks, presets } = useContent();
+  const { choose } = useContext(StudioContext);
+  return (
+    <section className="section wrap" id="ukoly" aria-labelledby="ukoly-title" style={{ paddingTop: 56 }}>
+      <SectionHead id="ukoly-title" kicker={tasks.kicker} title={tasks.title} text={tasks.text} />
+      <div className="task-grid">
+        {presets.map((p, i) => (
+          <button type="button" className="task clickable" key={p.id} onClick={() => choose(p)}>
+            <small>0{i + 1}</small><strong>{p.name}</strong><span>{p.tool}</span><b aria-hidden="true">↗</b>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function download(data, name, type) {
+  const url = URL.createObjectURL(new Blob([data], { type }));
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+export function PromptStudio() {
+  const { builder, library: lib, presets } = useContent();
+  const { editing, setEditing, draft, setDraft, selected, setSelected, notice, setNotice, library, persist, choose, load } = useContext(StudioContext);
+  // The format alone (always preset) doesn't make a prompt; show the empty state until real content exists.
+  const hasContent = ['role', 'context', 'task', 'sources', 'criteria'].some(k => draft[k].trim());
+  const prompt = !hasContent ? '' : ['role', 'context', 'task', 'sources', 'criteria', 'format']
+    .filter(k => draft[k].trim())
+    .map(k => `${builder.parts[k]}: ${draft[k].trim()}`)
+    .join('\n\n');
+  // A prompt saved on the other language version may use a format label this language doesn't list.
+  const formats = builder.formats.includes(draft.format) ? builder.formats : [draft.format, ...builder.formats];
+  const set = key => e => setDraft({ ...draft, [key]: e.target.value });
+
+  function save() {
+    if (!draft.title.trim() || !draft.task.trim()) { setNotice(builder.notices.needTitle); return; }
+    const item = { id: editing || crypto.randomUUID(), title: draft.title.trim(), prompt, fields: { ...draft }, updated: new Date().toISOString() };
+    const next = editing ? library.map(x => x.id === editing ? item : x) : [item, ...library];
+    if (persist(next)) { setEditing(item.id); setNotice(builder.notices.saved); }
+  }
+  async function copy(text) { setNotice((await copyText(text)) ? builder.notices.copied : builder.notices.copyFailed); }
+  function edit(item) {
+    if (load(item.fields, builder.notices.editing, lib.confirmLoad)) { setSelected(null); setEditing(item.id); }
+  }
+  function remove(item) {
+    if (window.confirm(lib.confirmDelete(item.title)) && persist(library.filter(x => x.id !== item.id))) {
+      if (editing === item.id) setEditing(null);
+      setNotice(builder.notices.deleted);
+    }
+  }
+
+  return (
+    <section id="builder" className="section band" aria-labelledby="builder-title">
+      <div className="wrap">
+        <SectionHead id="builder-title" kicker={builder.kicker} title={builder.title} text={builder.text} />
+        <div className="chips" role="group" aria-label={builder.presetsLabel}>
+          {presets.map(p => <button type="button" className="chip" key={p.id} onClick={() => choose(p)}>{p.fields.title}</button>)}
+          <a className="chip" href="#knihovna" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>{builder.libraryLink(library.length)} ↓</a>
+        </div>
+        {selected && <div className="callout"><span className="icon"><Mark kind="check" /></span><p><strong>{selected.tool}</strong><br />{selected.steps}</p></div>}
+        <div className="studio">
+          <div className="studio-fields">
+            {builder.fields.map(([key, label]) => (
+              <label className="field" key={key}>{label}
+                {key === 'title' ? <input maxLength={120} value={draft[key]} onChange={set(key)} /> : <textarea rows={key === 'role' ? 2 : 3} value={draft[key]} onChange={set(key)} />}
+              </label>
+            ))}
+            <label className="field">{builder.formatLabel}
+              <select value={draft.format} onChange={set('format')}>{formats.map(x => <option key={x}>{x}</option>)}</select>
+            </label>
+          </div>
+          <div className="studio-output">
+            <div className="label label-strong">{builder.output}</div>
+            <pre className={'prompt-box' + (prompt ? '' : ' empty')}>{prompt || builder.emptyOutput}</pre>
+            <div className="studio-actions">
+              <button type="button" className="btn" onClick={() => copy(prompt)} disabled={!prompt}>{builder.copy}</button>
+              <button type="button" className="btn btn-secondary" onClick={save}>{editing ? builder.update : builder.save}</button>
+              <button type="button" className="btn btn-secondary" onClick={() => download(prompt, builder.fileName, 'text/plain;charset=utf-8')} disabled={!prompt}>{builder.export}</button>
+            </div>
+            <p className="status" role="status">{notice}</p>
+            <p className="note">{builder.privacy}</p>
+            <p className="note">{builder.source} <a className="link" href="https://developers.openai.com/api/docs/guides/reasoning-best-practices" target="_blank" rel="noopener noreferrer">{builder.sourceLink} ↗</a>. {builder.sourceNote}</p>
+          </div>
+        </div>
+
+        <section id="knihovna" className="library" aria-labelledby="knihovna-title">
+          <SectionHead id="knihovna-title" kicker={lib.kicker} title={lib.title} text={lib.text}>
+            <button type="button" className="btn btn-secondary" disabled={!library.length} onClick={() => download(JSON.stringify({ version: 1, prompts: library }, null, 2), lib.fileName, 'application/json')}>{lib.export}</button>
+          </SectionHead>
+          {!library.length ? <p className="note">{lib.empty}</p> : (
+            <div className="grid cols-3">
+              {library.map(item => (
+                <article className="card library-item" key={item.id}>
+                  <h3>{item.title}</h3>
+                  <p>{item.fields.task}</p>
+                  <div className="studio-actions">
+                    <button type="button" className="btn btn-small btn-secondary" onClick={() => edit(item)}>{lib.edit}</button>
+                    <button type="button" className="btn btn-small btn-secondary" onClick={() => copy(item.prompt)}>{lib.copy}</button>
+                    <button type="button" className="btn btn-small btn-secondary" onClick={() => remove(item)}>{lib.remove}</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </section>
+  );
+}
+
+export { StudioContext };
