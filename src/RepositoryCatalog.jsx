@@ -32,7 +32,7 @@ function RepoCard({ repo }) {
         <a className="repo-stars" href={repo.url + '/stargazers'} target="_blank" rel="noopener noreferrer" title={c.starsTitle(date(repo.checkedAt))} aria-label={c.starsLabel(number.format(repo.stars))}><Mark kind="star" />{number.format(repo.stars)}</a>
       </div>
       <div>
-        <h2><a href={repo.url} target="_blank" rel="noopener noreferrer">{repo.name} <span aria-hidden="true">↗</span></a></h2>
+        <h3><a href={repo.url} target="_blank" rel="noopener noreferrer">{repo.name} <span aria-hidden="true">↗</span></a></h3>
         <span className="repo-id">{repo.id}</span>
       </div>
       <p>{repo.description}</p>
@@ -87,9 +87,13 @@ export default function RepositoryCatalog() {
     try {
       for (let i = 0; i < snapshot.length && !rateLimited; i += 4) {
         await Promise.all(snapshot.slice(i, i + 4).map(async repo => {
-          const timeout = setTimeout(() => abort.abort(), 20000);
+          // Each request gets its own 20 s timeout; leaving the page (abort) cancels all of them.
+          const request = new AbortController();
+          const cancel = () => request.abort();
+          abort.signal.addEventListener('abort', cancel);
+          const timeout = setTimeout(cancel, 20000);
           try {
-            const response = await fetch('https://api.github.com/repos/' + repo.id, { signal: abort.signal, headers: { Accept: 'application/vnd.github+json' } });
+            const response = await fetch('https://api.github.com/repos/' + repo.id, { signal: request.signal, headers: { Accept: 'application/vnd.github+json' } });
             if (response.status === 403 || response.status === 429) { rateLimited = true; return; }
             if (!response.ok) throw new Error('GitHub request failed');
             const data = await response.json();
@@ -97,7 +101,7 @@ export default function RepositoryCatalog() {
             next[repo.id] = { stars: data.stargazers_count, checkedAt: new Date().toISOString() };
             success++;
           } catch { /* Keep the dated snapshot when GitHub is unavailable. */ }
-          finally { clearTimeout(timeout); done++; if (!abort.signal.aborted) setProgress(done); }
+          finally { clearTimeout(timeout); abort.signal.removeEventListener('abort', cancel); done++; if (!abort.signal.aborted) setProgress(done); }
         }));
         if (abort.signal.aborted) break;
       }
@@ -135,7 +139,7 @@ export default function RepositoryCatalog() {
         <section id="catalog-results" className="repo-browser" aria-labelledby="catalog-title">
           <div className="section-head" style={{ marginBottom: 0 }}>
             <div><span className="kicker">{c.listKicker}</span><h2 id="catalog-title">{c.listTitle}</h2></div>
-            <button type="button" className="btn btn-secondary" onClick={refresh} disabled={refreshing}>{refreshing ? c.refreshing(progress, snapshot.length) : c.refresh + ' ↻'}</button>
+            <button type="button" className="btn btn-secondary" onClick={refresh} aria-disabled={refreshing} aria-busy={refreshing}>{refreshing ? c.refreshing(progress, snapshot.length) : c.refresh + ' ↻'}</button>
           </div>
           <p className="note" style={{ marginTop: 14 }}>{c.sourceNote}</p>
           <p role="status" className="repo-notice status">{notice}</p>

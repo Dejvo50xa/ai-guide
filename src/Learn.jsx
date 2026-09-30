@@ -4,6 +4,7 @@ import { copyText } from './clipboard.js';
 import { StudioContext } from './Studio.jsx';
 import { useContent } from './i18n.jsx';
 import { checkPrompt, MIN_LENGTH } from './practice.mjs';
+import { normalize } from './text.mjs';
 
 export function Paths() {
   const { paths } = useContent();
@@ -314,8 +315,8 @@ export function Templates() {
 export function Glossary() {
   const { glossary, locale } = useContent();
   const [q, setQ] = useState('');
-  const query = q.trim().toLocaleLowerCase(locale);
-  const items = glossary.items.filter(g => (g.t + ' ' + g.d).toLocaleLowerCase(locale).includes(query)).sort((a, b) => a.t.localeCompare(b.t, locale));
+  const query = normalize(q.trim());
+  const items = glossary.items.filter(g => normalize(g.t + ' ' + g.d).includes(query)).sort((a, b) => a.t.localeCompare(b.t, locale));
   return (
     <section id="slovnik" className="section band" aria-labelledby="slovnik-title">
       <div className="wrap">

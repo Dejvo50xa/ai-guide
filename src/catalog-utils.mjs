@@ -1,5 +1,6 @@
 const aliases={web:'UX web design rozhrani interface',ios:'iPhone iOS SwiftUI Apple mobil mobile',android:'Android Compose mobil mobile',code:'kod programovani vyvoj code coding programming development',testing:'testovani testy testing tests',security:'bezpecnost audit security',writing:'psani cestina texty writing czech text',marketing:'marketing SEO obsah content',docs:'dokumenty prezentace PDF Word documents presentations',data:'data databaze tabulky SQL Excel databases spreadsheets',research:'reserse vyzkum vyhledavani research search',automation:'automatizace workflow automation',agents:'agenti agent agents',video:'video animace animation',cloud:'cloud nasazeni deployment hosting'};
-export const normalize = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+import {normalize} from './text.mjs';
+export {normalize};
 export function selectRepositories(repos,{query='',category='all',type='all',sort='stars'}={}) {
   const words=normalize(query).trim().split(/\s+/).filter(Boolean);
   return repos.filter(repo => (category==='all'||repo.categories.includes(category))&&(type==='all'||repo.type===type)&&words.every(word=>normalize([repo.name,repo.id,repo.description,repo.setup,...repo.categories.map(id=>aliases[id]||id)].join(' ')).includes(word)))

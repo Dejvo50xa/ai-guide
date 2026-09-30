@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useContent } from './i18n.jsx';
 import { copyText } from './clipboard.js';
+import { normalize } from './text.mjs';
 
 const paths = { spark: 'M12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9Z', code: 'm8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18', book: 'M3 4h6l3 2 3-2h6v16h-6l-3 2-3-2H3ZM12 6v16', search: 'M20 20l-5-5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0', flow: 'M4 4h6v6H4Zm10 10h6v6h-6ZM10 7h7v7M7 10v7h7', arrow: 'M4 12h16m-6-6 6 6-6 6', check: 'm5 12 4 4L19 6', star: 'm12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L2 9.6l6.2-.9Z' };
 export function Mark({ kind = 'spark' }) {
@@ -12,7 +13,7 @@ export function SectionHead({ kicker, title, text, children, id }) {
     <div className="section-head">
       <div>
         <span className="kicker">{kicker}</span>
-        <h2 id={id}>{title}</h2>
+        <h2 id={id} tabIndex={-1}>{title}</h2>
         {text && <p>{text}</p>}
       </div>
       {children}
@@ -61,11 +62,11 @@ const sources = { OpenAI: 'https://developers.openai.com/api/docs/models', Anthr
 const typeIcon = { text: 'spark', image: 'book', video: 'flow', audio: 'flow' };
 
 export function ModelExplorer() {
-  const { models, locale } = useContent();
+  const { models } = useContent();
   const [task, setTask] = useState('all');
   const [q, setQ] = useState('');
-  const query = q.trim().toLocaleLowerCase(locale);
-  const visible = models.items.filter(m => (task === 'all' || m.tasks.includes(task)) && (m.name + ' ' + m.brand + ' ' + m.desc).toLocaleLowerCase(locale).includes(query));
+  const query = normalize(q.trim());
+  const visible = models.items.filter(m => (task === 'all' || m.tasks.includes(task)) && normalize([m.name, m.brand, m.tag, m.desc].join(' ')).includes(query));
   return (
     <section id="modely" className="section wrap" aria-labelledby="modely-title">
       <SectionHead id="modely-title" kicker={models.kicker} title={models.title} text={models.text}><span className="tag">{models.verified}</span></SectionHead>

@@ -1,10 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Mark } from './Explore.jsx';
 import { useContent } from './i18n.jsx';
 
 export default function SiteNav({ catalog = false }) {
   const { nav } = useContent();
   const [open, setOpen] = useState(false);
+  // Close the mobile menu on Esc, or when the window grows wide enough to show the desktop links.
+  useEffect(() => {
+    if (!open) return;
+    const wide = matchMedia('(min-width: 1081px)');
+    const onKey = e => { if (e.key === 'Escape') { setOpen(false); document.querySelector('.menu-toggle')?.focus(); } };
+    const onWide = () => { if (wide.matches) setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    wide.addEventListener('change', onWide);
+    return () => { document.removeEventListener('keydown', onKey); wide.removeEventListener('change', onWide); };
+  }, [open]);
   // On the catalog page, section links point back to the home page of the same language.
   const home = catalog ? nav.home : '';
   const links = [...nav.links.map(([label, hash]) => [label, home + hash]), nav.catalog];

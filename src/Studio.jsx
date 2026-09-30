@@ -14,7 +14,11 @@ function loadLibrary() {
   } catch { return []; }
 }
 
-function scrollToBuilder() { document.getElementById('builder')?.scrollIntoView({ behavior: 'instant' }); }
+// Scroll to the builder and move keyboard focus there too, so the next Tab continues inside it.
+function scrollToBuilder() {
+  document.getElementById('builder')?.scrollIntoView({ behavior: 'instant' });
+  document.getElementById('builder-title')?.focus({ preventScroll: true });
+}
 
 // Shared builder state, so the task launcher, career paths and library can all load prompts into the builder.
 export function StudioProvider({ children }) {
@@ -25,14 +29,18 @@ export function StudioProvider({ children }) {
   const [selected, setSelected] = useState(null);
   const [notice, setNotice] = useState('');
   const [library, setLibrary] = useState(loadLibrary);
-  const dirty = fieldKeys.some(k => draft[k] !== empty[k]);
+  // What the draft looked like after the last load or save; only edits beyond it count as unsaved.
+  const [baseline, setBaseline] = useState(empty);
+  const dirty = fieldKeys.some(k => draft[k] !== baseline[k]);
   function persist(next) {
     try { localStorage.setItem(KEY, JSON.stringify(next)); setLibrary(next); return true; }
     catch { setNotice(builder.notices.storageFailed); return false; }
   }
   function load(fields, message, confirmText) {
     if (dirty && !window.confirm(confirmText || builder.confirmReplace)) return false;
-    setDraft({ ...empty, ...fields });
+    const next = { ...empty, ...fields };
+    setDraft(next);
+    setBaseline(next);
     setNotice(message);
     scrollToBuilder();
     return true;
@@ -40,7 +48,7 @@ export function StudioProvider({ children }) {
   function choose(preset) {
     if (load(preset.fields, builder.notices.loaded)) { setEditing(null); setSelected(preset); }
   }
-  const value = { editing, setEditing, draft, setDraft, selected, setSelected, notice, setNotice, library, persist, choose, load };
+  const value = { editing, setEditing, draft, setDraft, setBaseline, selected, setSelected, notice, setNotice, library, persist, choose, load };
   return <StudioContext.Provider value={value}>{children}</StudioContext.Provider>;
 }
 
@@ -70,7 +78,7 @@ function download(data, name, type) {
 
 export function PromptStudio() {
   const { builder, library: lib, presets } = useContent();
-  const { editing, setEditing, draft, setDraft, selected, setSelected, notice, setNotice, library, persist, choose, load } = useContext(StudioContext);
+  const { editing, setEditing, draft, setDraft, setBaseline, selected, setSelected, notice, setNotice, library, persist, choose, load } = useContext(StudioContext);
   // The format alone (always preset) doesn't make a prompt; show the empty state until real content exists.
   const hasContent = ['role', 'context', 'task', 'sources', 'criteria'].some(k => draft[k].trim());
   const prompt = !hasContent ? '' : ['role', 'context', 'task', 'sources', 'criteria', 'format']
@@ -85,7 +93,7 @@ export function PromptStudio() {
     if (!draft.title.trim() || !draft.task.trim()) { setNotice(builder.notices.needTitle); return; }
     const item = { id: editing || crypto.randomUUID(), title: draft.title.trim(), prompt, fields: { ...draft }, updated: new Date().toISOString() };
     const next = editing ? library.map(x => x.id === editing ? item : x) : [item, ...library];
-    if (persist(next)) { setEditing(item.id); setNotice(builder.notices.saved); }
+    if (persist(next)) { setEditing(item.id); setBaseline({ ...draft }); setNotice(builder.notices.saved); }
   }
   async function copy(text) { setNotice((await copyText(text)) ? builder.notices.copied : builder.notices.copyFailed); }
   function edit(item) {

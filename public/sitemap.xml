@@ -5,23 +5,27 @@
     <lastmod>2026-09-30</lastmod>
     <xhtml:link rel="alternate" hreflang="cs" href="https://www.promptujai.cz/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.promptujai.cz/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.promptujai.cz/" />
   </url>
   <url>
     <loc>https://www.promptujai.cz/en/</loc>
     <lastmod>2026-09-30</lastmod>
     <xhtml:link rel="alternate" hreflang="cs" href="https://www.promptujai.cz/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.promptujai.cz/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.promptujai.cz/" />
   </url>
   <url>
     <loc>https://www.promptujai.cz/repozitare/</loc>
     <lastmod>2026-09-30</lastmod>
     <xhtml:link rel="alternate" hreflang="cs" href="https://www.promptujai.cz/repozitare/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.promptujai.cz/en/repositories/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.promptujai.cz/repozitare/" />
   </url>
   <url>
     <loc>https://www.promptujai.cz/en/repositories/</loc>
     <lastmod>2026-09-30</lastmod>
     <xhtml:link rel="alternate" hreflang="cs" href="https://www.promptujai.cz/repozitare/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.promptujai.cz/en/repositories/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.promptujai.cz/repozitare/" />
   </url>
 </urlset>

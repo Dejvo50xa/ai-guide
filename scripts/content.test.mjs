@@ -77,3 +77,21 @@ test('practice checker ignores accents and curly apostrophes', () => {
   assert.deepEqual(checkPrompt('', 'en').map(r => r.id), partIds);
   assert.ok(checkPrompt('', 'en').every(r => !r.found));
 });
+
+test('practice checker handles realistic phrasings in both languages', () => {
+  const found = (text, lang) => Object.fromEntries(checkPrompt(text, lang).map(r => [r.id, r.found]));
+  // Formal Czech ("vy") verbs, "žádné" limits and "Jako X" roles.
+  const cs = found('Jako copywriter pro kavárny napište příspěvek do 100 slov. Žádné hashtagy.', 'cs');
+  assert.equal(cs.role, true); assert.equal(cs.task, true); assert.equal(cs.format, true); assert.equal(cs.limits, true);
+  assert.equal(found('Shrňte tento článek a vysvětlete hlavní myšlenku.', 'cs').task, true);
+  assert.equal(found('Spočítej úsporu a zhodnoť rizika.', 'cs').task, true);
+  // "buď … nebo" is not a role.
+  assert.equal(found('Buď napiš e-mail, nebo zprávu.', 'cs').role, false);
+  // English "As a …" roles, "No …" limits, and extra task verbs.
+  const en = found('As a copywriter, generate a post for cafés in 100 words. No hashtags.', 'en');
+  assert.equal(en.role, true); assert.equal(en.task, true); assert.equal(en.format, true); assert.equal(en.limits, true);
+  assert.equal(found('Give me three ideas and make them short.', 'en').task, true);
+  // A bare possessive isn't context.
+  assert.equal(found('Fix my code.', 'en').context, false);
+  assert.equal(found('My team sells handmade bags to hikers.', 'en').context, true);
+});
