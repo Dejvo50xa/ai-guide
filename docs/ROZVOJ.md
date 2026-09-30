@@ -4,6 +4,10 @@
 
 Světlý design podle Davidovy roadmapy, mobilní navigace, katalog modelů s filtrem a vyhledáváním, šest interaktivních workflow s kopírovatelnými prompty, modernizace doporučení pro reasoning a strukturované výstupy, rozšířený slovník a přístupné detaily technik. Původní akademie a nástroje jsou zachovány. Web neodesílá zadání do API.
 
+## Hotovo 30. 9. 2026
+
+Redesign „Refined blue“ (viz `design-system/promptujai/MASTER.md`), anglická verze celého webu na `/en/` a `/en/repositories/`, cesty podle profese (4 role × 3 úkoly s kritérii dobrého výsledku) a trénink promptování (4 cvičení s lokální kontrolou pěti částí zadání a vzorovou verzí). Body 2 a 3 níže jsou tím v základní podobě hotové; cesty lze rozšířit na 5 úkolů na roli.
+
 ## Doporučené další kroky v pořadí přínosu
 
 1. **Osobní knihovna a pokrok.** Uložené prompty, rozečtené lekce a dokončené úkoly lokálně v prohlížeči. Bez registrace; s exportem a vysvětlením, že data se nesynchronizují.

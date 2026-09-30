@@ -69,17 +69,23 @@ function CopyButton({ text, labels, className = 'btn btn-small btn-secondary' })
 
 function TechniqueDialog({ t, labels, onClose }) {
   const ref = useRef(null);
+  // Close natively first so the page stops being inert and focus can return to the opener,
+  // then tell React. The native 'close' event is only a fallback; it isn't dispatched reliably.
+  const dismiss = () => { if (ref.current?.open) ref.current.close(); onClose(); };
+  // No close() in cleanup: it would fire onClose during StrictMode's effect re-run. Removing the
+  // element from the page already ends the modal state.
   useEffect(() => {
     const el = ref.current;
-    el.showModal();
-    return () => el.close();
+    if (!el.open) el.showModal();
+    document.documentElement.style.overflow = 'hidden';
+    return () => { document.documentElement.style.overflow = ''; };
   }, []);
   return (
-    <dialog ref={ref} className="sheet" aria-labelledby="technique-title" onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+    <dialog ref={ref} className="sheet" aria-labelledby="technique-title" onClose={onClose} onCancel={e => { e.preventDefault(); dismiss(); }} onClick={e => { if (e.target === e.currentTarget) dismiss(); }}>
       <div className="sheet-body">
         <div className="sheet-head">
           <div><span className="kicker">{labels.dialogKicker}</span><h2 id="technique-title">{t.name}</h2></div>
-          <button type="button" className="close" aria-label={labels.close} onClick={onClose}>×</button>
+          <button type="button" className="close" aria-label={labels.close} onClick={dismiss}>×</button>
         </div>
         <p>{t.co}</p>
         <div><div className="label label-weak">✗ {labels.weak}</div><div className="prompt-box prompt-weak">{t.spatne}</div></div>
