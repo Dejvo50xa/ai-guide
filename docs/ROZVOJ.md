@@ -24,10 +24,11 @@ Redesign „Refined blue“ (viz `design-system/promptujai/MASTER.md`), anglick�
 
 ## Zdroje a redakční omezení
 
-Ověřeno 7. 9. 2026:
+Ověřeno 23. 10. 2026 (změny proti 7. 9.: OpenAI GPT-6.1 Sol / GPT-6 Luna a GPT-Image-2.5; Anthropic Opus 5.5 / Sonnet 5.5; Google Gemini 4 Argon, Nano Banana 2.1 a Gemini Omni Flash, protože Veo 3.1 Preview v Gemini API skončil 22. 10. 2026):
 - OpenAI: https://developers.openai.com/api/docs/models
 - Anthropic: https://platform.claude.com/docs/en/models/overview
 - Google: https://ai.google.dev/gemini-api/docs/models
+- Google video (konec Veo 3.1 Preview): https://ai.google.dev/gemini-api/docs/video
 - Reasoning: https://developers.openai.com/api/docs/guides/reasoning-best-practices
 
 Katalog vychází z popisů výrobců, nikoliv vlastního srovnávacího testu. Zařazení podle úkolů a tipy představují redakční doporučení. API modely nejsou automaticky dostupné ve všech spotřebitelských aplikacích. Ceny a limity tarifů se neodhadují.

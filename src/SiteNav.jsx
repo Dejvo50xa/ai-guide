@@ -28,7 +28,7 @@ export default function SiteNav({ catalog = false }) {
           {links.map(([label, url]) => <a key={url} href={url} aria-current={catalog && url === nav.catalog[1] ? 'page' : undefined}>{label}</a>)}
         </div>
         <div className="nav-actions">
-          <a className="lang-switch" href={switchHref} hrefLang={nav.switchShort.toLowerCase()} lang={nav.switchShort.toLowerCase()} aria-label={nav.switchLabel} title={nav.switchLabel}>{nav.switchShort}</a>
+          <a className="lang-switch" href={switchHref} hrefLang={nav.switchShort.toLowerCase()} lang={nav.switchShort.toLowerCase()} aria-label={`${nav.switchShort} – ${nav.switchLabel}`} title={nav.switchLabel}>{nav.switchShort}</a>
           <a className="btn btn-small nav-cta" href={home + '#builder'}>{nav.cta}</a>
           <button type="button" className="menu-toggle" aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>{open ? nav.close : nav.menu}</button>
         </div>

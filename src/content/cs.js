@@ -1,5 +1,5 @@
 // Czech content for the whole site. en.js must mirror this structure (checked by scripts/content.test.mjs).
-const verified = '7. 9. 2026';
+const verified = '23. 10. 2026';
 
 export default {
   lang: 'cs',
@@ -69,13 +69,13 @@ export default {
     tasks: [['all', 'Všechny úkoly'], ['write', 'Psaní'], ['research', 'Rešerše'], ['code', 'Programování'], ['data', 'Data'], ['image', 'Obrázky'], ['video', 'Video'], ['audio', 'Audio']],
     items: [
       { name: 'GPT-6 Astra', brand: 'OpenAI', type: 'text', tag: 'Náročné úkoly', desc: 'Komplexní uvažování a programování.', tasks: ['research', 'code'], tip: 'Zadej cíl, podklady a kritéria hotového výsledku.' },
-      { name: 'GPT-5.6 Terra / Luna', brand: 'OpenAI', type: 'text', tag: 'Efektivní provoz', desc: 'Terra vyvažuje schopnosti a cenu, Luna míří na levnější hromadné úlohy.', tasks: ['write', 'data'], tip: 'Začni menším modelem a ověř kvalitu na skutečných příkladech.' },
+      { name: 'GPT-6.1 Sol / GPT-6 Luna', brand: 'OpenAI', type: 'text', tag: 'Efektivní provoz', desc: 'Sol se blíží Astře za nižší cenu, Luna míří na levné hromadné úlohy.', tasks: ['write', 'data'], tip: 'Začni menším modelem a ověř kvalitu na skutečných příkladech.' },
       { name: 'Claude Fable 5.1', brand: 'Anthropic', type: 'text', tag: 'Složité projekty', desc: 'Náročné uvažování a dlouhé agentní úkoly.', tasks: ['research', 'code'], tip: 'Urči milníky, výstupy a okamžiky pro kontrolu.' },
-      { name: 'Claude Opus 5 / Sonnet 5', brand: 'Anthropic', type: 'text', tag: 'Práce a vývoj', desc: 'Opus pro komplexní práci, Sonnet pro kombinaci rychlosti a schopností.', tasks: ['write', 'code', 'data'], tip: 'Přilož příklad požadovaného výstupu a konkrétní omezení.' },
-      { name: 'Gemini 3.8 Flash', brand: 'Google', type: 'text', tag: 'Vícekroková práce', desc: 'Programování, agenti a komplexní pracovní postupy.', tasks: ['code', 'data', 'research'], tip: 'Děl práci na ověřitelné kroky s jasným výsledkem.' },
-      { name: 'GPT-Image-2', brand: 'OpenAI', type: 'image', tag: 'Obrázky', desc: 'Generování a úpravy obrázků.', tasks: ['image'], tip: 'Popiš kompozici, světlo, poměr stran a co zachovat.' },
-      { name: 'Nano Banana 2', brand: 'Google', type: 'image', tag: 'Obrázky', desc: 'Tvorba a editace obrázků; stabilní model v Gemini API.', tasks: ['image'], tip: 'Přilož referenci a vyjmenuj konkrétní změny.' },
-      { name: 'Veo 3.1', brand: 'Google', type: 'video', tag: 'Video · preview', desc: 'Video se synchronizovaným zvukem; API verze je preview.', tasks: ['video'], tip: 'Zadej scénu, pohyb kamery, akci a zvuk.' },
+      { name: 'Claude Opus 5.5 / Sonnet 5.5', brand: 'Anthropic', type: 'text', tag: 'Práce a vývoj', desc: 'Opus pro komplexní práci, Sonnet pro kombinaci rychlosti a schopností.', tasks: ['write', 'code', 'data'], tip: 'Přilož příklad požadovaného výstupu a konkrétní omezení.' },
+      { name: 'Gemini 4 Argon / 3.8 Flash', brand: 'Google', type: 'text', tag: 'Vícekroková práce', desc: 'Argon pro náročné uvažování s dlouhým kontextem, 3.8 Flash pro programování, agenty a vícekrokové postupy.', tasks: ['code', 'data', 'research'], tip: 'Děl práci na ověřitelné kroky s jasným výsledkem.' },
+      { name: 'GPT-Image-2.5 Sunburst / Flare', brand: 'OpenAI', type: 'image', tag: 'Obrázky', desc: 'Sunburst pro nejvyšší kvalitu generování a úprav, Flare pro rychlou běžnou práci.', tasks: ['image'], tip: 'Popiš kompozici, světlo, poměr stran a co zachovat.' },
+      { name: 'Nano Banana 2.1', brand: 'Google', type: 'image', tag: 'Obrázky', desc: 'Tvorba a úpravy obrázků s lepší typografií a konzistencí napříč úpravami.', tasks: ['image'], tip: 'Přilož referenci a vyjmenuj konkrétní změny.' },
+      { name: 'Gemini Omni Flash', brand: 'Google', type: 'video', tag: 'Video', desc: 'Rychlé generování a úpravy videa s vlastním zvukem; v Gemini API nahradil Veo 3.1 Preview.', tasks: ['video'], tip: 'Zadej scénu, pohyb kamery, akci a zvuk.' },
       { name: 'Gemini 3.5 Transcribe', brand: 'Google', type: 'audio', tag: 'Přepis řeči', desc: 'Přepis s rozlišením mluvčích a časovými značkami.', tasks: ['audio'], tip: 'Přepis nejdřív zkontroluj, až potom z něj tvoř úkoly.' },
     ],
   },
