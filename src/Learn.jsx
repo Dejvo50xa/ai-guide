@@ -18,7 +18,7 @@ export function Paths() {
         {paths.items.map(p => <button type="button" key={p.id} className="chip" aria-pressed={p.id === active} onClick={() => setActive(p.id)}>{p.name}</button>)}
       </div>
       <p className="path-intro" aria-live="polite">{path.intro}</p>
-      <div className="grid cols-3">
+      <div className="grid cols-3 swap" key={path.id}>
         {path.tasks.map(task => (
           <article className="card path-task" key={task.title}>
             <h3>{task.title}</h3>
@@ -114,7 +114,7 @@ export function Techniques() {
         <div className="chips" role="group" aria-label={techniques.filterLabel} style={{ marginBottom: 20 }}>
           {techniques.filters.map(([id, label]) => <button type="button" key={id} className="chip" aria-pressed={filter === id} onClick={() => setFilter(id)}>{label}</button>)}
         </div>
-        <div className="grid cols-3">
+        <div className="grid cols-3 swap" key={filter}>
           {shown.map(t => (
             <button type="button" key={t.id} className="card technique clickable" data-level={t.lvl} aria-haspopup="dialog" onClick={e => { opener.current = e.currentTarget; setOpen(t); }}>
               <span className="technique-top"><span className="icon"><Mark kind="book" /></span><span className="tag">{t.tag}</span></span>
@@ -184,7 +184,7 @@ export function Practice() {
             {results ? (
               <>
                 <h3>{practice.resultTitle(found, results.length)}</h3>
-                <ul className="result-list">
+                <ul className="result-list stagger">
                   {results.map(r => {
                     const meta = practice.checks.find(c => c.id === r.id);
                     return <li key={r.id} className={r.found ? 'found' : 'missing'}><span className="mark" aria-hidden="true">{r.found ? '✓' : '!'}</span><div><strong>{meta.label}</strong>{!r.found && <span>{meta.hint}</span>}</div></li>;
@@ -212,20 +212,26 @@ export function Practice() {
 
 function LoopSimulator() {
   const { loop } = useContent();
-  const [step, setStep] = useState(0);
+  // `turns` counts steps travelled, always forwards, so the marker never spins backwards from 6 to 1.
+  const [{ step, turns }, setPos] = useState({ step: 0, turns: 0 });
   const [playing, setPlaying] = useState(false);
+  const n = loop.steps.length;
+  const moveTo = i => setPos(p => ({ step: i, turns: p.turns + ((i - p.step + n) % n) }));
   useEffect(() => {
     if (!playing) return;
-    const t = setTimeout(() => setStep(p => (p + 1) % loop.steps.length), 1700);
+    const t = setTimeout(() => setPos(p => ({ step: (p.step + 1) % n, turns: p.turns + 1 })), 1700);
     return () => clearTimeout(t);
-  }, [playing, step, loop.steps.length]);
+  }, [playing, step, n]);
   const cur = loop.steps[step];
   const R = 118, c = 150;
-  const go = i => { setPlaying(false); setStep(i); };
+  const go = i => { setPlaying(false); moveTo(i); };
   return (
     <div className="loop">
-      <svg viewBox="0 0 300 300" role="group" aria-label={loop.stepsLabel}>
-        <circle cx={c} cy={c} r={R} fill="none" stroke="var(--line-strong)" strokeDasharray="4 6" />
+      <svg viewBox="0 0 300 300" role="group" aria-label={loop.stepsLabel} className={playing ? 'playing' : undefined}>
+        <circle className="loop-track" cx={c} cy={c} r={R} fill="none" stroke="var(--line-strong)" strokeDasharray="4 6" />
+        <g className="loop-marker" style={{ transform: `rotate(${turns * (360 / n)}deg)` }} aria-hidden="true">
+          <circle cx={c} cy={c - R} r="31" />
+        </g>
         {loop.steps.map((st, i) => {
           const a = (i / loop.steps.length) * Math.PI * 2 - Math.PI / 2;
           const x = c + Math.cos(a) * R, y = c + Math.sin(a) * R;
@@ -246,10 +252,12 @@ function LoopSimulator() {
           <button type="button" className="btn" onClick={() => setPlaying(!playing)}>{playing ? '❚❚ ' + loop.pause : '▶ ' + loop.play}</button>
           <button type="button" className="btn btn-secondary" onClick={() => go((step + 1) % loop.steps.length)}>{loop.next} →</button>
         </div>
-        <div className="card" aria-live="polite" style={{ display: 'grid', gap: 12 }}>
-          <span className="loop-step">{step + 1}. {cur.k} · {cur.name}</span>
-          <div className="prompt-box loop-code">{cur.txt}</div>
-          <p>{cur.detail}</p>
+        <div className="card" aria-live="polite">
+          <div className="swap" key={step} style={{ display: 'grid', gap: 12 }}>
+            <span className="loop-step">{step + 1}. {cur.k} · {cur.name}</span>
+            <div className="prompt-box loop-code">{cur.txt}</div>
+            <p>{cur.detail}</p>
+          </div>
         </div>
         <div className="loop-progress" aria-hidden="true">{loop.steps.map((s, i) => <span key={s.k} className={i === step ? 'on' : ''} />)}</div>
       </div>

@@ -15,6 +15,17 @@ export default function SiteNav({ catalog = false }) {
     wide.addEventListener('change', onWide);
     return () => { document.removeEventListener('keydown', onKey); wide.removeEventListener('change', onWide); };
   }, [open]);
+  // Highlight the nav link of the section in the middle of the screen. Sections without a nav link
+  // clear the highlight instead of leaving the previous one lit.
+  const [current, setCurrent] = useState('');
+  useEffect(() => {
+    if (catalog || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) setCurrent('#' + entry.target.id);
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('main section[id]').forEach(section => io.observe(section));
+    return () => io.disconnect();
+  }, [catalog]);
   // On the catalog page, section links point back to the home page of the same language.
   const home = catalog ? nav.home : '';
   const links = [...nav.links.map(([label, hash]) => [label, home + hash]), nav.catalog];
@@ -25,7 +36,7 @@ export default function SiteNav({ catalog = false }) {
       <nav className="wrap" aria-label={nav.label}>
         <a className="brand" href={home || '#uvod'}><Mark /><b>promptuj<span>ai</span></b></a>
         <div className="nav-links">
-          {links.map(([label, url]) => <a key={url} href={url} aria-current={catalog && url === nav.catalog[1] ? 'page' : undefined}>{label}</a>)}
+          {links.map(([label, url]) => <a key={url} href={url} aria-current={catalog && url === nav.catalog[1] ? 'page' : url === current ? 'location' : undefined}>{label}</a>)}
         </div>
         <div className="nav-actions">
           <a className="lang-switch" href={switchHref} hrefLang={nav.switchShort.toLowerCase()} lang={nav.switchShort.toLowerCase()} aria-label={`${nav.switchShort} – ${nav.switchLabel}`} title={nav.switchLabel}>{nav.switchShort}</a>
@@ -39,6 +50,7 @@ export default function SiteNav({ catalog = false }) {
           <a href={switchHref} hrefLang={nav.switchShort.toLowerCase()} lang={nav.switchShort.toLowerCase()}>{nav.switchLabel}</a>
         </div>
       )}
+      <div className="scroll-progress" aria-hidden="true" />
     </header>
   );
 }

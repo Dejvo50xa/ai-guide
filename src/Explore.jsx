@@ -25,8 +25,10 @@ export function Hero() {
   const { hero } = useContent();
   return (
     <>
+      <div className="hero-shell">
+      <div className="hero-bg" aria-hidden="true"><i /><i /><i /></div>
       <section className="hero wrap" id="uvod" aria-labelledby="hero-title">
-        <div>
+        <div className="hero-copy">
           <span className="kicker">{hero.kicker}</span>
           <h1 id="hero-title">{hero.title[0]}<br />{hero.title[1]}<em>{hero.title[2]}</em></h1>
           <p className="hero-text">{hero.text}</p>
@@ -43,14 +45,21 @@ export function Hero() {
           </div>
           <div>
             <div className="label label-strong">{hero.strongLabel}</div>
-            <div className="prompt-box">{hero.strong}</div>
+            {/* Each part lights up in turn, together with its chip below (CSS only). */}
+            <div className="prompt-box hero-parts">
+              {hero.strongParts.map(([label, text], i) => <span key={label} style={{ '--i': i }}>{text} </span>)}
+            </div>
+            <ul className="hero-legend" aria-label={hero.partsLabel}>
+              {hero.strongParts.map(([label], i) => <li key={label} style={{ '--i': i }}>{label}</li>)}
+            </ul>
           </div>
           <p>{hero.cardNote}</p>
         </figure>
       </section>
+      </div>
       <div className="wrap">
         <div className="proof">
-          {hero.proof.map(([n, label]) => <span key={label}><strong>{n}</strong>{label}</span>)}
+          {hero.proof.map(([n, label], i) => <span key={label} style={{ '--i': i }}><strong>{n}</strong>{label}</span>)}
           <span className="verified">{hero.verified}</span>
         </div>
       </div>
@@ -118,7 +127,8 @@ export function Workflows() {
               </button>
             ))}
           </div>
-          <article className="card workflow-detail" id="workflow-detail" aria-live="polite">
+          <article className="card" id="workflow-detail" aria-live="polite">
+            <div className="workflow-detail swap" key={current.id}>
             <span className="kicker" style={{ margin: 0 }}>{current.time}</span>
             <h3>{current.title}</h3>
             <p>{current.desc}</p>
@@ -129,6 +139,7 @@ export function Workflows() {
             </div>
             <div><button type="button" className="btn" onClick={copy}>{workflows.copy}</button></div>
             <p className="status" role="status">{status}</p>
+            </div>
           </article>
         </div>
       </div>
