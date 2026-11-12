@@ -27,3 +27,9 @@ test('invalid cached API values cannot replace the snapshot',()=>{
   assert.deepEqual(validCachedStats({unknown:{stars:1,checkedAt:now}},[id]),{});
   assert.equal(validCachedStats({[id]:{stars:123,checkedAt:now}},[id])[id].stars,123);
 });
+test('every repository has English text and English search works on it',()=>{
+  for(const r of repos)for(const key of ['description','setup','prompt'])assert.ok(typeof r.en?.[key]==='string'&&r.en[key].trim().length>10,`${r.id} is missing en.${key}`);
+  const english=repos.map(r=>({...r,...r.en}));
+  assert.ok(selectRepositories(english,{query:'testing'}).length>0);
+  assert.ok(selectRepositories(english,{category:'docs',query:'documents'}).length>0);
+});
