@@ -1,5 +1,5 @@
 // English content. Must mirror the structure of cs.js (checked by scripts/content.test.mjs).
-const verified = 'Oct 23, 2026';
+const verified = 'Nov 15, 2026';
 
 export default {
   lang: 'en',
@@ -71,10 +71,10 @@ export default {
     items: [
       { name: 'GPT-6 Astra', brand: 'OpenAI', type: 'text', tag: 'Hard problems', desc: 'Complex reasoning and coding.', tasks: ['research', 'code'], tip: 'Give it the goal, your material, and what a finished result looks like.' },
       { name: 'GPT-6.1 Sol / GPT-6 Luna', brand: 'OpenAI', type: 'text', tag: 'Cost-efficient', desc: 'Sol comes close to Astra at a lower price; Luna targets cheap high-volume tasks.', tasks: ['write', 'data'], tip: 'Start with the smaller model and check quality on real examples.' },
-      { name: 'Claude Fable 5.1', brand: 'Anthropic', type: 'text', tag: 'Complex projects', desc: 'Demanding reasoning and long agentic tasks.', tasks: ['research', 'code'], tip: 'Set milestones, deliverables, and checkpoints for review.' },
+      { name: 'Claude Fable 5.2', brand: 'Anthropic', type: 'text', tag: 'Complex projects', desc: 'Demanding reasoning and long agentic tasks.', tasks: ['research', 'code'], tip: 'Set milestones, deliverables, and checkpoints for review.' },
       { name: 'Claude Opus 5.5 / Sonnet 5.5', brand: 'Anthropic', type: 'text', tag: 'Work and coding', desc: 'Opus for complex work, Sonnet for a mix of speed and capability.', tasks: ['write', 'code', 'data'], tip: 'Attach an example of the output you want and concrete constraints.' },
-      { name: 'Gemini 4 Argon / 3.8 Flash', brand: 'Google', type: 'text', tag: 'Multi-step work', desc: 'Argon for demanding reasoning over long context; 3.8 Flash for coding, agents, and multi-step workflows.', tasks: ['code', 'data', 'research'], tip: 'Split the work into verifiable steps with clear outcomes.' },
-      { name: 'GPT-Image-2.5 Sunburst / Flare', brand: 'OpenAI', type: 'image', tag: 'Images', desc: 'Sunburst for the highest-quality generation and editing; Flare for fast everyday work.', tasks: ['image'], tip: 'Describe composition, lighting, aspect ratio, and what to keep.' },
+      { name: 'Gemini 4 Carbon / Argon', brand: 'Google', type: 'text', tag: 'Multi-step work', desc: 'Carbon for the hardest reasoning, coding, and science; Argon for efficient reasoning at a lower price.', tasks: ['code', 'data', 'research'], tip: 'Split the work into verifiable steps with clear outcomes.' },
+      { name: 'GPT-Image-2.6 Sunburst / Flare', brand: 'OpenAI', type: 'image', tag: 'Images', desc: 'Sunburst for detailed generation and editing; Flare for fast iteration.', tasks: ['image'], tip: 'Describe composition, lighting, aspect ratio, and what to keep.' },
       { name: 'Nano Banana 2.1', brand: 'Google', type: 'image', tag: 'Images', desc: 'Image creation and editing with better typography and consistency across edits.', tasks: ['image'], tip: 'Attach a reference and list the specific changes.' },
       { name: 'Gemini Omni Flash', brand: 'Google', type: 'video', tag: 'Video', desc: 'Fast video generation and editing with native audio; replaced the Veo 3.1 Preview in the Gemini API.', tasks: ['video'], tip: 'Specify the scene, camera movement, action, and sound.' },
       { name: 'Gemini 3.5 Transcribe', brand: 'Google', type: 'audio', tag: 'Speech to text', desc: 'Transcription with speaker labels and timestamps.', tasks: ['audio'], tip: 'Check the transcript first, then turn it into tasks.' },

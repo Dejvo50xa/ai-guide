@@ -67,7 +67,7 @@ export function Hero() {
   );
 }
 
-const sources = { OpenAI: 'https://developers.openai.com/api/docs/models', Anthropic: 'https://platform.claude.com/docs/en/models/overview', Google: 'https://ai.google.dev/gemini-api/docs/models' };
+const sources = { OpenAI: 'https://developers.openai.com/api/docs/models', Anthropic: 'https://platform.claude.com/docs/en/models/overview', Google: 'https://aistudio.google.com/docs/models' };
 const typeIcon = { text: 'spark', image: 'book', video: 'flow', audio: 'flow' };
 
 export function ModelExplorer() {
