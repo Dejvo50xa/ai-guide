@@ -1,7 +1,9 @@
 # PromptujAI — vizuální systém
 
-Reference: Davidova roadmapa (david-roadmap/src/style.css). UI/UX Pro Max: ověřený dotaz „knowledge base minimal editorial“, styl Minimalism & Swiss Style, přehledná navigace a kategorizace obsahu. První výsledek pro education navrhoval dětský styl; pro tento web byl odmítnut. Rozvržení a písma navazují na roadmapu. Na přání uživatele byla paleta změněna ze zelené na světle modrou.
+Redesign 30. 9. 2026: „Refined blue“. Zachovává světle modrou paletu, kterou si uživatel vybral, ale s výraznější hierarchií, méně soupeřícími kartami a jedním stylovým souborem (`src/styles.css`, tokeny v `:root`). Inline styly a animace při scrollování byly odstraněny.
 
-Pozadí #f3f8fd, karty #ffffff, text #203b56, sekundární text #526b82, modrá #3974a6, CTA #245b86, hranice #d3e2ef. Nadpisy Manrope, tělo DM Sans. Šířka 1240 px, okraje 20–32 px. Karty 12–14 px, jemné hranice, pohyb jen při interakci. SVG ikony s jednotným tahem 1.5.
+Barvy: pozadí #f3f8fd, pás sekce #eaf3fc, karty #ffffff, text #16324d, sekundární text #4b6580, akcent #2f6fa8, jemný akcent #e3effa, hlavní tlačítko (navy) #16324d, hranice #d6e5f2 / #b3cde4. Varování #7a5210 na #fbf3e4, chyba #8b3a30 na #fbefec.
 
-Desktop: rozdělený úvod s mapou, tři sloupce modelů, dva sloupce workflow. Mobil: jeden sloupec, textová nabídka Menu, všechny akce dostupné bez hoveru. Viditelný focus, nativní dialog, respekt reduced-motion. Zdroje a datum modelového katalogu jsou viditelné.
+Písma: nadpisy Manrope 700/800, text Inter 400/500/600 (Google Fonts, `display=swap`), kód systémový monospace. Šířka obsahu 1200 px, okraje 32 px (20 px na mobilu). Karty 16 px zaoblení, tlačítka a pole 10 px. Pohyb jen při interakci (hover), `prefers-reduced-motion` vše vypíná.
+
+Rozvržení: úvod rozdělený na text a ukázku slabého a silného promptu; sekce se střídají se světlejším pásem. Zlomy 1080 px (menu místo odkazů), 860 px (jeden sloupec u rozdělených bloků), 620 px (jeden sloupec všude). Viditelný focus (2 px akcent), nativní `<dialog>` pro detail techniky, `<details>` pro FAQ.

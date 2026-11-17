@@ -11,6 +11,11 @@
     "description": "Návrh rozhraní, barev, typografie a přístupnosti pro web i mobilní aplikace.",
     "setup": "Vyber podporovaného AI asistenta a postup instalace v README. Skill pak použij při zadání návrhu nebo úpravy rozhraní.",
     "prompt": "Navrhni přehlednější objednávkový formulář pro mobil. Vycházej ze stávajících komponent a zkontroluj přístupnost.",
+    "en": {
+      "description": "Interface design, colors, typography and accessibility for web and mobile apps.",
+      "setup": "Pick a supported AI assistant and follow the install steps in the README. Then use the skill when you ask for a new interface design or changes to one.",
+      "prompt": "Design a clearer order form for mobile. Build on the existing components and check accessibility."
+    },
     "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
     "stars": 130033,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -33,6 +38,11 @@
     "description": "Skilly pro vizuální návrh, animace a drobné interakce. Zahrnuje web, SwiftUI i Compose.",
     "setup": "Nainstaluj cast pro interakce nebo paint pro celý vizuální návrh. Připoj také podpůrné moduly podle dokumentace.",
     "prompt": "Navrhni jemné animace pro můj web. Nejprve ukaž zamýšlené chování a respektuj omezení pohybu.",
+    "en": {
+      "description": "Skills for visual design, animations and small interactions. Covers web, SwiftUI and Compose.",
+      "setup": "Install cast for interactions or paint for full visual design. Also connect the supporting modules as described in the docs.",
+      "prompt": "Design subtle animations for my website. First show the intended behavior, and respect reduced motion settings."
+    },
     "url": "https://github.com/AThevon/genjutsu",
     "stars": 368,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -52,6 +62,11 @@
     "description": "Postupy pro SwiftUI: stav aplikace, skládání obrazovek, výkon a rozhraní pro zařízení Apple.",
     "setup": "Přidej swiftui-expert-skill do asistenta, který podporuje Agent Skills. Používej ho nad konkrétním SwiftUI projektem.",
     "prompt": "Zkontroluj tuto SwiftUI obrazovku: správu stavu, navigaci, velikost textu a ovládání jednou rukou.",
+    "en": {
+      "description": "SwiftUI practices: app state, composing screens, performance and interfaces for Apple devices.",
+      "setup": "Add swiftui-expert-skill to an assistant that supports Agent Skills. Use it on a specific SwiftUI project.",
+      "prompt": "Review this SwiftUI screen: state management, navigation, text size and one-handed use."
+    },
     "url": "https://github.com/AvdLee/SwiftUI-Agent-Skill",
     "stars": 3603,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -73,6 +88,11 @@
     "description": "Oficiální skilly pro vývoj, ladění, aktualizace a nasazování aplikací Expo.",
     "setup": "Postup pro tvého asistenta najdeš v README. Skill potřebuje kontext existujícího Expo projektu.",
     "prompt": "Prověř navigaci a práci s klávesnicí v této Expo aplikaci pro iOS i Android.",
+    "en": {
+      "description": "Official skills for developing, debugging, updating and deploying Expo apps.",
+      "setup": "You'll find the steps for your assistant in the README. The skill needs the context of an existing Expo project.",
+      "prompt": "Check navigation and keyboard handling in this Expo app on both iOS and Android."
+    },
     "url": "https://github.com/expo/skills",
     "stars": 2599,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -94,6 +114,11 @@
     "description": "Kolekce instrukcí a skriptů pro AI agenty při práci na webových projektech.",
     "setup": "Vyber konkrétní skill z kolekce a nainstaluj ho podle README. Nepotřebuješ přidávat celou sadu.",
     "prompt": "Projdi můj webový projekt a navrhni úpravy odpovídající jeho frameworku a způsobu nasazení.",
+    "en": {
+      "description": "A collection of instructions and scripts for AI agents working on web projects.",
+      "setup": "Pick a specific skill from the collection and install it following the README. You don't need to add the whole set.",
+      "prompt": "Go through my web project and suggest changes that fit its framework and how it's deployed."
+    },
     "url": "https://github.com/vercel-labs/agent-skills",
     "stars": 31477,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -116,6 +141,11 @@
     "description": "Sada skillů pro dokumenty, tabulky, prezentace, design a další úkoly v Claude.",
     "setup": "Vyber složku se SKILL.md. Instalace a dostupnost jednotlivých funkcí závisí na prostředí, ve kterém Claude používáš.",
     "prompt": "Z přiložených podkladů vytvoř upravitelnou prezentaci a zkontroluj čitelnost každého snímku.",
+    "en": {
+      "description": "A set of skills for documents, spreadsheets, presentations, design and other tasks in Claude.",
+      "setup": "Pick a folder with a SKILL.md. Installation and which features are available depend on the environment where you use Claude.",
+      "prompt": "Create an editable presentation from the attached materials and check that every slide is readable."
+    },
     "url": "https://github.com/anthropics/skills",
     "stars": 177763,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -137,6 +167,11 @@
     "description": "Katalog skillů pro opakovatelné úkoly v Codexu včetně práce se soubory a vývoje.",
     "setup": "V Codexu vyber konkrétní skill z katalogu. Dokumentace repozitáře popisuje instalaci i strukturu vlastních skillů.",
     "prompt": "Vyber z katalogu skill vhodný pro tento úkol a vysvětli, jaké vstupy bude potřebovat.",
+    "en": {
+      "description": "A catalog of skills for repeatable tasks in Codex, including working with files and development.",
+      "setup": "In Codex, pick a specific skill from the catalog. The repository docs describe installation and how to structure your own skills.",
+      "prompt": "Pick a skill from the catalog that fits this task and explain what inputs it will need."
+    },
     "url": "https://github.com/openai/skills",
     "stars": 27577,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -158,6 +193,11 @@
     "description": "Postupy pro plánování vývoje, implementaci, testování a kontrolu práce kódovacích agentů.",
     "setup": "Zvol instalační postup pro Claude Code, Codex nebo další podporované prostředí v README.",
     "prompt": "Navrhni postup opravy této chyby. Nejprve ji reprodukuj, potom oprav a ověř regresi.",
+    "en": {
+      "description": "Workflows for planning, implementing, testing and reviewing the work of coding agents.",
+      "setup": "Choose the install steps for Claude Code, Codex or another supported environment in the README.",
+      "prompt": "Propose how to fix this bug. First reproduce it, then fix it and check for regressions."
+    },
     "url": "https://github.com/obra/superpowers",
     "stars": 290449,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -179,6 +219,11 @@
     "description": "Komunitní knihovna agentů, instrukcí, skillů a workflow pro GitHub Copilot.",
     "setup": "Vyber konkrétní položku nebo plugin pro svůj úkol a přidej ho do odpovídajícího prostředí Copilotu.",
     "prompt": "Najdi v kolekci instrukce pro code review odpovídající jazyku tohoto projektu.",
+    "en": {
+      "description": "A community library of agents, instructions, skills and workflows for GitHub Copilot.",
+      "setup": "Pick a specific item or plugin for your task and add it to the matching Copilot environment.",
+      "prompt": "Find code review instructions in the collection that match this project's language."
+    },
     "url": "https://github.com/github/awesome-copilot",
     "stars": 39304,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -200,6 +245,11 @@
     "description": "Zpřístupní AI práci s webovou stránkou přes prohlížeč a jeho strom přístupnosti.",
     "setup": "Přidej server do nastavení MCP klienta podle README. Pro lokální spuštění ověř požadovanou verzi Node.js.",
     "prompt": "Otevři lokální web a otestuj registraci, chybové zprávy a ovládání klávesnicí.",
+    "en": {
+      "description": "Lets AI work with a web page through the browser and its accessibility tree.",
+      "setup": "Add the server to your MCP client's settings following the README. For running it locally, check the required Node.js version.",
+      "prompt": "Open the local site and test sign-up, error messages and keyboard navigation."
+    },
     "url": "https://github.com/microsoft/playwright-mcp",
     "stars": 37498,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -221,6 +271,11 @@
     "description": "Umožní agentovi používat Chrome DevTools pro ladění, síťové požadavky a výkon webu.",
     "setup": "Nastav MCP server a připojení k podporované verzi Chromu podle dokumentace.",
     "prompt": "Zjisti, proč se tato stránka pomalu načítá. Uveď konkrétní požadavky a navrhni opravy.",
+    "en": {
+      "description": "Lets an agent use Chrome DevTools for debugging, network requests and web performance.",
+      "setup": "Set up the MCP server and the connection to a supported Chrome version following the docs.",
+      "prompt": "Find out why this page loads slowly. List the specific requests and suggest fixes."
+    },
     "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
     "stars": 52509,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -241,6 +296,11 @@
     "description": "Dodává agentům dokumentaci a příklady použití knihoven v kontextu vývoje.",
     "setup": "Zvol MCP server nebo variantu CLI se skillem. Nastavení přístupu a případné přihlášení popisuje README.",
     "prompt": "Najdi dokumentaci pro verzi knihovny, kterou používá tento projekt, a ověř navržené API.",
+    "en": {
+      "description": "Gives agents library documentation and usage examples while you develop.",
+      "setup": "Choose the MCP server or the CLI version with a skill. The README describes access setup and sign-in, if needed.",
+      "prompt": "Find the docs for the library version this project uses and verify the proposed API."
+    },
     "url": "https://github.com/upstash/context7",
     "stars": 62356,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -261,6 +321,11 @@
     "description": "Oficiální propojení AI s repozitáři, issues, pull requesty a dalšími funkcemi GitHubu.",
     "setup": "Připoj vzdálený nebo lokální server podle svého MCP klienta a nastav přístup k potřebným repozitářům.",
     "prompt": "Shrň otevřené issues v tomto repozitáři a připrav návrh pořadí oprav.",
+    "en": {
+      "description": "The official connection between AI and GitHub repositories, issues, pull requests and other features.",
+      "setup": "Connect the remote or local server depending on your MCP client and set up access to the repositories you need.",
+      "prompt": "Summarize the open issues in this repository and propose an order for fixing them."
+    },
     "url": "https://github.com/github/github-mcp-server",
     "stars": 33143,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -281,6 +346,11 @@
     "description": "Propojí asistenta s projektem Supabase pro práci s databází a vývojovým kontextem.",
     "setup": "Nastav MCP připojení, vyber projekt a rozsah přístupu. Pro první průzkum použij režim jen pro čtení, pokud ho klient podporuje.",
     "prompt": "Prohlédni schéma vývojové databáze a navrhni indexy pro tento pomalý dotaz.",
+    "en": {
+      "description": "Connects your assistant to a Supabase project for working with the database and development context.",
+      "setup": "Set up the MCP connection, pick a project and the access scope. For a first look around, use read-only mode if your client supports it.",
+      "prompt": "Look at the development database schema and suggest indexes for this slow query."
+    },
     "url": "https://github.com/supabase/mcp",
     "stars": 2918,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -302,6 +372,11 @@
     "description": "Převádí kancelářské dokumenty a další soubory na Markdown pro další zpracování AI.",
     "setup": "Nainstaluj Python balíček s podporou potřebných formátů. Převod pak zapoj jako krok před zpracováním textu modelem.",
     "prompt": "Převeď tyto dokumenty do Markdownu, zachovej nadpisy a označ části, které se nepodařilo převést.",
+    "en": {
+      "description": "Converts office documents and other files to Markdown for further AI processing.",
+      "setup": "Install the Python package with support for the formats you need. Then add the conversion as a step before the model processes the text.",
+      "prompt": "Convert these documents to Markdown, keep the headings and mark the parts that couldn't be converted."
+    },
     "url": "https://github.com/microsoft/markitdown",
     "stars": 186577,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -323,6 +398,11 @@
     "description": "Nástroje pro vyhledávání a získávání obsahu webů ve formátu použitelném pro AI.",
     "setup": "Použij MCP, CLI nebo API podle dokumentace. Hostovaná varianta může vyžadovat účet, klíč a placený tarif.",
     "prompt": "Z těchto veřejných produktových stránek vytáhni názvy a parametry včetně odkazů na zdroje.",
+    "en": {
+      "description": "Tools for searching and fetching web content in a format AI can use.",
+      "setup": "Use MCP, the CLI or the API following the docs. The hosted version may require an account, a key and a paid plan.",
+      "prompt": "From these public product pages, extract names and specs, including links to the sources."
+    },
     "url": "https://github.com/firecrawl/firecrawl",
     "stars": 183633,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -344,6 +424,11 @@
     "description": "Nástroje a knihovna pro agenty, kteří vykonávají úkoly v prohlížeči.",
     "setup": "Vyber Python knihovnu, CLI nebo podporovanou integraci. Doplň přístup k modelu a prohlížeči podle README.",
     "prompt": "Projdi tento testovací web a zkontroluj, zda lze dokončit objednávku bez skutečné platby.",
+    "en": {
+      "description": "Tools and a library for agents that carry out tasks in a browser.",
+      "setup": "Choose the Python library, the CLI or a supported integration. Add access to a model and a browser following the README.",
+      "prompt": "Go through this test site and check whether an order can be completed without a real payment."
+    },
     "url": "https://github.com/browser-use/browser-use",
     "stars": 116038,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -365,6 +450,11 @@
     "description": "Vizuální workflow propojující aplikace, data a AI kroky. Lze provozovat samostatně nebo v cloudu.",
     "setup": "Spusť n8n nebo použij jeho cloud. Model a externí služby připoj uvnitř workflow pomocí vlastních přístupů.",
     "prompt": "Navrhni workflow, které z příchozího formuláře připraví návrh odpovědi ke schválení.",
+    "en": {
+      "description": "Visual workflows connecting apps, data and AI steps. You can self-host it or use the cloud.",
+      "setup": "Run n8n yourself or use its cloud. Connect the model and external services inside the workflow using your own credentials.",
+      "prompt": "Design a workflow that turns an incoming form into a draft reply for approval."
+    },
     "url": "https://github.com/n8n-io/n8n",
     "stars": 205757,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -386,6 +476,11 @@
     "description": "Prostředí pro AI aplikace, agenty a práci s vlastními znalostními podklady.",
     "setup": "Zvol cloud nebo vlastní provoz a připoj poskytovatele modelu. Aplikaci sestav ve workflow editoru.",
     "prompt": "Navrhni asistenta, který odpovídá z našich interních návodů a u každé odpovědi uvede zdroj.",
+    "en": {
+      "description": "A platform for AI apps, agents and working with your own knowledge sources.",
+      "setup": "Choose cloud or self-hosting and connect a model provider. Build the app in the workflow editor.",
+      "prompt": "Design an assistant that answers from our internal guides and cites the source for every answer."
+    },
     "url": "https://github.com/langgenius/dify",
     "stars": 156953,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -406,6 +501,11 @@
     "description": "Knihovna pro stavové agenty a vícekrokové postupy s řízením průběhu a lidskou kontrolou.",
     "setup": "Přidej knihovnu do aplikace a definuj stav, kroky a přechody mezi nimi. Není to samostatný skill do chatu.",
     "prompt": "Navrhni workflow rešerše se stavem, kontrolou zdrojů a schválením před zveřejněním.",
+    "en": {
+      "description": "A library for stateful agents and multi-step workflows with flow control and human review.",
+      "setup": "Add the library to your app and define the state, the steps and the transitions between them. It isn't a standalone chat skill.",
+      "prompt": "Design a research workflow with state, source checking and approval before publishing."
+    },
     "url": "https://github.com/langchain-ai/langgraph",
     "stars": 42176,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -426,6 +526,11 @@
     "description": "Framework pro spolupráci více agentů. Projekt je v režimu údržby; README odkazuje na Microsoft Agent Framework.",
     "setup": "Hodí se zejména k práci na existujícím projektu AutoGen. Před novým nasazením si přečti oznámení o údržbě v README.",
     "prompt": "Vysvětli architekturu tohoto existujícího projektu AutoGen a možnosti jeho další údržby.",
+    "en": {
+      "description": "A framework for multi-agent collaboration. The project is in maintenance mode; the README points to Microsoft Agent Framework.",
+      "setup": "Best suited for working on an existing AutoGen project. Before a new deployment, read the maintenance notice in the README.",
+      "prompt": "Explain the architecture of this existing AutoGen project and the options for maintaining it going forward."
+    },
     "url": "https://github.com/microsoft/autogen",
     "stars": 61118,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -446,6 +551,11 @@
     "description": "Python SDK pro agenty, nástroje, předávání úkolů a sledování běhu.",
     "setup": "Nainstaluj openai-agents do Python projektu a nakonfiguruj poskytovatele modelu podle dokumentace.",
     "prompt": "Navrhni agenta, který používá dva nástroje a před zápisem změn čeká na potvrzení uživatele.",
+    "en": {
+      "description": "A Python SDK for agents, tools, handoffs and run tracing.",
+      "setup": "Install openai-agents in your Python project and configure a model provider following the docs.",
+      "prompt": "Design an agent that uses two tools and waits for user confirmation before writing changes."
+    },
     "url": "https://github.com/openai/openai-agents-python",
     "stars": 29653,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -467,6 +577,11 @@
     "description": "Testování promptů, agentů a RAG aplikací včetně porovnávání výstupů a bezpečnostních testů.",
     "setup": "Spusť CLI, vytvoř testovací konfiguraci a připoj testované modely. Výsledky lze vyhodnocovat také v CI.",
     "prompt": "Připrav testovací sadu pro tohoto asistenta: správné odpovědi, chybějící podklady a pokusy o změnu instrukcí.",
+    "en": {
+      "description": "Testing for prompts, agents and RAG apps, including output comparison and security tests.",
+      "setup": "Run the CLI, create a test config and connect the models you're testing. You can also evaluate results in CI.",
+      "prompt": "Prepare a test suite for this assistant: correct answers, missing source material and attempts to change its instructions."
+    },
     "url": "https://github.com/promptfoo/promptfoo",
     "stars": 25394,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -488,6 +603,11 @@
     "description": "Kolekce specializovaných MCP serverů pro služby a vývojové úkoly v AWS.",
     "setup": "Vyber konkrétní server. Nastav jeho požadavky a potřebná oprávnění AWS podle příslušného README.",
     "prompt": "Vyber vhodný server z kolekce pro průzkum dokumentace a návrh infrastruktury této aplikace.",
+    "en": {
+      "description": "A collection of specialized MCP servers for AWS services and development tasks.",
+      "setup": "Pick a specific server. Set up its requirements and the AWS permissions it needs following its README.",
+      "prompt": "Pick a suitable server from the collection for exploring the docs and designing the infrastructure for this app."
+    },
     "url": "https://github.com/awslabs/mcp",
     "stars": 9726,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -509,6 +629,11 @@
     "description": "Skilly pro obsah, SEO, analytiku a práci na konverzích webu.",
     "setup": "Nainstaluj vybrané skilly a přidej kontext produktu, zákazníků a cíle stránky.",
     "prompt": "Projdi tuto produktovou stránku a navrhni konkrétnější nadpisy podle přiložených zákaznických rozhovorů.",
+    "en": {
+      "description": "Skills for content, SEO, analytics and website conversion work.",
+      "setup": "Install the skills you want and add context about the product, customers and the page's goal.",
+      "prompt": "Go through this product page and suggest more specific headlines based on the attached customer interviews."
+    },
     "url": "https://github.com/coreyhaines31/marketingskills",
     "stars": 51273,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -530,6 +655,11 @@
     "description": "Skilly pro bezpečnostní analýzu kódu, hledání zranitelností a auditní postupy.",
     "setup": "Vyber plugin nebo skill podle jazyka a typu auditu. Postup pro Claude Code a Codex uvádí README.",
     "prompt": "Prověř tuto změnu z hlediska autorizace a práce s nedůvěryhodným vstupem. Každý nález dolož místem v kódu.",
+    "en": {
+      "description": "Skills for security code analysis, finding vulnerabilities and audit workflows.",
+      "setup": "Pick a plugin or skill based on the language and type of audit. The README covers steps for Claude Code and Codex.",
+      "prompt": "Review this change for authorization and handling of untrusted input. Back up every finding with its location in the code."
+    },
     "url": "https://github.com/trailofbits/skills",
     "stars": 7212,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -550,6 +680,11 @@
     "description": "Instrukce pro AI agenty, kteří vytvářejí videa v projektech Remotion.",
     "setup": "Přidej skilly do asistenta a pracuj v projektu s Remotion. Samotný skill nenahrazuje vykreslovací prostředí.",
     "prompt": "Vytvoř v tomto Remotion projektu krátké produktové video podle scénáře a firemních barev.",
+    "en": {
+      "description": "Instructions for AI agents that create videos in Remotion projects.",
+      "setup": "Add the skills to your assistant and work in a Remotion project. The skill itself doesn't replace the rendering environment.",
+      "prompt": "Create a short product video in this Remotion project based on the script and the brand colors."
+    },
     "url": "https://github.com/remotion-dev/skills",
     "stars": 4697,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
@@ -570,6 +705,11 @@
     "description": "Pravidla pro konkrétní, přirozené české texty bez výplňových frází.",
     "setup": "V běžném chatu vlož krátkou verzi pravidel. V kódovacím agentovi přidej složku skill se SKILL.md a referencemi.",
     "prompt": "Přepiš tento český text. Zachovej fakta, nahraď obecné sliby konkrétními příklady a nic si nevymýšlej.",
+    "en": {
+      "description": "Rules for specific, natural Czech texts without filler phrases.",
+      "setup": "In a regular chat, paste the short version of the rules. In a coding agent, add the skill folder with SKILL.md and references.",
+      "prompt": "Rewrite this Czech text. Keep the facts, replace generic promises with specific examples and don't make anything up."
+    },
     "url": "https://github.com/nowork-ai/anti-ai-slop-cz",
     "stars": 21,
     "checkedAt": "2026-09-23T12:54:08.720989+00:00",
